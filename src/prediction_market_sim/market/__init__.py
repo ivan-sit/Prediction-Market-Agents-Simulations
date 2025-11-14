@@ -1,23 +1,39 @@
 """Market implementation modules for prediction market simulation.
 
-This package provides LMSR (Logarithmic Market Scoring Rule) implementation,
-the industry-standard automated market maker for prediction markets.
+This package provides TWO market implementations:
 
-LMSR is used by major prediction market platforms like Augur, Gnosis, and others.
-It provides instant liquidity, full trade visibility, and automatic price discovery.
+1. LMSR (Logarithmic Market Scoring Rule):
+   - Automated market maker
+   - Always has liquidity
+   - Good for low-liquidity / simple scenarios
+   
+2. Order Book (using PyOrderBook):
+   - Realistic market like Kalshi/Polymarket
+   - Liquidity depends on traders
+   - Orders may not execute without counterparty
+   - Bid-ask spread exists
+   
+Choose based on your simulation needs via .env configuration.
 """
 
-# Main market adapter (RECOMMENDED)
-from .adapters import LMSRMarketAdapter
+# Market adapters
+from .adapters import LMSRMarketAdapter, OrderBookMarketAdapter
 
-# LMSR core components (for advanced usage)
+# LMSR components
 from .lmsr import LMSRMarket, LMSRTrade, LMSROrderConverter
 
+# Order Book components
+from .orderbook import OrderBookMarket, Order, Trade
+
 __all__ = [
-    # Main adapter (use this in your simulations)
+    # LMSR (simple, always liquid)
     "LMSRMarketAdapter",
-    # Core components (for advanced customization)
     "LMSRMarket",
     "LMSRTrade",
     "LMSROrderConverter",
+    # Order Book (realistic, like Kalshi)
+    "OrderBookMarketAdapter",
+    "OrderBookMarket",
+    "Order",
+    "Trade",
 ]

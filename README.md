@@ -1,28 +1,48 @@
 # Prediction-Market-Agents-Simulations
 
-A comprehensive simulation framework for multi-agent prediction markets with support for:
+A comprehensive simulation framework for multi-agent prediction markets with support for **TWO market mechanisms**:
 
-- ✅ **Full Limit Order Book** with price-time priority matching
-- ✅ **LMSR Market Maker** for automated market making
-- ✅ **Comprehensive Logging** of market state, beliefs, and information flows
+## 🎯 Choose Your Market Type
+
+### 📗 **Order Book** (Realistic - Like Kalshi/Polymarket)
+- Price-time priority matching
+- Bid/ask spreads and market depth  
+- Orders may NOT execute without counterparty
+- Realistic liquidity constraints
+- **Use for:** Production-like simulations
+
+### 🔵 **LMSR** (Simple - Automated Market Maker)
+- Guaranteed liquidity (always trades)
+- No spread, instant execution
+- Formula-based pricing
+- **Use for:** Testing, low-liquidity scenarios
+
+## ✨ Features
+
+- ✅ **Dynamic Market Selection** via config file
+- ✅ **Comprehensive Logging** of market state, beliefs, and flows
 - ✅ **Multiple Agent Types** (Bayesian, Momentum, Noise traders)
-- ✅ **Flexible Architecture** for easy extension and experimentation
+- ✅ **Flexible Architecture** for easy extension
+- ✅ **Real-time Position Tracking** and PnL calculation
+- ✅ **Visualization Tools** for analysis
 
-## Features
+## Market Implementations
 
-### Market Implementations
+### 1. Order Book (PyOrderBook)
+**Realistic market like Kalshi/Polymarket:**
+- Limit orders and market orders
+- Order matching via price-time priority
+- Bid/ask spread exists
+- Liquidity depends on traders
+- Orders can fail if no counterparty
 
-1. **OrderBook**: Traditional limit order book with:
-   - Price-time priority matching
-   - Bid/ask spreads and market depth
-   - Real-time position tracking
-   - Trade history
-
-2. **LMSR**: Automated market maker with:
-   - Guaranteed liquidity
-   - No spread
-   - Bounded loss for market maker
-   - Perfect for prediction markets
+### 2. LMSR (Logarithmic Market Scoring Rule)
+**Simple automated market maker:**
+- Always has liquidity
+- Instant execution guaranteed
+- Zero spread
+- Formula-based pricing
+- Good for testing
 
 ### Data Logging
 
@@ -41,18 +61,35 @@ Built-in visualization tools to analyze:
 - Trading volume and flow
 - Information signal impact
 
-## Quick Start
+## 🚀 Quick Start
 
-### Installation
+### 1. Installation
 
 ```bash
-# Clone and install dependencies
+# Clone repo
 git clone <repo-url>
 cd Prediction-Market-Agents-Simulations
-pip install -r requirements.txt
 
-# For best performance, install external orderbook library (RECOMMENDED)
-pip install limit-order-book
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### 2. Configure Market Type
+
+```bash
+# Copy config template
+cp config.env.example config.env
+
+# Edit config.env to choose market type
+# MARKET_TYPE=orderbook  (realistic, like Kalshi)
+# MARKET_TYPE=lmsr       (simple, always liquid)
+```
+
+### 3. Run Example
+
+```bash
+# Run dynamic market selection demo
+python examples/demo_market_selection.py
 ```
 
 The framework supports **multiple orderbook implementations**:

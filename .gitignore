@@ -32,6 +32,7 @@ simulation_logs/
 visualizations/
 test_scripts/
 pricing_test/
+orderbook_test/
 
 # Jupyter checkpoints
 .ipynb_checkpoints/
