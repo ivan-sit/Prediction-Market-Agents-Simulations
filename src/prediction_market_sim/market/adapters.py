@@ -1,0 +1,397 @@
+"""Market adapters for prediction market simulation.
+
+This module provides two market mechanisms:
+
+1. LMSR (Logarithmic Market Scoring Rule):
+   - Automated market maker
+   - Always has liquidity
+   - Good for low-liquidity simulations
+   
+2. Order Book (using PyOrderBook):
+   - Realistic market like Kalshi/Polymarket
+   - Liquidity depends on traders
+   - Orders may not execute
+   - Bid-ask spread exists
+"""
+
+from __future__ import annotations
+
+from collections import defaultdict
+from typing import Dict, List, Mapping, Sequence, Optional
+
+from ..simulation.interfaces import MarketAdapter, MarketOrder
+
+
+class LMSRMarketAdapter(MarketAdapter):
+    """LMSR market maker adapter for prediction markets.
+    
+    LMSR (Logarithmic Market Scoring Rule) is the standard automated market
+    maker for prediction markets, used by platforms like Augur and Gnosis.
+    
+    Features:
+    - Automated market making (always has liquidity)
+    - Instant trade execution
+    - Full trade visibility
+    - Price tracking and net flow monitoring
+    - Agent position tracking with PnL calculation
+    
+    Args:
+        liquidity_param: Controls how much price moves per trade (higher = more liquid)
+        track_positions: Whether to track agent positions and PnL
+    """
+    
+    def __init__(
+        self,
+        *,
+        liquidity_param: float = 100.0,
+        track_positions: bool = True
+    ):
+        """Initialize the LMSR adapter.
+        
+        Args:
+            liquidity_param: LMSR liquidity parameter (higher = more liquidity)
+            track_positions: Whether to track agent positions
+        """
+        from .lmsr import LMSRMarket, LMSROrderConverter
+        
+        self._market = LMSRMarket(liquidity_param=liquidity_param)
+        self._converter = LMSROrderConverter(self._market)
+        self._track_positions = track_positions
+        
+        # State tracking
+        self._net_flow_tick = 0.0
+        self._tick_volume = 0.0
+        
+        # Agent position tracking
+        self._positions: Dict[str, Dict[str, float]] = defaultdict(
+            lambda: {"YES": 0.0, "NO": 0.0, "cash": 0.0}
+        )
+        
+    def submit_orders(self, orders: Sequence[MarketOrder], timestep: int) -> None:
+        """Submit orders to the LMSR market.
+        
+        Args:
+            orders: Sequence of market orders
+            timestep: Current simulation timestep
+        """
+        self._net_flow_tick = 0.0
+        self._tick_volume = 0.0
+        
+        for order in orders:
+            # Convert order to LMSR trade
+            trade = self._converter.submit_limit_order(
+                agent_id=order.agent_id,
+                side=order.side,
+                size=order.size,
+                limit_price=order.limit_price,
+                timestamp=timestep
+            )
+            
+            if trade is not None:
+                # Track net flow (buy = positive, sell = negative)
+                if order.side.lower() == "buy":
+                    self._net_flow_tick += trade.shares
+                else:
+                    self._net_flow_tick -= trade.shares
+                    
+                self._tick_volume += abs(trade.shares)
+                
+                # Update agent positions
+                if self._track_positions:
+                    agent_pos = self._positions[trade.agent_id]
+                    agent_pos[trade.outcome] += trade.shares
+                    agent_pos["cash"] -= trade.cost
+                    
+    def current_price(self) -> float:
+        """Get the current market price for YES outcome."""
+        return self._market.get_price("YES")
+    
+    def snapshot(self) -> Mapping[str, object]:
+        """Get comprehensive market state snapshot."""
+        market_snapshot = self._market.snapshot()
+        
+        snapshot_data = {
+            "price": market_snapshot["yes_price"],
+            "yes_price": market_snapshot["yes_price"],
+            "no_price": market_snapshot["no_price"],
+            "yes_shares": market_snapshot["yes_shares"],
+            "no_shares": market_snapshot["no_shares"],
+            "spread": 0.0,  # LMSR has no spread
+            "net_flow": self._net_flow_tick,
+            "tick_volume": self._tick_volume,
+            "total_volume": market_snapshot["total_volume"],
+            "num_trades": market_snapshot["num_trades"],
+            "liquidity_param": market_snapshot["liquidity_param"],
+        }
+        
+        # Add position tracking if enabled
+        if self._track_positions:
+            snapshot_data["positions"] = dict(self._positions)
+            
+        return snapshot_data
+    
+    def get_agent_position(self, agent_id: str) -> Dict[str, float]:
+        """Get an agent's current position.
+        
+        Args:
+            agent_id: Agent identifier
+            
+        Returns:
+            Dictionary with position information
+        """
+        pos = self._positions[agent_id]
+        
+        # Calculate PnL based on current prices
+        yes_price = self._market.get_price("YES")
+        no_price = self._market.get_price("NO")
+        
+        pnl = (
+            pos["YES"] * yes_price +
+            pos["NO"] * no_price +
+            pos["cash"]
+        )
+        
+        return {
+            "yes_shares": pos["YES"],
+            "no_shares": pos["NO"],
+            "cash": pos["cash"],
+            "pnl": pnl
+        }
+
+
+class OrderBookMarketAdapter(MarketAdapter):
+    """
+    Realistic order book adapter using PyOrderBook.
+    
+    Simulates Kalshi/Polymarket-style prediction markets where:
+    - Traders submit limit orders (bid/ask)
+    - Orders are matched via price-time priority
+    - Liquidity depends on trader participation
+    - Bid-ask spread exists
+    - Orders may not execute if no counterparty exists
+    
+    This is MORE REALISTIC than LMSR but requires:
+    - More agents to provide liquidity
+    - Agents handle failed order execution
+    - More complex market dynamics
+    
+    Args:
+        market_id: Unique market identifier
+        tick_size: Minimum price increment (default 0.01 = 1 cent)
+        initial_liquidity: Seed book with initial orders
+        track_positions: Track agent positions and PnL
+    """
+    
+    def __init__(
+        self,
+        *,
+        market_id: str = "default_market",
+        tick_size: float = 0.01,
+        initial_liquidity: bool = True,
+        track_positions: bool = True
+    ):
+        from .orderbook import OrderBookMarket
+        
+        self._market = OrderBookMarket(
+            market_id=market_id,
+            outcomes=["YES", "NO"],
+            tick_size=tick_size,
+            initial_liquidity=initial_liquidity
+        )
+        
+        self._track_positions = track_positions
+        self._positions: Dict[str, Dict[str, float]] = defaultdict(
+            lambda: {"YES": 0.0, "NO": 0.0, "cash": 0.0}
+        )
+        
+        # Track order submission attempts
+        self._submitted_orders = []
+        self._failed_orders = []
+    
+    def process_orders(
+        self,
+        orders: Sequence[MarketOrder],
+        timestep: int
+    ) -> List[Dict]:
+        """
+        Process orders from agents.
+        
+        NOTE: Unlike LMSR, not all orders will execute!
+        Orders only execute if there's a counterparty.
+        
+        Args:
+            orders: List of market orders from agents
+            timestep: Current simulation timestep
+            
+        Returns:
+            List of execution results (may be empty if no matches)
+        """
+        results = []
+        
+        for order in orders:
+            self._submitted_orders.append(order)
+            
+            # Convert simulation order to order book order
+            if order.order_type == "market":
+                # Market order: execute immediately at best price
+                trades = self._market.submit_market_order(
+                    agent_id=order.agent_id,
+                    outcome=order.outcome,
+                    side=order.side,
+                    quantity=order.quantity,
+                    timestamp=timestep
+                )
+                
+                if trades:
+                    # Order executed!
+                    for trade in trades:
+                        result = {
+                            "agent_id": order.agent_id,
+                            "outcome": trade.outcome,
+                            "side": order.side,
+                            "quantity": trade.quantity,
+                            "price": trade.price,
+                            "executed": True,
+                            "trade_id": trade.trade_id
+                        }
+                        results.append(result)
+                        
+                        # Update positions
+                        if self._track_positions:
+                            self._update_position(
+                                agent_id=order.agent_id,
+                                outcome=trade.outcome,
+                                side=order.side,
+                                quantity=trade.quantity,
+                                price=trade.price
+                            )
+                else:
+                    # Order failed to execute
+                    self._failed_orders.append(order)
+                    results.append({
+                        "agent_id": order.agent_id,
+                        "outcome": order.outcome,
+                        "side": order.side,
+                        "quantity": order.quantity,
+                        "price": None,
+                        "executed": False,
+                        "reason": "No counterparty available"
+                    })
+            
+            elif order.order_type == "limit":
+                # Limit order: place in book at specific price
+                limit_price = order.limit_price or 0.5  # Default to mid
+                
+                ob_order = self._market.submit_limit_order(
+                    agent_id=order.agent_id,
+                    outcome=order.outcome,
+                    side=order.side,
+                    price=limit_price,
+                    quantity=order.quantity,
+                    timestamp=timestep
+                )
+                
+                if ob_order:
+                    result = {
+                        "agent_id": order.agent_id,
+                        "outcome": order.outcome,
+                        "side": order.side,
+                        "quantity": order.quantity,
+                        "price": limit_price,
+                        "executed": ob_order.filled_quantity > 0,
+                        "filled_quantity": ob_order.filled_quantity,
+                        "order_id": ob_order.order_id
+                    }
+                    results.append(result)
+                    
+                    # Update positions for filled portion
+                    if self._track_positions and ob_order.filled_quantity > 0:
+                        self._update_position(
+                            agent_id=order.agent_id,
+                            outcome=order.outcome,
+                            side=order.side,
+                            quantity=ob_order.filled_quantity,
+                            price=limit_price
+                        )
+        
+        return results
+    
+    def _update_position(
+        self,
+        agent_id: str,
+        outcome: str,
+        side: str,
+        quantity: float,
+        price: float
+    ):
+        """Update agent position after trade execution."""
+        pos = self._positions[agent_id]
+        
+        if side == "BUY":
+            pos[outcome] += quantity
+            pos["cash"] -= quantity * price
+        else:  # SELL
+            pos[outcome] -= quantity
+            pos["cash"] += quantity * price
+    
+    def get_market_state(self) -> Dict:
+        """
+        Get current market state.
+        
+        Returns order book state including:
+        - Best bid/ask
+        - Spread
+        - Market depth
+        - Last traded price
+        - Volume
+        """
+        state = self._market.get_market_state()
+        
+        # Add adapter-level stats
+        state["submitted_orders"] = len(self._submitted_orders)
+        state["failed_orders"] = len(self._failed_orders)
+        state["execution_rate"] = (
+            1.0 - len(self._failed_orders) / len(self._submitted_orders)
+            if self._submitted_orders else 1.0
+        )
+        
+        return state
+    
+    def get_agent_position(self, agent_id: str) -> Dict:
+        """Get agent's current position and PnL."""
+        if not self._track_positions:
+            return {}
+        
+        pos = self._positions[agent_id]
+        state = self.get_market_state()
+        
+        # Calculate PnL using mid price
+        mid_price = state.get("mid_price", 0.5)
+        yes_price = mid_price
+        no_price = 1.0 - mid_price
+        
+        pnl = (
+            pos["YES"] * yes_price +
+            pos["NO"] * no_price +
+            pos["cash"]
+        )
+        
+        return {
+            "yes_shares": pos["YES"],
+            "no_shares": pos["NO"],
+            "cash": pos["cash"],
+            "pnl": pnl,
+            "unrealized_pnl": pnl - pos["cash"]
+        }
+    
+    def get_order_book(self, outcome: str = "YES", depth: int = 10) -> Dict:
+        """Get current order book for an outcome."""
+        return self._market.get_order_book(outcome, depth)
+    
+    def get_trades(self) -> List:
+        """Get all executed trades."""
+        return self._market.get_trades()
+    
+    def get_failed_orders(self) -> List[MarketOrder]:
+        """Get list of orders that failed to execute."""
+        return self._failed_orders.copy()

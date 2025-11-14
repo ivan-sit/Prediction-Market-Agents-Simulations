@@ -1,0 +1,25 @@
+# Prediction Market Agents Simulations
+# Core dependencies for the simulation framework
+
+# Data handling and analysis
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Optional: For visualization and analysis
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Market implementations
+pyorderbook>=0.1.0  # Realistic order book (like Kalshi)
+
+# Development dependencies
+pytest>=7.4.0
+pytest-cov>=4.1.0
+mypy>=1.5.0
+black>=23.7.0
+ruff>=0.0.285
+
+# Documentation
+mkdocs>=1.5.0
+mkdocs-material>=9.2.0
+

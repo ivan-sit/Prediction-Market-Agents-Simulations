@@ -28,6 +28,15 @@ data/external/*
 # Experiment outputs / logs
 artifacts/
 logs/
+simulation_logs/
+visualizations/
+test_scripts/
+pricing_test/
+orderbook_test/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
 
 # IDE settings
 .vscode/
