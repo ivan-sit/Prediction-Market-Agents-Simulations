@@ -1,0 +1,24 @@
+{
+  "memories": [
+    {
+      "id": "mem_1763084917074_1aeguzauk",
+      "content": "Made agents/ folder a proper Python module by:\n1. Updated agents/__init__.py to export PredictionMarketAgent, OllamaLLM, MarketPlanningModule, MarketMemoryModule, MarketReasoningModule, PlaceholderMarketTools, and OllamaEmbeddings\n2. Fixed imports in prediction_market_agent.py and ollama_llm.py to use relative imports (.websocietysimulator) instead of absolute imports\n3. Module can now be imported with: from src.prediction_market_sim.agents import PredictionMarketAgent, OllamaLLM, etc.",
+      "type": "code",
+      "tags": [
+        "code",
+        "python",
+        "module",
+        "imports",
+        "agents",
+        "configuration"
+      ],
+      "timestamp": "2025-11-14T01:48:37.074Z",
+      "context": "Prediction Market Agents Simulations project - agents module configuration",
+      "accessCount": 0,
+      "lastAccessed": "2025-11-14T01:48:37.074Z",
+      "lastVerified": "2025-11-14T01:48:37.074Z",
+      "status": "fresh"
+    }
+  ],
+  "lastUpdated": "2025-11-14T01:48:37.074Z"
+}
