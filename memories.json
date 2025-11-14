@@ -1,0 +1,38 @@
+{
+  "memories": [
+    {
+      "id": "mem_1763079594052_4chmsn3tx",
+      "content": "Prediction Market Agent Architecture Analysis:\n\nFILE LOCATIONS:\n- Main agent: /home/brody/Desktop/Prediction-Market-Agents-Simulations/prediction_market_agent.py\n- Test agent: /home/brody/Desktop/Prediction-Market-Agents-Simulations/test.py\n- Simulation interfaces: /home/brody/Desktop/Prediction-Market-Agents-Simulations/src/prediction_market_sim/simulation/interfaces.py\n- Simulation engine: /home/brody/Desktop/Prediction-Market-Agents-Simulations/src/prediction_market_sim/simulation/engine.py\n\nARCHITECTURE PATTERN:\n- Uses Protocol-based design (MessageStream, PortalNetwork, Agent, MarketAdapter, Evaluator)\n- MessageStream produces messages with source_id keys\n- PortalNetwork routes messages to agents based on subscriptions\n- Agents implement: ingest(), update_belief(), generate_order()\n- Two implementations: websocietysimulator base and prediction market specific\n\nCURRENT STATE:\n- Source/subscription mechanism NOT YET IMPLEMENTED in code\n- Documentation mentions it (SIMULATOR_SKELETON.md line 79: \"MessageStream and PortalNetwork must agree on source_id keys\")\n- PortalNetwork has ingest_agent_feedback() method for agent-to-portal communication\n- Current PredictionMarketAgent uses insert_event() not ingest() - doesn't follow Protocol\n\nCROSS-POSTING IMPLEMENTATION LOCATION:\n- Should be in Agent.ingest() to receive messages from subscribed sources\n- Decision logic in Agent.update_belief() or new decide_crosspost() method\n- Output via PortalNetwork.ingest_agent_feedback() to repost to different sources\n- PortalNetwork.route() needs subscription mapping (agent_id -> source_ids)",
+      "type": "tip",
+      "tags": [
+        "tip",
+        "architecture",
+        "prediction-market",
+        "cross-posting"
+      ],
+      "timestamp": "2025-11-14T00:19:54.052Z",
+      "context": "Research for adding cross-source information sharing to prediction market agents",
+      "accessCount": 0,
+      "lastAccessed": "2025-11-14T00:19:54.052Z",
+      "lastVerified": "2025-11-14T00:19:54.052Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1763079640245_5n9bb1tlo",
+      "content": "Prediction Market Agent Architecture: Uses Protocol-based design (MessageStream, PortalNetwork, Agent). PortalNetwork routes messages from sources to agents based on subscriptions. Need to implement cross-posting: agents decide to repost info from source A to source B via PortalNetwork.ingest_agent_feedback(). Files: prediction_market_agent.py, interfaces.py, engine.py",
+      "type": "concept",
+      "tags": [
+        "concept",
+        "architecture",
+        "prediction-agent",
+        "cross-posting"
+      ],
+      "timestamp": "2025-11-14T00:20:40.245Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-11-14T00:20:40.245Z",
+      "lastVerified": "2025-11-14T00:20:40.245Z",
+      "status": "fresh"
+    }
+  ],
+  "lastUpdated": "2025-11-14T00:20:40.245Z"
+}
