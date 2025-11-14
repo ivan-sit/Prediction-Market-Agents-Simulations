@@ -10,6 +10,7 @@ from .interfaces import (
     PortalNetwork,
 )
 from .market_adapters import ExternalOrderBookAdapter
+from .logging import SimulationLogger, create_logger
 
 __all__ = [
     "SimulationEngine",
@@ -22,4 +23,6 @@ __all__ = [
     "PortalNetwork",
     "Evaluator",
     "ExternalOrderBookAdapter",
+    "SimulationLogger",
+    "create_logger",
 ]
