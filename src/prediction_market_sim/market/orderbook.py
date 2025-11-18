@@ -7,9 +7,8 @@ where liquidity is provided by traders and orders are matched via price-time pri
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Dict, List, Optional, Literal
-from decimal import Decimal
 
 # Note: Using simple custom implementation
 # More straightforward than external libraries
@@ -18,35 +17,61 @@ HAS_PYORDERBOOK = True  # We have our own implementation
 
 class SimpleBook:
     """Simple order book with bids and asks."""
-    
+
     def __init__(self):
-        self.bids: List[tuple[float, float, str]] = []  # [(price, qty, order_id), ...]
-        self.asks: List[tuple[float, float, str]] = []  # [(price, qty, order_id), ...]
-    
-    def add_bid(self, price: float, quantity: float, order_id: str):
-        """Add a buy order (bid)."""
-        self.bids.append((price, quantity, order_id))
-        # Sort descending (highest first)
-        self.bids.sort(reverse=True, key=lambda x: x[0])
-    
-    def add_ask(self, price: float, quantity: float, order_id: str):
-        """Add a sell order (ask)."""
-        self.asks.append((price, quantity, order_id))
-        # Sort ascending (lowest first)
-        self.asks.sort(key=lambda x: x[0])
-    
+        self.bids: List[Order] = []
+        self.asks: List[Order] = []
+
+    def add_bid(self, order: Order) -> None:
+        """Add a buy order (bid) and resort for price-time priority."""
+        self.bids.append(order)
+        self._sort_bids()
+
+    def add_ask(self, order: Order) -> None:
+        """Add a sell order (ask) and resort for price-time priority."""
+        self.asks.append(order)
+        self._sort_asks()
+
+    def best_bid_order(self) -> Optional[Order]:
+        """Return the best bid order available."""
+        self._prune_filled()
+        return self.bids[0] if self.bids else None
+
+    def best_ask_order(self) -> Optional[Order]:
+        """Return the best ask order available."""
+        self._prune_filled()
+        return self.asks[0] if self.asks else None
+
     def get_best_bid(self) -> Optional[float]:
-        """Get highest bid price."""
-        return self.bids[0][0] if self.bids else None
-    
+        order = self.best_bid_order()
+        return order.price if order else None
+
     def get_best_ask(self) -> Optional[float]:
-        """Get lowest ask price."""
-        return self.asks[0][0] if self.asks else None
-    
-    def remove_order(self, order_id: str):
-        """Remove an order from the book."""
-        self.bids = [(p, q, oid) for p, q, oid in self.bids if oid != order_id]
-        self.asks = [(p, q, oid) for p, q, oid in self.asks if oid != order_id]
+        order = self.best_ask_order()
+        return order.price if order else None
+
+    def remove_order(self, order_id: str) -> None:
+        """Remove an order from the book by ID."""
+        self.bids = [order for order in self.bids if order.order_id != order_id]
+        self.asks = [order for order in self.asks if order.order_id != order_id]
+
+    def top_levels(self, side: Literal["BUY", "SELL"], depth: int) -> List[Order]:
+        """Return the first N orders for a side for inspection."""
+        self._prune_filled()
+        book_side = self.bids if side == "BUY" else self.asks
+        return book_side[:depth]
+
+    def _prune_filled(self) -> None:
+        self.bids = [order for order in self.bids if not order.is_filled]
+        self.asks = [order for order in self.asks if not order.is_filled]
+
+    def _sort_bids(self) -> None:
+        # Highest price first, then oldest timestamp/order_id
+        self.bids.sort(key=lambda order: (-order.price, order.timestamp, order.order_id))
+
+    def _sort_asks(self) -> None:
+        # Lowest price first, then oldest timestamp/order_id
+        self.asks.sort(key=lambda order: (order.price, order.timestamp, order.order_id))
 
 
 @dataclass
@@ -179,6 +204,9 @@ class OrderBookMarket:
         Returns:
             Order object if successful, None if invalid
         """
+        side = side.upper()
+        outcome = outcome.upper()
+        
         # Validate price
         if not (0 < price < 1):
             return None
@@ -206,14 +234,14 @@ class OrderBookMarket:
         book = self._books[outcome]
         
         if side == "BUY":
-            # Try to match immediately, then add to book
-            trades = self._match_order(book, order, timestamp)
+            # Try to match immediately, then add remaining quantity to the book
+            self._match_order(book, order, timestamp)
             if order.remaining_quantity > 0:
-                book.add_bid(price, order.remaining_quantity, order_id)
+                book.add_bid(order)
         else:  # SELL
-            trades = self._match_order(book, order, timestamp)
+            self._match_order(book, order, timestamp)
             if order.remaining_quantity > 0:
-                book.add_ask(price, order.remaining_quantity, order_id)
+                book.add_ask(order)
         
         return order
     
@@ -238,6 +266,9 @@ class OrderBookMarket:
         Returns:
             List of executed trades
         """
+        side = side.upper()
+        outcome = outcome.upper()
+        
         # Market order is like a limit order with extreme price
         if side == "BUY":
             price = 0.99  # Willing to pay up to 99 cents
@@ -267,75 +298,60 @@ class OrderBookMarket:
     
     def _match_order(
         self,
-        book: PyOB,
+        book: SimpleBook,
         order: Order,
         timestamp: int
     ) -> List[Trade]:
-        """
-        Match an order against the opposite side of the book.
-        
-        Returns:
-            List of executed trades
-        """
-        trades = []
+        """Match an order against the opposite side of the book."""
+        trades: List[Trade] = []
+        epsilon = 1e-9
         
         if order.side == "BUY":
-            # Match against asks (sellers)
             while order.remaining_quantity > 0:
-                best_ask = self._get_best_ask(order.outcome)
-                if best_ask is None or best_ask > order.price:
-                    break  # No match possible
+                best_ask_order = book.best_ask_order()
+                if best_ask_order is None or best_ask_order.price > order.price + epsilon:
+                    break
                 
-                # Find quantity available at best ask
-                match_quantity = min(
-                    order.remaining_quantity,
-                    self._get_quantity_at_price(order.outcome, "SELL", best_ask)
-                )
-                
-                # Execute trade
+                match_quantity = min(order.remaining_quantity, best_ask_order.remaining_quantity)
                 trade = self._execute_trade(
                     buyer_id=order.agent_id,
-                    seller_id="<from_book>",  # Would need to track actual seller
+                    seller_id=best_ask_order.agent_id,
                     outcome=order.outcome,
-                    price=best_ask,
+                    price=best_ask_order.price,
                     quantity=match_quantity,
                     timestamp=timestamp,
                     buy_order_id=order.order_id,
-                    sell_order_id="<book>"
+                    sell_order_id=best_ask_order.order_id
                 )
-                
                 trades.append(trade)
                 order.filled_quantity += match_quantity
+                best_ask_order.filled_quantity += match_quantity
                 
-                # Remove from book (simplified - PyOrderBook handles this)
-                break
-        
+                if best_ask_order.is_filled:
+                    book.remove_order(best_ask_order.order_id)
         else:  # SELL
-            # Match against bids (buyers)
             while order.remaining_quantity > 0:
-                best_bid = self._get_best_bid(order.outcome)
-                if best_bid is None or best_bid < order.price:
-                    break  # No match possible
+                best_bid_order = book.best_bid_order()
+                if best_bid_order is None or best_bid_order.price < order.price - epsilon:
+                    break
                 
-                match_quantity = min(
-                    order.remaining_quantity,
-                    self._get_quantity_at_price(order.outcome, "BUY", best_bid)
-                )
-                
+                match_quantity = min(order.remaining_quantity, best_bid_order.remaining_quantity)
                 trade = self._execute_trade(
-                    buyer_id="<from_book>",
+                    buyer_id=best_bid_order.agent_id,
                     seller_id=order.agent_id,
                     outcome=order.outcome,
-                    price=best_bid,
+                    price=best_bid_order.price,
                     quantity=match_quantity,
                     timestamp=timestamp,
-                    buy_order_id="<book>",
+                    buy_order_id=best_bid_order.order_id,
                     sell_order_id=order.order_id
                 )
-                
                 trades.append(trade)
                 order.filled_quantity += match_quantity
-                break
+                best_bid_order.filled_quantity += match_quantity
+                
+                if best_bid_order.is_filled:
+                    book.remove_order(best_bid_order.order_id)
         
         return trades
     
@@ -388,8 +404,9 @@ class OrderBookMarket:
         if order.is_filled:
             return False
         
-        # Remove from book (simplified)
-        # In production, would need to track order position in book
+        # Remove from the appropriate book side
+        book = self._books[order.outcome]
+        book.remove_order(order_id)
         del self._orders[order_id]
         return True
     
@@ -403,28 +420,6 @@ class OrderBookMarket:
         book = self._books[outcome]
         return book.get_best_ask()
     
-    def _get_quantity_at_price(
-        self,
-        outcome: str,
-        side: Literal["BUY", "SELL"],
-        price: float
-    ) -> float:
-        """Get total quantity available at a specific price level."""
-        book = self._books[outcome]
-        
-        if side == "BUY":
-            # Looking for quantity in bids
-            for p, q, _ in book.bids:
-                if abs(p - price) < 0.0001:  # Float comparison
-                    return q
-        else:
-            # Looking for quantity in asks
-            for p, q, _ in book.asks:
-                if abs(p - price) < 0.0001:
-                    return q
-        
-        return 0.0
-    
     def get_market_state(self) -> Dict:
         """
         Get current market state.
@@ -434,21 +429,40 @@ class OrderBookMarket:
         """
         best_bid = self._get_best_bid("YES")
         best_ask = self._get_best_ask("YES")
+        has_both = best_bid is not None and best_ask is not None
+        
+        if has_both:
+            mid_price = (best_bid + best_ask) / 2
+            spread = best_ask - best_bid
+        else:
+            mid_price = best_bid if best_bid is not None else (best_ask if best_ask is not None else 0.5)
+            spread = None if not has_both else 0.0
+        
+        open_orders = 0
+        bid_depth = 0.0
+        ask_depth = 0.0
+        for book in self._books.values():
+            for bid in book.bids:
+                if bid.remaining_quantity > 0:
+                    open_orders += 1
+                    bid_depth += bid.remaining_quantity
+            for ask in book.asks:
+                if ask.remaining_quantity > 0:
+                    open_orders += 1
+                    ask_depth += ask.remaining_quantity
         
         return {
             "market_id": self.market_id,
             "best_bid": best_bid,
             "best_ask": best_ask,
-            "spread": (best_ask - best_bid) if (best_bid and best_ask) else None,
-            "mid_price": ((best_bid + best_ask) / 2) if (best_bid and best_ask) else 0.5,
+            "spread": spread,
+            "mid_price": mid_price,
             "total_volume": self._total_volume,
             "num_trades": len(self._trades),
-            "num_open_orders": len([o for o in self._orders.values() if not o.is_filled]),
+            "num_open_orders": open_orders,
             "book_depth": {
-                "bid_depth": sum(o.remaining_quantity for o in self._orders.values() 
-                                if o.side == "BUY" and not o.is_filled),
-                "ask_depth": sum(o.remaining_quantity for o in self._orders.values() 
-                                if o.side == "SELL" and not o.is_filled)
+                "bid_depth": bid_depth,
+                "ask_depth": ask_depth
             }
         }
     
@@ -463,11 +477,31 @@ class OrderBookMarket:
         Returns:
             Dictionary with bids and asks
         """
-        # Simplified version
+        if outcome not in self._books:
+            raise ValueError(f"Unknown outcome {outcome}")
+        book = self._books[outcome]
+        bids = [
+            {
+                "price": order.price,
+                "quantity": order.remaining_quantity,
+                "order_id": order.order_id,
+                "agent_id": order.agent_id,
+            }
+            for order in book.top_levels("BUY", depth)
+        ]
+        asks = [
+            {
+                "price": order.price,
+                "quantity": order.remaining_quantity,
+                "order_id": order.order_id,
+                "agent_id": order.agent_id,
+            }
+            for order in book.top_levels("SELL", depth)
+        ]
         return {
             "outcome": outcome,
-            "bids": [],  # [(price, quantity), ...]
-            "asks": []   # [(price, quantity), ...]
+            "bids": bids,
+            "asks": asks
         }
     
     def get_trades(self) -> List[Trade]:
@@ -480,4 +514,3 @@ class OrderBookMarket:
         if outcome_trades:
             return outcome_trades[-1].price
         return None
-

@@ -1,10 +1,10 @@
-“””
+"""
 Source Node (Portal) Module for Prediction Market Simulation
 
 This module defines the SourceNode class which represents information portals
 in the network. Portals maintain a chronological feed of events and allow
 agents to read and post information.
-“””
+"""
 
 from typing import List, Dict, Optional, Set
 
@@ -15,45 +15,45 @@ from pathlib import Path
 
 # Add parent directory to path to import from sibling module
 
-parent_dir = Path(**file**).parent.parent
+parent_dir = Path(__file__).parent.parent
 if str(parent_dir) not in sys.path:
-sys.path.insert(0, str(parent_dir))
+    sys.path.insert(0, str(parent_dir))
 
-from data.data_module import Event
+from ..data.data_module import Event
 
 # Global time function - should be implemented by the main simulation
 
 _current_time = 0
 
 def get_current_time() -> int:
-“””
+    """
 Global utility to get the current simulation tick time.
 This should be set by the main simulation loop.
 
-```
+
 Returns:
     Current timestep as integer
 """
 return _current_time
-```
+
 
 def set_current_time(time: int):
-“””
+    """
 Set the global current time (used by simulation loop).
 
-```
+
 Args:
     time: Current timestep
 """
 global _current_time
 _current_time = time
-```
+
 
 class SourceNode:
-“””
+    """
 Represents a portal/source node in the information network.
 
-```
+
 Each source node maintains a chronological feed of events and tracks
 when each event was posted to it. Agents can read from and post to
 source nodes.
@@ -203,6 +203,7 @@ def clear_feed(self):
     self.event_ids_posted.clear()
 
 def __repr__(self) -> str:
+def __repr__(self) -> str:
     return f"SourceNode(id={self.node_id}, events={len(self.event_feed)})"
 
 def get_feed_summary(self) -> Dict:
@@ -218,15 +219,15 @@ def get_feed_summary(self) -> Dict:
         "event_ids": list(self.event_ids_posted),
         "latest_post_time": max(self.event_post_times.values()) if self.event_post_times else None
     }
-```
+
 
 class SourceNodeManager:
-“””
+    """
 Manages multiple source nodes in the network.
 Convenience class for the simulation to manage all portals.
-“””
+"""
 
-```
+
 def __init__(self):
     """Initialize the source node manager."""
     self.nodes: Dict[str, SourceNode] = {}
@@ -288,13 +289,13 @@ def clear_all_nodes(self):
     """Clear all events from all nodes."""
     for node in self.nodes.values():
         node.clear_feed()
-```
 
-if **name** == “**main**”:
+
+if __name__ == "**main**":
 # Example usage and testing
 from data.data_module import Event
 
-```
+
 # Set simulation time
 set_current_time(100)
 
@@ -362,4 +363,4 @@ event3 = Event(
 
 results = manager.post_event_to_nodes(event3, ["portal_C", "portal_D"])
 print(f"Posting to multiple nodes: {results}")
-```
+

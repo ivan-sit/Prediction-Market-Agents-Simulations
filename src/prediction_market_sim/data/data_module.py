@@ -1,19 +1,19 @@
-“””
+"""
 Data Module for Prediction Market Simulation
 
 This module manages the central event database stored as JSON.
 Events are stored in chronological order by their initial timestamp.
-“””
+"""
 
 import json
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 
 class Event:
-“””
+    """
 Represents a single event in the prediction market.
 
-```
+
 Attributes:
     event_id: Unique identifier for the event
     initial_time: Timestamp when event first hits a data source
@@ -22,6 +22,7 @@ Attributes:
     description: Detailed description of the event
 """
 
+def __init__(self, event_id: str, initial_time: int, source_nodes: List[str],
 def __init__(self, event_id: str, initial_time: int, source_nodes: List[str],
              tagline: str, description: str):
     self.event_id = event_id
@@ -52,16 +53,17 @@ def from_dict(cls, data: Dict[str, Any]) -> 'Event':
     )
 
 def __repr__(self) -> str:
+def __repr__(self) -> str:
     return f"Event(id={self.event_id}, time={self.initial_time}, tagline='{self.tagline}')"
-```
+
 
 class EventDatabase:
-“””
+    """
 Manages the central event database stored in a JSON file.
 Events are assumed to be sorted by initial_time in the file.
-“””
+"""
 
-```
+
 def __init__(self, db_path: str = "events_database.json"):
     """
     Initialize the event database manager.
@@ -170,15 +172,15 @@ def get_event_count(self) -> int:
     with open(self.db_path, 'r') as f:
         data = json.load(f)
     return len(data.get("events", []))
-```
+
 
 # Global function to be used by other modules
 
-def get_events_for_current_timestep(current_time: int, db_path: str = “events_database.json”) -> List[Event]:
-“””
+def get_events_for_current_timestep(current_time: int, db_path: str = "events_database.json") -> List[Event]:
+    """
 Convenience function to get events at current timestep.
 
-```
+
 Args:
     current_time: Current simulation timestep
     db_path: Path to the database file
@@ -188,13 +190,13 @@ Returns:
 """
 db = EventDatabase(db_path)
 return db.get_events_at_timestep(current_time)
-```
 
-if **name** == “**main**”:
+
+if __name__ == "**main**":
 # Example usage and testing
-db = EventDatabase(“test_events.json”)
+db = EventDatabase("test_events.json")
 
-```
+
 # Create sample events
 sample_events = [
     Event(
@@ -232,4 +234,4 @@ for event in events_at_10:
 
 # Check remaining events
 print(f"\nRemaining events in database: {db.get_event_count()}")
-```
+

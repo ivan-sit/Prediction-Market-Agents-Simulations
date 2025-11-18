@@ -26,7 +26,6 @@ data/external/*
 !data/external/.gitkeep
 
 # Experiment outputs / logs
-artifacts/
 logs/
 simulation_logs/
 visualizations/
@@ -42,4 +41,6 @@ orderbook_test/
 .vscode/
 .idea/
 
+# Environment config (local settings, may contain secrets)
 .env
+config.env

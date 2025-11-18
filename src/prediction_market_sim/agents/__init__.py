@@ -11,6 +11,7 @@ from .prediction_market_agent import (
     PlaceholderMarketTools,
 )
 from .ollama_llm import OllamaLLM, OllamaEmbeddings
+from .adapters import PredictionMarketAgentAdapter, create_prediction_agent
 
 __all__ = [
     "PredictionMarketAgent",
@@ -20,4 +21,6 @@ __all__ = [
     "PlaceholderMarketTools",
     "OllamaLLM",
     "OllamaEmbeddings",
+    "PredictionMarketAgentAdapter",
+    "create_prediction_agent",
 ]

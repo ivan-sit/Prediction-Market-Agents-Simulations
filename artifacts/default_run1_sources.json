@@ -1,0 +1,162 @@
+[
+  {
+    "timestep": 0,
+    "source_id": "portal_main",
+    "timestamp": 0,
+    "topic": "election",
+    "content": "Signal +1 @t=0",
+    "signal": 1
+  },
+  {
+    "timestep": 1,
+    "source_id": "portal_main",
+    "timestamp": 1,
+    "topic": "election",
+    "content": "Signal -1 @t=1",
+    "signal": -1
+  },
+  {
+    "timestep": 2,
+    "source_id": "portal_main",
+    "timestamp": 2,
+    "topic": "election",
+    "content": "Signal +1 @t=2",
+    "signal": 1
+  },
+  {
+    "timestep": 3,
+    "source_id": "portal_main",
+    "timestamp": 3,
+    "topic": "election",
+    "content": "Signal -1 @t=3",
+    "signal": -1
+  },
+  {
+    "timestep": 4,
+    "source_id": "portal_main",
+    "timestamp": 4,
+    "topic": "election",
+    "content": "Signal +1 @t=4",
+    "signal": 1
+  },
+  {
+    "timestep": 5,
+    "source_id": "portal_main",
+    "timestamp": 5,
+    "topic": "election",
+    "content": "Signal +1 @t=5",
+    "signal": 1
+  },
+  {
+    "timestep": 6,
+    "source_id": "portal_main",
+    "timestamp": 6,
+    "topic": "election",
+    "content": "Signal -1 @t=6",
+    "signal": -1
+  },
+  {
+    "timestep": 7,
+    "source_id": "portal_main",
+    "timestamp": 7,
+    "topic": "election",
+    "content": "Signal +1 @t=7",
+    "signal": 1
+  },
+  {
+    "timestep": 8,
+    "source_id": "portal_main",
+    "timestamp": 8,
+    "topic": "election",
+    "content": "Signal +1 @t=8",
+    "signal": 1
+  },
+  {
+    "timestep": 9,
+    "source_id": "portal_main",
+    "timestamp": 9,
+    "topic": "election",
+    "content": "Signal +1 @t=9",
+    "signal": 1
+  },
+  {
+    "timestep": 10,
+    "source_id": "portal_main",
+    "timestamp": 10,
+    "topic": "election",
+    "content": "Signal -1 @t=10",
+    "signal": -1
+  },
+  {
+    "timestep": 11,
+    "source_id": "portal_main",
+    "timestamp": 11,
+    "topic": "election",
+    "content": "Signal +1 @t=11",
+    "signal": 1
+  },
+  {
+    "timestep": 12,
+    "source_id": "portal_main",
+    "timestamp": 12,
+    "topic": "election",
+    "content": "Signal +1 @t=12",
+    "signal": 1
+  },
+  {
+    "timestep": 13,
+    "source_id": "portal_main",
+    "timestamp": 13,
+    "topic": "election",
+    "content": "Signal -1 @t=13",
+    "signal": -1
+  },
+  {
+    "timestep": 14,
+    "source_id": "portal_main",
+    "timestamp": 14,
+    "topic": "election",
+    "content": "Signal -1 @t=14",
+    "signal": -1
+  },
+  {
+    "timestep": 15,
+    "source_id": "portal_main",
+    "timestamp": 15,
+    "topic": "election",
+    "content": "Signal +1 @t=15",
+    "signal": 1
+  },
+  {
+    "timestep": 16,
+    "source_id": "portal_main",
+    "timestamp": 16,
+    "topic": "election",
+    "content": "Signal -1 @t=16",
+    "signal": -1
+  },
+  {
+    "timestep": 17,
+    "source_id": "portal_main",
+    "timestamp": 17,
+    "topic": "election",
+    "content": "Signal -1 @t=17",
+    "signal": -1
+  },
+  {
+    "timestep": 18,
+    "source_id": "portal_main",
+    "timestamp": 18,
+    "topic": "election",
+    "content": "Signal +1 @t=18",
+    "signal": 1
+  },
+  {
+    "timestep": 19,
+    "source_id": "portal_main",
+    "timestamp": 19,
+    "topic": "election",
+    "content": "Signal -1 @t=19",
+    "signal": -1
+  }
+]

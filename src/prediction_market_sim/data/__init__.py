@@ -11,7 +11,7 @@ EventDatabase,
 get_events_for_current_timestep
 )
 
-**all** = [
+__all__ = [
 ‘Event’,
 ‘EventDatabase’,
 ‘get_events_for_current_timestep’

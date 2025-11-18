@@ -17,7 +17,7 @@ This module provides two market mechanisms:
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Dict, List, Mapping, Sequence, Optional
+from typing import Dict, List, Mapping, Sequence
 
 from ..simulation.interfaces import MarketAdapter, MarketOrder
 
@@ -207,6 +207,23 @@ class OrderBookMarketAdapter(MarketAdapter):
         # Track order submission attempts
         self._submitted_orders = []
         self._failed_orders = []
+        self._last_results: List[Dict[str, object]] = []
+        self._last_market_state: Dict[str, object] = self._market.get_market_state()
+    
+    def submit_orders(self, orders: Sequence[MarketOrder], timestep: int) -> None:
+        """Conform to the MarketAdapter interface expected by the engine."""
+        if not orders:
+            self._last_results = []
+            return
+        self._last_results = self.process_orders(orders, timestep)
+    
+    def current_price(self) -> float:
+        if not self._last_market_state:
+            self._last_market_state = self._market.get_market_state()
+        return float(self._last_market_state.get("mid_price", 0.5))
+    
+    def snapshot(self) -> Mapping[str, object]:
+        return self.get_market_state()
     
     def process_orders(
         self,
@@ -226,94 +243,117 @@ class OrderBookMarketAdapter(MarketAdapter):
         Returns:
             List of execution results (may be empty if no matches)
         """
-        results = []
+        results: List[Dict[str, object]] = []
         
         for order in orders:
             self._submitted_orders.append(order)
+            quantity = float(order.size)
+            if quantity <= 0:
+                continue
             
-            # Convert simulation order to order book order
-            if order.order_type == "market":
-                # Market order: execute immediately at best price
+            metadata = order.metadata or {}
+            meta_kind = metadata.get("order_type")
+            if isinstance(meta_kind, str) and meta_kind:
+                order_kind = meta_kind.lower()
+            else:
+                order_kind = (order.order_type or "limit").lower()
+            meta_outcome = metadata.get("outcome")
+            if isinstance(meta_outcome, str) and meta_outcome:
+                outcome = meta_outcome.upper()
+            else:
+                outcome = (order.outcome or "YES").upper()
+            side = order.side.upper()
+            
+            if order_kind == "market":
                 trades = self._market.submit_market_order(
                     agent_id=order.agent_id,
-                    outcome=order.outcome,
-                    side=order.side,
-                    quantity=order.quantity,
+                    outcome=outcome,
+                    side=side,
+                    quantity=quantity,
                     timestamp=timestep
                 )
                 
                 if trades:
-                    # Order executed!
                     for trade in trades:
                         result = {
                             "agent_id": order.agent_id,
                             "outcome": trade.outcome,
-                            "side": order.side,
+                            "side": side,
                             "quantity": trade.quantity,
                             "price": trade.price,
+                            "order_type": order_kind,
                             "executed": True,
                             "trade_id": trade.trade_id
                         }
                         results.append(result)
                         
-                        # Update positions
                         if self._track_positions:
                             self._update_position(
                                 agent_id=order.agent_id,
                                 outcome=trade.outcome,
-                                side=order.side,
+                                side=side,
                                 quantity=trade.quantity,
                                 price=trade.price
                             )
                 else:
-                    # Order failed to execute
                     self._failed_orders.append(order)
                     results.append({
                         "agent_id": order.agent_id,
-                        "outcome": order.outcome,
-                        "side": order.side,
-                        "quantity": order.quantity,
+                        "outcome": outcome,
+                        "side": side,
+                        "quantity": quantity,
                         "price": None,
+                        "order_type": order_kind,
                         "executed": False,
                         "reason": "No counterparty available"
                     })
-            
-            elif order.order_type == "limit":
-                # Limit order: place in book at specific price
-                limit_price = order.limit_price or 0.5  # Default to mid
-                
+            else:
+                limit_price = order.limit_price if order.limit_price is not None else 0.5
                 ob_order = self._market.submit_limit_order(
                     agent_id=order.agent_id,
-                    outcome=order.outcome,
-                    side=order.side,
+                    outcome=outcome,
+                    side=side,
                     price=limit_price,
-                    quantity=order.quantity,
+                    quantity=quantity,
                     timestamp=timestep
                 )
                 
                 if ob_order:
                     result = {
                         "agent_id": order.agent_id,
-                        "outcome": order.outcome,
-                        "side": order.side,
-                        "quantity": order.quantity,
+                        "outcome": outcome,
+                        "side": side,
+                        "quantity": quantity,
                         "price": limit_price,
+                        "order_type": order_kind,
                         "executed": ob_order.filled_quantity > 0,
                         "filled_quantity": ob_order.filled_quantity,
                         "order_id": ob_order.order_id
                     }
                     results.append(result)
                     
-                    # Update positions for filled portion
                     if self._track_positions and ob_order.filled_quantity > 0:
                         self._update_position(
                             agent_id=order.agent_id,
-                            outcome=order.outcome,
-                            side=order.side,
+                            outcome=outcome,
+                            side=side,
                             quantity=ob_order.filled_quantity,
                             price=limit_price
                         )
+                else:
+                    self._failed_orders.append(order)
+                    results.append({
+                        "agent_id": order.agent_id,
+                        "outcome": outcome,
+                        "side": side,
+                        "quantity": quantity,
+                        "price": limit_price,
+                        "order_type": order_kind,
+                        "executed": False,
+                        "reason": "Order rejected"
+                    })
         
+        self._last_market_state = self._market.get_market_state()
         return results
     
     def _update_position(
@@ -326,12 +366,14 @@ class OrderBookMarketAdapter(MarketAdapter):
     ):
         """Update agent position after trade execution."""
         pos = self._positions[agent_id]
+        norm_side = side.upper()
+        norm_outcome = outcome.upper()
         
-        if side == "BUY":
-            pos[outcome] += quantity
+        if norm_side == "BUY":
+            pos[norm_outcome] += quantity
             pos["cash"] -= quantity * price
         else:  # SELL
-            pos[outcome] -= quantity
+            pos[norm_outcome] -= quantity
             pos["cash"] += quantity * price
     
     def get_market_state(self) -> Dict:
@@ -345,7 +387,9 @@ class OrderBookMarketAdapter(MarketAdapter):
         - Last traded price
         - Volume
         """
-        state = self._market.get_market_state()
+        base_state = self._market.get_market_state()
+        self._last_market_state = base_state
+        state = dict(base_state)
         
         # Add adapter-level stats
         state["submitted_orders"] = len(self._submitted_orders)
@@ -386,7 +430,7 @@ class OrderBookMarketAdapter(MarketAdapter):
     
     def get_order_book(self, outcome: str = "YES", depth: int = 10) -> Dict:
         """Get current order book for an outcome."""
-        return self._market.get_order_book(outcome, depth)
+        return self._market.get_order_book(outcome.upper(), depth)
     
     def get_trades(self) -> List:
         """Get all executed trades."""

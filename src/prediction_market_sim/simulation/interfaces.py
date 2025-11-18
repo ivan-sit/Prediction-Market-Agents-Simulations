@@ -19,6 +19,8 @@ class MarketOrder:
     limit_price: float
     confidence: float
     metadata: Mapping[str, object] | None = None
+    order_type: str = "limit"  # e.g. "limit" or "market"
+    outcome: str = "YES"
 
 
 class MessageStream(Protocol):

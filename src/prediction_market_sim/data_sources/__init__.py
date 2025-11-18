@@ -12,10 +12,20 @@ from .source_node import (
     get_current_time,
     set_current_time
 )
+from .adapters import (
+    EventDatabaseStream,
+    SourceNodeNetworkAdapter,
+    create_event_stream,
+    create_portal_network
+)
 
 __all__ = [
     'SourceNode',
     'SourceNodeManager',
     'get_current_time',
-    'set_current_time'
+    'set_current_time',
+    'EventDatabaseStream',
+    'SourceNodeNetworkAdapter',
+    'create_event_stream',
+    'create_portal_network',
 ]

@@ -1,0 +1,21 @@
+content,signal,source_id,timestamp,timestep,topic
+Signal +1 @t=0,1,portal_main,0,0,election
+Signal -1 @t=1,-1,portal_main,1,1,election
+Signal +1 @t=2,1,portal_main,2,2,election
+Signal -1 @t=3,-1,portal_main,3,3,election
+Signal +1 @t=4,1,portal_main,4,4,election
+Signal +1 @t=5,1,portal_main,5,5,election
+Signal -1 @t=6,-1,portal_main,6,6,election
+Signal +1 @t=7,1,portal_main,7,7,election
+Signal +1 @t=8,1,portal_main,8,8,election
+Signal +1 @t=9,1,portal_main,9,9,election
+Signal -1 @t=10,-1,portal_main,10,10,election
+Signal +1 @t=11,1,portal_main,11,11,election
+Signal +1 @t=12,1,portal_main,12,12,election
+Signal -1 @t=13,-1,portal_main,13,13,election
+Signal -1 @t=14,-1,portal_main,14,14,election
+Signal +1 @t=15,1,portal_main,15,15,election
+Signal -1 @t=16,-1,portal_main,16,16,election
+Signal -1 @t=17,-1,portal_main,17,17,election
+Signal +1 @t=18,1,portal_main,18,18,election
+Signal -1 @t=19,-1,portal_main,19,19,election
