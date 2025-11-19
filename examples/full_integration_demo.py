@@ -3,7 +3,7 @@ Full Integration Demo - Connects All Modules
 
 This example demonstrates the complete simulation with:
 1. Event data from your colleague's data module
-2. Source nodes (portals) from data_sources module  
+2. Source nodes (portals) from data_sources module
 3. LLM-based agents from agents module
 4. Market (LMSR or OrderBook) from market module
 5. Simulation orchestration and logging
@@ -11,7 +11,12 @@ This example demonstrates the complete simulation with:
 Run with: python examples/full_integration_demo.py
 """
 
+import sys
 from pathlib import Path
+
+# Add src directory to path so we can import prediction_market_sim
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root / "src"))
 
 from prediction_market_sim.simulation.engine import (
     SimulationEngine,
@@ -23,7 +28,7 @@ from prediction_market_sim.data_sources import (
     create_portal_network
 )
 from prediction_market_sim.agents import create_prediction_agent
-from prediction_market_sim.market import LMSRMarketAdapter
+from prediction_market_sim.utils.config import SimulationConfig, create_market_from_config
 from prediction_market_sim.simulation.interfaces import Evaluator
 from typing import Mapping
 
@@ -61,25 +66,33 @@ def main():
     print("🚀 FULL PREDICTION MARKET SIMULATION - INTEGRATED")
     print("=" * 60)
     print()
-    
-    # Step 1: Configure paths
+
+    # Step 1: Load configuration
+    config = SimulationConfig()
+    print(f"⚙️  Configuration loaded from config.env")
+    print(f"   Market Type: {config.market_type.upper()}")
+    print(f"   Max Timesteps: {config.max_ticks}")
+    print(f"   Logging: {'Enabled' if config.enable_logging else 'Disabled'}")
+    print()
+
+    # Step 2: Configure paths
     project_root = Path(__file__).parent.parent
     events_db = project_root / "artifacts" / "sample_events.json"
-    logs_dir = project_root / "simulation_logs" / "full_integration"
-    
+    logs_dir = project_root / config.log_dir / "full_integration"
+
     print(f"📂 Events Database: {events_db}")
     print(f"📂 Logs Directory: {logs_dir}")
     print()
-    
-    # Step 2: Create source nodes (information portals)
+
+    # Step 3: Create source nodes (information portals)
     print("📡 Setting up information portals...")
     portal_network = create_portal_network([
         {'node_id': 'twitter', 'reliability': 0.6},
         {'node_id': 'news_feed', 'reliability': 0.8},
         {'node_id': 'expert_analysis', 'reliability': 0.9}
     ])
-    
-    # Step 3: Create agents with personalities
+
+    # Step 4: Create agents with personalities
     print("🤖 Creating agents...")
     
     agent_configs = [
@@ -101,8 +114,8 @@ def main():
     ]
     
     agent_factories = []
-    for config in agent_configs:
-        def make_agent(cfg=config):  # Closure to capture config
+    for agent_config in agent_configs:
+        def make_agent(cfg=agent_config):  # Closure to capture agent_config
             agent = create_prediction_agent(
                 agent_id=cfg['agent_id'],
                 personality=cfg['personality'],
@@ -120,32 +133,28 @@ def main():
     print(f"   ✅ Bob (aggressive) - subscribes to: twitter, news_feed")
     print(f"   ✅ Charlie (contrarian) - subscribes to: twitter, expert_analysis")
     print()
-    
-    # Step 4: Create market (LMSR for now)
+
+    # Step 5: Create market from config
     print("💹 Setting up market...")
-    print("   Market Type: LMSR (Automated Market Maker)")
-    print("   Liquidity Parameter: 100.0")
-    print()
-    
+
     def market_factory():
-        return LMSRMarketAdapter(
-            market_id="home_team_wins",
-            outcomes=["YES", "NO"],
-            liquidity_param=100.0
-        )
-    
-    # Step 5: Configure simulation
+        return create_market_from_config(config, market_id="home_team_wins")
+
+    print()
+
+    # Step 6: Configure simulation
     runtime_config = SimulationRuntimeConfig(
-        max_timesteps=20,
+        max_timesteps=config.max_ticks,
         log_dir=logs_dir,
         run_name="full_integration_v1",
         log_every=1,
-        enable_logging=True,
-        save_logs_as_csv=True,
-        save_logs_as_json=True
+        stop_when_stream_finishes=False,  # Continue even after all events are consumed
+        enable_logging=config.enable_logging,
+        save_logs_as_csv=config.save_logs_csv,
+        save_logs_as_json=config.save_logs_json
     )
-    
-    # Step 6: Build the engine
+
+    # Step 7: Build the engine
     print("🔧 Building simulation engine...")
     engine = SimulationEngine(
         stream_factory=lambda: create_event_stream(str(events_db)),
@@ -157,8 +166,8 @@ def main():
     )
     print("   ✅ Engine ready!")
     print()
-    
-    # Step 7: Run simulation
+
+    # Step 8: Run simulation
     print("▶️  Running simulation...")
     print("-" * 60)
     

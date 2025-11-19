@@ -26,42 +26,58 @@ except ImportError:
     PLOTTING_AVAILABLE = False
 
 
+def find_log_file(run_id: str, suffix: str, log_base_dir: Path = Path("simulation_logs")) -> Path:
+    """Search for a log file recursively in subdirectories.
+
+    Args:
+        run_id: Run identifier (e.g., 'simulation_run1')
+        suffix: File suffix (e.g., 'market.csv')
+        log_base_dir: Base directory to search in
+
+    Returns:
+        Path to the log file, or None if not found
+    """
+    pattern = f"**/{run_id}_{suffix}"
+    matches = list(log_base_dir.glob(pattern))
+    return matches[0] if matches else None
+
+
 def load_simulation_data(run_id: str, log_dir: Path = Path("simulation_logs")) -> dict:
     """Load all simulation data for a given run.
-    
+
     Args:
         run_id: Run identifier (e.g., 'orderbook_demo_run1')
-        log_dir: Directory containing log files
-        
+        log_dir: Base directory containing log files (searches recursively)
+
     Returns:
         Dictionary with loaded DataFrames
     """
     data = {}
-    
+
     # Load market data
-    market_csv = log_dir / f"{run_id}_market.csv"
-    if market_csv.exists():
+    market_csv = find_log_file(run_id, "market.csv", log_dir)
+    if market_csv and market_csv.exists():
         data['market'] = pd.read_csv(market_csv)
         print(f"✓ Loaded market data: {len(data['market'])} timesteps")
-    
+
     # Load beliefs
-    beliefs_csv = log_dir / f"{run_id}_beliefs.csv"
-    if beliefs_csv.exists():
+    beliefs_csv = find_log_file(run_id, "beliefs.csv", log_dir)
+    if beliefs_csv and beliefs_csv.exists():
         data['beliefs'] = pd.read_csv(beliefs_csv)
         print(f"✓ Loaded beliefs data: {len(data['beliefs'])} records")
-    
+
     # Load sources
-    sources_csv = log_dir / f"{run_id}_sources.csv"
-    if sources_csv.exists():
+    sources_csv = find_log_file(run_id, "sources.csv", log_dir)
+    if sources_csv and sources_csv.exists():
         data['sources'] = pd.read_csv(sources_csv)
         print(f"✓ Loaded sources data: {len(data['sources'])} messages")
-    
+
     # Load agent metadata if exists
-    agent_csv = log_dir / f"{run_id}_agent_meta.csv"
-    if agent_csv.exists():
+    agent_csv = find_log_file(run_id, "agent_meta.csv", log_dir)
+    if agent_csv and agent_csv.exists():
         data['agent_meta'] = pd.read_csv(agent_csv)
         print(f"✓ Loaded agent metadata: {len(data['agent_meta'])} records")
-    
+
     return data
 
 
@@ -294,16 +310,18 @@ def main():
     if len(sys.argv) > 1:
         run_id = sys.argv[1]
     else:
-        # List available runs
+        # List available runs (search recursively)
         log_dir = Path("simulation_logs")
         if log_dir.exists():
-            market_files = list(log_dir.glob("*_market.csv"))
+            market_files = list(log_dir.glob("**/*_market.csv"))
             if market_files:
                 print("Available runs:")
                 for i, f in enumerate(market_files, 1):
                     run_id = f.stem.replace("_market", "")
-                    print(f"  {i}. {run_id}")
-                
+                    # Show relative path for context
+                    rel_path = f.relative_to(log_dir).parent
+                    print(f"  {i}. {run_id} ({rel_path})")
+
                 if len(market_files) == 1:
                     run_id = market_files[0].stem.replace("_market", "")
                     print(f"\nUsing: {run_id}")
@@ -312,11 +330,11 @@ def main():
                     return
             else:
                 print("No simulation logs found in 'simulation_logs/' directory")
-                print("Run a simulation first with: python examples/demo_full_simulation.py")
+                print("Run a simulation first with: python examples/run_simulation.py")
                 return
         else:
             print("No 'simulation_logs/' directory found")
-            print("Run a simulation first with: python examples/demo_full_simulation.py")
+            print("Run a simulation first with: python examples/run_simulation.py")
             return
     
     print(f"\nLoading data for: {run_id}")

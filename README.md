@@ -85,12 +85,26 @@ cp config.env.example config.env
 # MARKET_TYPE=lmsr       (simple, always liquid)
 ```
 
-### 3. Run Example
+### 3. Run Your First Simulation
 
 ```bash
-# Run dynamic market selection demo
-python examples/demo_market_selection.py
+# Run a complete simulation with configurable options
+python examples/run_simulation.py
+
+# Or customize it
+python examples/run_simulation.py --timesteps 50 --market orderbook --agents 5
 ```
+
+**🎯 See [QUICKSTART.md](QUICKSTART.md) for a complete guide with all options!**
+
+Available options:
+- `--timesteps N` - Number of simulation steps (default: from config.env)
+- `--market TYPE` - Choose `lmsr` or `orderbook` (default: from config.env)
+- `--agents N` - Number of trading agents 1-6 (default: 3)
+- `--seed N` - Random seed for reproducibility (default: 42)
+- `--quiet` - Minimal output mode
+
+**Note:** Works out of the box with fallback behavior. For LLM-powered agents, install Ollama: `ollama pull llama3.1:8b`
 
 The framework supports **multiple orderbook implementations**:
 - 🚀 **limit-order-book** (C++/Python, high-performance) - RECOMMENDED

@@ -46,8 +46,8 @@ Decide BUY or SELL and amount.
 Output format (use exact XML tags):
 <analysis>2-3 sentence reasoning</analysis>
 <decision>BUY or SELL</decision>
-<amount>dollar amount</amount>
-<confidence>0.0 to 1.0</confidence>'''
+<amount>100.0</amount>  <!-- Dollar amount as decimal number, e.g., 100.0 for $100 -->
+<confidence>0.75</confidence>  <!-- Decimal between 0.0 and 1.0, e.g., 0.75 for 75% confident -->'''
 
         messages = [{"role": "user", "content": prompt}]
         return self.llm(messages=messages, temperature=0.2, max_tokens=500)

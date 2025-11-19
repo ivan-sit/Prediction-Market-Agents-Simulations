@@ -58,10 +58,8 @@ class EventDatabaseStream(MessageStream):
             })
         
         # Check if finished (no more events in database)
-        # We consider stream finished after some reasonable max timestep
-        # or when EventDatabase returns empty for several consecutive calls
-        if not messages and self.current_timestep > 0:
-            # Could check if DB is empty, for now just mark finished
+        # Only mark finished when database is actually empty
+        if self.db.get_event_count() == 0:
             self._finished = True
         
         self.current_timestep += 1
@@ -119,13 +117,15 @@ class SourceNodeNetworkAdapter(PortalNetwork):
             for node_id in source_nodes:
                 node = self.manager.get_node(node_id)
                 if node:
-                    # Post event to this source node
-                    node.post_event(
+                    # Post event to this source node - create Event object
+                    event = Event(
                         event_id=msg['event_id'],
+                        initial_time=msg['timestamp'],
+                        source_nodes=source_nodes,  # List of portals
                         tagline=msg['tagline'],
-                        description=msg['description'],
-                        initial_time=msg['timestamp']
+                        description=msg['description']
                     )
+                    node.post_event(event)
         
         # Now route to agents based on subscriptions
         agent_inboxes: dict[str, list[dict]] = {}
@@ -200,11 +200,8 @@ def create_portal_network(node_configs: list[dict] | None = None) -> SourceNodeN
     
     if node_configs:
         for config in node_configs:
-            node = SourceNode(
-                node_id=config['node_id'],
-                reliability=config.get('reliability', 0.5)
-            )
-            manager.add_node(node)
+            # Note: reliability is ignored as SourceNode doesn't support it yet
+            manager.create_node(config['node_id'])
     
     return SourceNodeNetworkAdapter(manager=manager)
 

@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Mapping, MutableMapping, Optional, Sequence
+from tqdm import tqdm
 
 from .interfaces import (
     Agent,
@@ -101,54 +103,69 @@ class SimulationEngine:
 
         current_price = market.current_price()
         timestep = 0
-        while timestep < self._config.max_timesteps:
-            if stream.finished and self._config.stop_when_stream_finishes:
-                break
 
-            messages = stream.next_batch()
-            routed = portal.route(messages) if messages else {}
-            belief_snapshot: Dict[str, float] = {}
-            orders: List[MarketOrder] = []
+        with tqdm(total=self._config.max_timesteps, desc=f"Run {run_id}", unit="step", leave=True, position=0) as pbar_timestep:
+            while timestep < self._config.max_timesteps:
+                if stream.finished and self._config.stop_when_stream_finishes:
+                    break
 
-            # Log source messages
-            if logger and messages:
-                for message in messages:
-                    logger.log_source_message(timestep, message)
+                timestep_start = time.time()
+                messages = stream.next_batch()
+                routed = portal.route(messages) if messages else {}
+                belief_snapshot: Dict[str, float] = {}
+                orders: List[MarketOrder] = []
 
-            for agent in agents:
-                inbox = routed.get(agent.agent_id, [])
-                if inbox:
-                    agent.ingest(inbox)
-                belief = agent.update_belief(timestep, current_price)
-                belief_snapshot[agent.agent_id] = belief
+                if logger and messages:
+                    for message in messages:
+                        logger.log_source_message(timestep, message)
 
-                maybe_order = agent.generate_order(belief, current_price)
-                if maybe_order is not None:
-                    orders.append(maybe_order)
+                pbar_timestep.write(f"[Timestep {timestep}] Processing {len(agents)} agents, {len(messages)} messages...")
 
-            if orders:
-                market.submit_orders(orders, timestep)
+                with tqdm(total=len(agents), desc="  Agents", position=1, leave=False, disable=len(agents) <= 1) as pbar_agents:
+                    for agent in agents:
+                        agent_start = time.time()
+                        pbar_agents.set_description(f"  Agent {agent.agent_id}")
 
-            current_price = market.current_price()
-            snapshot = market.snapshot()
-            result.prices.append(current_price)
-            result.belief_history.append(belief_snapshot)
-            result.market_snapshots.append(snapshot)
+                        inbox = routed.get(agent.agent_id, [])
+                        if inbox:
+                            agent.ingest(inbox)
+                        belief = agent.update_belief(timestep, current_price)
+                        belief_snapshot[agent.agent_id] = belief
 
-            # Log market state and beliefs
-            if logger and timestep % self._config.log_every == 0:
-                logger.log_market_state(timestep, current_price, snapshot)
-                logger.log_beliefs(timestep, belief_snapshot, current_price)
+                        maybe_order = agent.generate_order(belief, current_price)
+                        if maybe_order is not None:
+                            orders.append(maybe_order)
 
-            for evaluator in evaluators:
-                evaluator.on_tick(
-                    timestep=timestep,
-                    price=current_price,
-                    agent_beliefs=belief_snapshot,
-                    market_snapshot=snapshot,
-                )
+                        agent_time = time.time() - agent_start
+                        pbar_agents.set_postfix(time=f"{agent_time:.1f}s", belief=f"{belief:.3f}")
+                        pbar_agents.update(1)
 
-            timestep += 1
+                if orders:
+                    market.submit_orders(orders, timestep)
+
+                current_price = market.current_price()
+                snapshot = market.snapshot()
+                result.prices.append(current_price)
+                result.belief_history.append(belief_snapshot)
+                result.market_snapshots.append(snapshot)
+
+                if logger and timestep % self._config.log_every == 0:
+                    logger.log_market_state(timestep, current_price, snapshot)
+                    logger.log_beliefs(timestep, belief_snapshot, current_price)
+
+                for evaluator in evaluators:
+                    evaluator.on_tick(
+                        timestep=timestep,
+                        price=current_price,
+                        agent_beliefs=belief_snapshot,
+                        market_snapshot=snapshot,
+                    )
+
+                timestep_time = time.time() - timestep_start
+                pbar_timestep.write(f"[Timestep {timestep}] Complete in {timestep_time:.1f}s - {len(orders)} orders, price: {current_price:.4f}")
+                pbar_timestep.set_postfix(price=f"{current_price:.4f}", orders=len(orders))
+                pbar_timestep.update(1)
+                timestep += 1
 
         metrics: MutableMapping[str, Mapping[str, float]] = {}
         for evaluator in evaluators:

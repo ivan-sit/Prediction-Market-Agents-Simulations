@@ -12,14 +12,51 @@ class OllamaEmbeddings:
         return [self.embed_query(text) for text in texts]
 
     def embed_query(self, text: str) -> List[float]:
-        response = requests.post(
-            f"{self.base_url}/api/embeddings",
-            json={"model": self.model, "prompt": text}
-        )
-        if response.status_code == 200:
-            return response.json()['embedding']
-        else:
-            raise Exception(f"Ollama embedding error: {response.text}")
+        """Generate embeddings for text with robust error handling.
+
+        Returns a 768-dimensional zero vector on any failure to prevent ChromaDB crashes.
+        """
+        EMBEDDING_DIM = 768  # nomic-embed-text dimension
+
+        try:
+            # Handle empty or whitespace-only text
+            if not text or not text.strip():
+                print("⚠️  Empty text provided to embed_query, returning zero vector")
+                return [0.0] * EMBEDDING_DIM
+
+            # Make API request with timeout
+            response = requests.post(
+                f"{self.base_url}/api/embeddings",
+                json={"model": self.model, "prompt": text},
+                timeout=30
+            )
+
+            if response.status_code == 200:
+                data = response.json()
+
+                # Validate response contains embedding
+                if 'embedding' not in data:
+                    raise ValueError(f"Response missing 'embedding' key: {data.keys()}")
+
+                embedding = data['embedding']
+
+                # Validate embedding is not empty
+                if not embedding:
+                    raise ValueError("Embedding is empty list")
+
+                return embedding
+            else:
+                raise Exception(f"HTTP {response.status_code}: {response.text}")
+
+        except Exception as e:
+            # Log error with context but don't crash
+            text_preview = text[:100] + "..." if len(text) > 100 else text
+            print(f"⚠️  Embedding failed (len={len(text)}): {e}")
+            print(f"   Text preview: {text_preview}")
+            print(f"   Returning zero vector to prevent crash")
+
+            # Return zero vector instead of crashing ChromaDB
+            return [0.0] * EMBEDDING_DIM
 
 
 class OllamaLLM(LLMBase):

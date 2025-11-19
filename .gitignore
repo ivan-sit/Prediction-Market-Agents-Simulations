@@ -7,6 +7,9 @@ __pycache__/
 *.pyo
 *.pyd
 
+artifacts/
+db/
+
 # Virtual environments
 .venv/
 venv/
