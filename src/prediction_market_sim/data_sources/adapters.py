@@ -137,17 +137,16 @@ class SourceNodeNetworkAdapter(PortalNetwork):
             for node_id in subscribed_nodes:
                 node = self.manager.get_node(node_id)
                 if node:
-                    # Get recent events from this node
-                    # (The node stores chronological feed)
-                    recent_events = node.get_recent_events(limit=10)
-                    
-                    for event_dict in recent_events:
+                    # Get all events from this node's feed
+                    events = node.get_all_events()
+
+                    for event in events:
                         inbox.append({
                             'source_node': node_id,
-                            'event_id': event_dict['event_id'],
-                            'tagline': event_dict['tagline'],
-                            'description': event_dict['description'],
-                            'timestamp': event_dict['timestamp']
+                            'event_id': event.event_id,
+                            'tagline': event.tagline,
+                            'description': event.description,
+                            'timestamp': event.initial_time
                         })
             
             agent_inboxes[agent_id] = inbox

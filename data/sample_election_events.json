@@ -1,0 +1,109 @@
+{
+  "events": [
+    {
+      "event_id": "evt_001",
+      "initial_time": 0,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Early polls show tight race",
+      "description": "Initial polling data suggests candidates are neck and neck with 48% to 47% split. Social media buzzing with speculation about debate performance."
+    },
+    {
+      "event_id": "evt_002",
+      "initial_time": 3,
+      "source_nodes": ["news_feed"],
+      "tagline": "Major newspaper endorses Candidate A",
+      "description": "The National Times has endorsed Candidate A, citing strong economic policy and leadership experience. This is a significant endorsement from a respected outlet."
+    },
+    {
+      "event_id": "evt_003",
+      "initial_time": 5,
+      "source_nodes": ["twitter"],
+      "tagline": "Viral debate moment favors Candidate A",
+      "description": "A clip from last night's debate showing Candidate A's response on healthcare has gone viral with 2M views. Social media sentiment appears strongly positive."
+    },
+    {
+      "event_id": "evt_004",
+      "initial_time": 7,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Political analyst: Debate shifted momentum",
+      "description": "Leading political analyst Sarah Chen reports that post-debate polling shows a 3-point swing toward Candidate A among independent voters. Historical patterns suggest this could be sustained."
+    },
+    {
+      "event_id": "evt_005",
+      "initial_time": 10,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "New polls confirm Candidate A gaining ground",
+      "description": "Three major polls released today all show Candidate A with 51-52% support, up from 48% before the debate. Margin of error is ±3%, but the trend is consistent across surveys."
+    },
+    {
+      "event_id": "evt_006",
+      "initial_time": 12,
+      "source_nodes": ["reddit", "twitter"],
+      "tagline": "Grassroots organizing surge for Candidate A",
+      "description": "Online communities reporting unprecedented volunteer signups and small-dollar donations following debate performance. Campaign claims 50K new volunteers this week."
+    },
+    {
+      "event_id": "evt_007",
+      "initial_time": 15,
+      "source_nodes": ["twitter"],
+      "tagline": "Candidate B campaign disputes poll accuracy",
+      "description": "Candidate B's campaign manager tweets that internal polls show race still tied. Questions methodology of recent public surveys."
+    },
+    {
+      "event_id": "evt_008",
+      "initial_time": 18,
+      "source_nodes": ["news_feed"],
+      "tagline": "Campaign finance reports show fundraising gap",
+      "description": "Latest FEC filings reveal Candidate A raised $45M last month vs $38M for Candidate B. Candidate A now has larger war chest for final push."
+    },
+    {
+      "event_id": "evt_009",
+      "initial_time": 20,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Electoral college model favors Candidate A",
+      "description": "Updated electoral models from FiveThirtyEight give Candidate A 65% probability of victory, up from 52% pre-debate. Key swing states showing movement."
+    },
+    {
+      "event_id": "evt_010",
+      "initial_time": 22,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Social media trends heavily favor Candidate A",
+      "description": "Sentiment analysis of 1M tweets shows 62% positive mentions for Candidate A vs 38% for Candidate B. Hashtags related to Candidate A trending in all battleground states."
+    },
+    {
+      "event_id": "evt_011",
+      "initial_time": 25,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "Final pre-election polls: Candidate A leads by 4 points",
+      "description": "Comprehensive poll average from RealClearPolitics shows Candidate A at 52%, Candidate B at 48%. If accurate, this would translate to comfortable electoral college victory."
+    },
+    {
+      "event_id": "evt_012",
+      "initial_time": 28,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Political scientist: Fundamentals favor Candidate A",
+      "description": "Professor Alan Lichtman, who has correctly predicted 9 of last 10 elections, forecasts Candidate A victory based on his 13 Keys model. Cites strong economy and incumbent party fatigue."
+    },
+    {
+      "event_id": "evt_013",
+      "initial_time": 30,
+      "source_nodes": ["twitter"],
+      "tagline": "Last-minute controversy for Candidate B",
+      "description": "Old interview resurfaces showing Candidate B making controversial statements. Trending #1 on Twitter but unclear if it will impact voting."
+    },
+    {
+      "event_id": "evt_014",
+      "initial_time": 32,
+      "source_nodes": ["news_feed"],
+      "tagline": "Early voting numbers favor Candidate A",
+      "description": "Early voting data from key states shows higher turnout in areas that favored Candidate A in primaries. Democrats report strong enthusiasm."
+    },
+    {
+      "event_id": "evt_015",
+      "initial_time": 35,
+      "source_nodes": ["expert_analysis", "news_feed"],
+      "tagline": "Final forecast: Candidate A 70% win probability",
+      "description": "Meta-analysis of all major forecasting models (FiveThirtyEight, Economist, Princeton) converges on approximately 70% probability of Candidate A victory. Market should reflect this."
+    }
+  ]
+}
