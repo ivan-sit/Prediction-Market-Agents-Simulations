@@ -61,6 +61,7 @@ class LMSRMarketAdapter(MarketAdapter):
         # State tracking
         self._net_flow_tick = 0.0
         self._tick_volume = 0.0
+        self._trade_log: List[object] = []
         
         # Agent position tracking
         self._positions: Dict[str, Dict[str, float]] = defaultdict(
@@ -86,8 +87,9 @@ class LMSRMarketAdapter(MarketAdapter):
                 limit_price=order.limit_price,
                 timestamp=timestep
             )
-            
+
             if trade is not None:
+                self._trade_log.append(trade)
                 # Track net flow (buy = positive, sell = negative)
                 if order.side.lower() == "buy":
                     self._net_flow_tick += trade.shares
@@ -157,6 +159,10 @@ class LMSRMarketAdapter(MarketAdapter):
             "cash": pos["cash"],
             "pnl": pnl
         }
+
+    def get_trades(self) -> List[object]:
+        """Return all executed trades recorded by this adapter."""
+        return list(self._trade_log)
 
 
 class OrderBookMarketAdapter(MarketAdapter):

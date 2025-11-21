@@ -54,6 +54,8 @@ class SimulationResult:
     logger: Optional[SimulationLogger] = None
     log_files: Mapping[str, Path] = field(default_factory=dict)
     summary_stats: Mapping[str, object] = field(default_factory=dict)
+    agent_pnl_history: List[Mapping[str, float]] = field(default_factory=list)
+    trade_log: List[object] = field(default_factory=list)
 
 
 class SimulationEngine:
@@ -130,26 +132,26 @@ class SimulationEngine:
                 pbar_timestep.write(f"[Timestep {timestep}] Processing {len(agents)} agents, {len(messages)} messages...")
 
                 with tqdm(total=len(agents), desc="  Agents", position=1, leave=False, disable=len(agents) <= 1) as pbar_agents:
-                for agent in agents:
-                    agent_start = time.time()
-                    pbar_agents.set_description(f"  Agent {agent.agent_id}")
+                    for agent in agents:
+                        agent_start = time.time()
+                        pbar_agents.set_description(f"  Agent {agent.agent_id}")
 
-                    inbox = routed.get(agent.agent_id, [])
-                    if inbox:
-                        agent.ingest(inbox)
+                        inbox = routed.get(agent.agent_id, [])
+                        if inbox:
+                            agent.ingest(inbox)
                         belief = agent.update_belief(timestep, current_price)
                         belief_snapshot[agent.agent_id] = belief
 
-                    maybe_order = agent.generate_order(belief, current_price)
-                    if maybe_order is not None:
-                        orders.append(maybe_order)
+                        maybe_order = agent.generate_order(belief, current_price)
+                        if maybe_order is not None:
+                            orders.append(maybe_order)
 
-                    # Optional: agent-generated posts to source nodes
-                    generate_posts = getattr(agent, "generate_posts", None)
-                    if callable(generate_posts):
-                        posts = generate_posts(timestep)
-                        for post in posts:
-                            portal.ingest_agent_feedback(agent.agent_id, post)
+                        # Optional: agent-generated posts to source nodes
+                        generate_posts = getattr(agent, "generate_posts", None)
+                        if callable(generate_posts):
+                            posts = generate_posts(timestep)
+                            for post in posts:
+                                portal.ingest_agent_feedback(agent.agent_id, post)
 
                         agent_time = time.time() - agent_start
                         pbar_agents.set_postfix(time=f"{agent_time:.1f}s", belief=f"{belief:.3f}")
@@ -163,6 +165,17 @@ class SimulationEngine:
                 result.prices.append(current_price)
                 result.belief_history.append(belief_snapshot)
                 result.market_snapshots.append(snapshot)
+
+                # Capture per-agent PnL if adapter supports it
+                if hasattr(market, "get_agent_position"):
+                    pnl_snapshot: Dict[str, float] = {}
+                    for agent in agents:
+                        try:
+                            pos = market.get_agent_position(agent.agent_id)
+                            pnl_snapshot[agent.agent_id] = float(pos.get("pnl", 0.0))
+                        except Exception:
+                            pnl_snapshot[agent.agent_id] = 0.0
+                    result.agent_pnl_history.append(pnl_snapshot)
 
                 if logger and timestep % self._config.log_every == 0:
                     logger.log_market_state(timestep, current_price, snapshot)
@@ -195,5 +208,12 @@ class SimulationEngine:
             if self._config.save_logs_as_json:
                 result.log_files.update(logger.save_to_json())
             result.summary_stats = logger.get_summary_stats()
+
+        # Capture trades if adapter supports it
+        if hasattr(market, "get_trades"):
+            try:
+                result.trade_log = list(market.get_trades())
+            except Exception:
+                result.trade_log = []
 
         return result

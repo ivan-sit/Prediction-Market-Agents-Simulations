@@ -16,6 +16,10 @@ Usage:
 import sys
 import argparse
 from pathlib import Path
+import os
+
+import pandas as pd
+import matplotlib.pyplot as plt
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -317,6 +321,38 @@ def main():
         print(f"  - Market data: artifacts/{run_name}_run1_market.csv")
         print(f"  - Agent beliefs: artifacts/{run_name}_run1_beliefs.csv")
         print(f"  - Event sources: artifacts/{run_name}_run1_sources.csv")
+
+        # Plot and save PnL dashboard per agent if available
+        if result.agent_pnl_history:
+            dashboard_dir = Path("artifacts/dashboards")
+            dashboard_dir.mkdir(parents=True, exist_ok=True)
+            pnl_df = pd.DataFrame(result.agent_pnl_history)
+            ax = pnl_df.plot(title=f"Agent PnL — {run_name}", figsize=(10, 5))
+            ax.set_xlabel("Timestep")
+            ax.set_ylabel("PnL")
+            ax.grid(True, alpha=0.3)
+            plt.tight_layout()
+            pnl_path = dashboard_dir / f"{run_name}_pnl.png"
+            plt.savefig(pnl_path, dpi=150)
+            plt.close()
+            print(f"  - PnL chart: {pnl_path}")
+
+        # Save trade log per agent if available
+        if result.trade_log:
+            trades_dir = Path("artifacts/trades")
+            trades_dir.mkdir(parents=True, exist_ok=True)
+            rows = []
+            for t in result.trade_log:
+                if hasattr(t, "__dict__"):
+                    rows.append({k: v for k, v in t.__dict__.items()})
+                else:
+                    try:
+                        rows.append(dict(t))
+                    except Exception:
+                        rows.append({"trade": str(t)})
+            trades_path = trades_dir / f"{run_name}_trades.csv"
+            pd.DataFrame(rows).to_csv(trades_path, index=False)
+            print(f"  - Trades log: {trades_path}")
 
     except Exception as e:
         print(f"\n❌ Error during simulation: {e}")
