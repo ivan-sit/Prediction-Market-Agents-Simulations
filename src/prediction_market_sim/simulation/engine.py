@@ -8,6 +8,12 @@ from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Mapping, MutableMapping, Optional, Sequence
 from tqdm import tqdm
 
+try:  # Optional - only used if source nodes are present
+    from prediction_market_sim.data_sources.source_node import set_current_time
+except Exception:  # pragma: no cover - keep simulation runnable without data_sources
+    def set_current_time(_: int) -> None:
+        return
+
 from .interfaces import (
     Agent,
     Evaluator,
@@ -109,6 +115,8 @@ class SimulationEngine:
                 if stream.finished and self._config.stop_when_stream_finishes:
                     break
 
+                set_current_time(timestep)
+
                 timestep_start = time.time()
                 messages = stream.next_batch()
                 routed = portal.route(messages) if messages else {}
@@ -122,19 +130,26 @@ class SimulationEngine:
                 pbar_timestep.write(f"[Timestep {timestep}] Processing {len(agents)} agents, {len(messages)} messages...")
 
                 with tqdm(total=len(agents), desc="  Agents", position=1, leave=False, disable=len(agents) <= 1) as pbar_agents:
-                    for agent in agents:
-                        agent_start = time.time()
-                        pbar_agents.set_description(f"  Agent {agent.agent_id}")
+                for agent in agents:
+                    agent_start = time.time()
+                    pbar_agents.set_description(f"  Agent {agent.agent_id}")
 
-                        inbox = routed.get(agent.agent_id, [])
-                        if inbox:
-                            agent.ingest(inbox)
+                    inbox = routed.get(agent.agent_id, [])
+                    if inbox:
+                        agent.ingest(inbox)
                         belief = agent.update_belief(timestep, current_price)
                         belief_snapshot[agent.agent_id] = belief
 
-                        maybe_order = agent.generate_order(belief, current_price)
-                        if maybe_order is not None:
-                            orders.append(maybe_order)
+                    maybe_order = agent.generate_order(belief, current_price)
+                    if maybe_order is not None:
+                        orders.append(maybe_order)
+
+                    # Optional: agent-generated posts to source nodes
+                    generate_posts = getattr(agent, "generate_posts", None)
+                    if callable(generate_posts):
+                        posts = generate_posts(timestep)
+                        for post in posts:
+                            portal.ingest_agent_feedback(agent.agent_id, post)
 
                         agent_time = time.time() - agent_start
                         pbar_agents.set_postfix(time=f"{agent_time:.1f}s", belief=f"{belief:.3f}")

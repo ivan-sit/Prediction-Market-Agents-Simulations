@@ -103,6 +103,21 @@ class SourceNode:
 
         return True
 
+    def get_recent_events(self, limit: int = 10) -> List[Dict[str, object]]:
+        """Return the most recent events as dictionaries with metadata."""
+        recent = self.event_feed[-limit:]
+        items = []
+        for ev in recent:
+            items.append(
+                {
+                    "event_id": ev.event_id,
+                    "tagline": ev.tagline,
+                    "description": ev.description,
+                    "timestamp": self.event_post_times.get(ev.event_id, None),
+                }
+            )
+        return items
+
     def get_events_since_index(self, last_read_index: int) -> List[Event]:
         """
         Get all events posted since the last read index.
@@ -358,4 +373,3 @@ if __name__ == "__main__":
 
     results = manager.post_event_to_nodes(event3, ["portal_C", "portal_D"])
     print(f"Posting to multiple nodes: {results}")
-

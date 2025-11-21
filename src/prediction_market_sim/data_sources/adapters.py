@@ -161,14 +161,24 @@ class SourceNodeNetworkAdapter(PortalNetwork):
             agent_id: Agent making the post
             payload: Content to post (could contain commentary, analysis, etc.)
         """
-        # Agents can post their own commentary to source nodes
-        target_node = payload.get('target_node')
-        if target_node:
-            node = self.manager.get_node(target_node)
-            if node:
-                # Could extend SourceNode to support agent posts
-                # For now, just pass through
-                pass
+        target_node = payload.get("target_node")
+        content = payload.get("content")
+        tagline = payload.get("tagline", "Agent post")
+        if not target_node or not content:
+            return
+        node = self.manager.get_node(target_node)
+        if not node:
+            return
+
+        # Create a lightweight Event from the post
+        event = Event(
+            event_id=payload.get("event_id", f"agent_post_{agent_id}"),
+            initial_time=payload.get("timestamp", 0),
+            source_nodes=[target_node],
+            tagline=tagline,
+            description=str(content),
+        )
+        node.post_event(event)
 
 
 def create_event_stream(db_path: str = "events_database.json") -> EventDatabaseStream:
@@ -203,4 +213,3 @@ def create_portal_network(node_configs: list[dict] | None = None) -> SourceNodeN
             manager.create_node(config['node_id'])
     
     return SourceNodeNetworkAdapter(manager=manager)
-
