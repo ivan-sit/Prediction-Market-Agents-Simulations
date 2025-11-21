@@ -32,7 +32,6 @@ data/external/*
 logs/
 simulation_logs/
 visualizations/
-test_scripts/
 pricing_test/
 orderbook_test/
 
