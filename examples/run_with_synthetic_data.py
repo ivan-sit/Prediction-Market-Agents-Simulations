@@ -26,6 +26,7 @@ import sys
 import argparse
 from pathlib import Path
 import os
+import yaml
 
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -44,12 +45,13 @@ def load_env_config(env_path: Path = None) -> dict:
     config = {
         'events_file': 'data/sample_election_events.json',
         'market_type': 'lmsr',
-        'num_agents': 3,
+        'num_agents': None,  # None means use all agents from YAML or default to 3
         'max_timesteps': 100,
         'liquidity_param': 100.0,
         'run_name': 'prediction_sim',
         'random_seed': 42,
         'log_dir': 'simulation_logs',
+        'personas_yaml': None,
     }
 
     # Find config.env - check multiple locations
@@ -90,6 +92,7 @@ def load_env_config(env_path: Path = None) -> dict:
                     'RUN_NAME': ('run_name', str),
                     'RANDOM_SEED': ('random_seed', int),
                     'LOG_DIR': ('log_dir', str),
+                    'PERSONAS_YAML': ('personas_yaml', str),
                 }
 
                 if key in mapping:
@@ -126,48 +129,103 @@ def create_standard_portals():
     ])
 
 
-def create_agents_with_subscriptions(portal_network, num_agents=3):
+def load_agents_from_yaml(yaml_path: Path):
+    """
+    Load agent configurations from YAML file.
+
+    Expected format:
+      agents:
+        - agent_id: ...
+          personality_prompt: ...
+          subscriptions: [...]
+          net_worth: "$X"
+          ...
+
+    Returns:
+        List of agent config dicts
+    """
+    with open(yaml_path, 'r') as f:
+        data = yaml.safe_load(f)
+
+    agent_configs = []
+    for agent in data.get('agents', []):
+        # Convert net_worth string like "$150,000" to float
+        net_worth_str = agent.get('net_worth', '$10000')
+        initial_cash = float(net_worth_str.replace('$', '').replace(',', ''))
+
+        agent_configs.append({
+            'agent_id': agent['agent_id'],
+            'personality': agent['personality_prompt'],
+            'subscriptions': agent['subscriptions'],
+            'initial_cash': initial_cash
+        })
+
+    return agent_configs
+
+
+def create_agents_with_subscriptions(portal_network, num_agents=None, yaml_path=None):
     """
     Create agents with different personalities and portal subscriptions.
+
+    Args:
+        portal_network: Portal network to subscribe agents to
+        num_agents: Number of agents to create (limits from config). If None and using YAML, uses all agents from YAML.
+        yaml_path: Optional path to YAML file with agent personas
 
     Returns:
         List of agent factory functions
     """
-    agent_configs = [
-        {
-            'agent_id': 'conservative_trader',
-            'personality': 'Conservative trader who values high-quality sources and expert analysis. Risk-averse and careful.',
-            'subscriptions': ['news_feed', 'expert_analysis'],
-            'initial_cash': 10000.0
-        },
-        {
-            'agent_id': 'aggressive_trader',
-            'personality': 'Aggressive momentum trader who follows social media sentiment and takes bold positions.',
-            'subscriptions': ['twitter', 'reddit', 'news_feed'],
-            'initial_cash': 10000.0
-        },
-        {
-            'agent_id': 'contrarian_trader',
-            'personality': 'Contrarian value investor who bets against public opinion and looks for mispricing.',
-            'subscriptions': ['twitter', 'expert_analysis'],
-            'initial_cash': 10000.0
-        },
-        {
-            'agent_id': 'well_informed_trader',
-            'personality': 'Well-informed trader who monitors all sources and synthesizes information carefully.',
-            'subscriptions': ['twitter', 'news_feed', 'expert_analysis', 'reddit'],
-            'initial_cash': 10000.0
-        },
-        {
-            'agent_id': 'social_trader',
-            'personality': 'Social trader who primarily follows community sentiment and discussion.',
-            'subscriptions': ['twitter', 'reddit', 'discord'],
-            'initial_cash': 10000.0
-        },
-    ]
+    # Try to load from YAML if provided
+    if yaml_path and Path(yaml_path).exists():
+        print(f"Loading agents from: {yaml_path}")
+        agent_configs = load_agents_from_yaml(Path(yaml_path))
+        print(f"Found {len(agent_configs)} agent personas in YAML")
+
+        # If num_agents not specified, use all agents from YAML
+        if num_agents is None:
+            num_agents = len(agent_configs)
+            print(f"Using all {num_agents} agents from YAML file")
+    else:
+        # Fallback to hardcoded configs
+        if num_agents is None:
+            num_agents = 3  # Default for hardcoded agents
+
+        agent_configs = [
+            {
+                'agent_id': 'conservative_trader',
+                'personality': 'Conservative trader who values high-quality sources and expert analysis. Risk-averse and careful.',
+                'subscriptions': ['news_feed', 'expert_analysis'],
+                'initial_cash': 10000.0
+            },
+            {
+                'agent_id': 'aggressive_trader',
+                'personality': 'Aggressive momentum trader who follows social media sentiment and takes bold positions.',
+                'subscriptions': ['twitter', 'reddit', 'news_feed'],
+                'initial_cash': 10000.0
+            },
+            {
+                'agent_id': 'contrarian_trader',
+                'personality': 'Contrarian value investor who bets against public opinion and looks for mispricing.',
+                'subscriptions': ['twitter', 'expert_analysis'],
+                'initial_cash': 10000.0
+            },
+            {
+                'agent_id': 'well_informed_trader',
+                'personality': 'Well-informed trader who monitors all sources and synthesizes information carefully.',
+                'subscriptions': ['twitter', 'news_feed', 'expert_analysis', 'reddit'],
+                'initial_cash': 10000.0
+            },
+            {
+                'agent_id': 'social_trader',
+                'personality': 'Social trader who primarily follows community sentiment and discussion.',
+                'subscriptions': ['twitter', 'reddit', 'discord'],
+                'initial_cash': 10000.0
+            },
+        ]
 
     # Limit to requested number of agents
     agent_configs = agent_configs[:num_agents]
+    print(f"Creating {len(agent_configs)} agents")
 
     # Subscribe agents to portals
     for config in agent_configs:
@@ -194,7 +252,8 @@ def build_simulation_engine(
     timesteps: int = 50,
     liquidity_param: float = 100.0,
     run_name: str = 'synthetic_data_sim',
-    read_only: bool = True
+    read_only: bool = True,
+    personas_yaml: str = None
 ):
     """
     Build the complete simulation engine with all modules integrated.
@@ -206,6 +265,8 @@ def build_simulation_engine(
         timesteps: Maximum simulation timesteps
         liquidity_param: Market liquidity parameter
         run_name: Name for this simulation run
+        read_only: Whether to run in read-only mode
+        personas_yaml: Optional path to YAML file with agent personas
 
     Returns:
         Configured SimulationEngine ready to run
@@ -217,7 +278,7 @@ def build_simulation_engine(
 
     # 2. Create agents and subscribe them to portals
     print(f"Creating {num_agents} agents with different strategies...")
-    agent_factories = create_agents_with_subscriptions(portal_network, num_agents)
+    agent_factories = create_agents_with_subscriptions(portal_network, num_agents, yaml_path=personas_yaml)
 
     # 3. Create market
     print(f"Setting up {market_type.upper()} market...")
@@ -301,7 +362,7 @@ Examples:
         '--agents',
         type=int,
         default=env_config['num_agents'],
-        help=f"Number of agents 1-5 (default from config.env: {env_config['num_agents']})"
+        help=f"Number of agents to use. If personas YAML is provided and this is not set, uses all agents from YAML. (default: {env_config['num_agents'] if env_config['num_agents'] is not None else 'all from YAML or 3'})"
     )
     parser.add_argument(
         '--timesteps',
@@ -338,6 +399,12 @@ Examples:
         dest='read_only',
         action='store_false',
         help='Allow event file to be consumed during simulation (default: read-only mode enabled)'
+    )
+    parser.add_argument(
+        '--personas',
+        type=str,
+        default=env_config['personas_yaml'],
+        help=f"Path to YAML file with agent personas (default from config.env: {env_config['personas_yaml']})"
     )
     parser.set_defaults(read_only=True)
 
@@ -383,11 +450,18 @@ Examples:
     print("="*60)
     print(f"Events file:    {events_path}")
     print(f"Market type:    {args.market.upper()}")
-    print(f"Agents:         {args.agents}")
+    if args.agents is None and args.personas:
+        print(f"Agents:         All from YAML ({args.personas})")
+    elif args.agents is None:
+        print(f"Agents:         3 (default)")
+    else:
+        print(f"Agents:         {args.agents}")
     print(f"Max timesteps:  {args.timesteps}")
     print(f"Liquidity:      {args.liquidity}")
     print(f"Random seed:    {args.seed}")
     print(f"Run name:       {run_name}")
+    if args.personas:
+        print(f"Personas:       {args.personas}")
     print("="*60 + "\n")
 
     # Build and run simulation
@@ -399,7 +473,8 @@ Examples:
             timesteps=args.timesteps,
             liquidity_param=args.liquidity,
             run_name=run_name,
-            read_only=args.read_only
+            read_only=args.read_only,
+            personas_yaml=args.personas
         )
 
         print("Starting simulation...\n")
