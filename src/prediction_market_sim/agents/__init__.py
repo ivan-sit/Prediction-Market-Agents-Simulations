@@ -8,7 +8,6 @@ from .prediction_market_agent import (
     MarketPlanningModule,
     MarketReasoningModule,
     MarketMemoryModule,
-    PlaceholderMarketTools,
 )
 from .ollama_llm import OllamaLLM, OllamaEmbeddings
 from .adapters import PredictionMarketAgentAdapter, create_prediction_agent

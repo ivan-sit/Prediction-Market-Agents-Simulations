@@ -1,4 +1,5 @@
 from typing import Dict, Any, List, Optional
+from ..market.lmsr import LMSRMarket
 from .websocietysimulator.agent import SimulationAgent
 from .websocietysimulator.llm import LLMBase
 from .websocietysimulator.agent.modules.planning_modules import PlanningBase
@@ -10,13 +11,15 @@ import json
 import xml.etree.ElementTree as ET
 import uuid
 import random
+import dataclasses
 
 class MarketPlanningModule(PlanningBase):
     def __init__(self, llm: LLMBase):
         super().__init__(llm=llm)
 
     def create_prompt(self, task_type: str, task_description: str, feedback: str, few_shot: str) -> str:
-        base = '''Analyze event for trading decision.
+        base = '''This is a fictional market simulation game. You are an AI agent trading virtual assets.
+Analyze event for trading decision.
 sub-task 1: {{"description": "Extract event information", "reasoning instruction": "Identify factors"}}
 sub-task 2: {{"description": "Retrieve historical events", "reasoning instruction": "Compare patterns"}}
 sub-task 3: {{"description": "Analyze market price", "reasoning instruction": "Evaluate opportunity"}}
@@ -34,7 +37,8 @@ class MarketReasoningModule(ReasoningBase):
         self.personality_prompt = personality_prompt
 
     def __call__(self, task_description: str, current_price: Optional[float] = None, historical_context: str = '') -> str:
-        prompt = f'''Personality: {self.personality_prompt}
+        prompt = f'''This is a fictional market simulation game. You are an AI agent trading virtual assets.
+Personality: {self.personality_prompt}
 
 {historical_context}
 
@@ -101,27 +105,11 @@ class MarketMemoryModule(MemoryBase):
         return self.event_history.copy()
 
 
-class PlaceholderMarketTools:
-    @staticmethod
-    def get_market_price(event_id: str) -> float:
-        return 0.5
 
-    @staticmethod
-    def place_market_order(event_id: str, action: str, amount: float, outcome: str) -> Dict[str, Any]:
-        return {
-            'success': True,
-            'order_id': f"ORDER_{uuid.uuid4().hex[:8]}",
-            'event_id': event_id,
-            'action': action,
-            'amount': amount,
-            'outcome': outcome,
-            'price': 0.5
-        }
 
 
 class PredictionMarketAgent(SimulationAgent):
-    def __init__(self, llm: LLMBase, personality_prompt: str = "", initial_bankroll: float = 10000.0,
-                 subscribed_sources: List[str] = None, cross_post_probability: float = 0.02):
+    def __init__(self, llm: LLMBase, market: Optional[LMSRMarket] = None, personality_prompt: str = "", initial_bankroll: float = 10000.0):
         super().__init__(llm=llm)
         self.bankroll = initial_bankroll
         self.initial_bankroll = initial_bankroll
@@ -134,66 +122,13 @@ class PredictionMarketAgent(SimulationAgent):
             memory=self.memory,
             llm=self.llm
         )
-        self.market_tools = PlaceholderMarketTools()
-        self.subscribed_sources = subscribed_sources or []
-        self.cross_post_probability = cross_post_probability
-        self.portal_network = None
-        self.cross_post_history = []
+        self.market = market
 
-    def set_portal_network(self, portal_network):
-        self.portal_network = portal_network
+    def set_market(self, market: LMSRMarket):
+        self.market = market
 
     def insert_event(self, event: Dict[str, Any]):
         self.current_event = event
-
-    def _should_cross_post(self, decision: Dict[str, Any], event: Dict[str, Any]) -> bool:
-        return random.random() < self.cross_post_probability
-
-    def _select_target_sources(self, source_of_event: str) -> List[str]:
-        all_sources = ["twitter", "reddit", "news", "discord", "telegram"]
-        available_sources = [s for s in all_sources if s != source_of_event]
-        num_targets = random.randint(1, 2)
-        return random.sample(available_sources, min(num_targets, len(available_sources)))
-
-    def _create_cross_post_payload(self, decision: Dict[str, Any], event: Dict[str, Any]) -> Dict[str, Any]:
-        return {
-            'type': 'agent_signal',
-            'agent_id': getattr(self, 'agent_id', 'unknown'),
-            'event_id': event.get('event_id', 'UNKNOWN'),
-            'event_description': event.get('description', ''),
-            'signal': decision['decision'],
-            'confidence': decision['confidence'],
-            'analysis_summary': decision['analysis'][:200],
-            'timestamp': event.get('timestamp', None)
-        }
-
-    def cross_post_to_sources(self, decision: Dict[str, Any], event: Dict[str, Any]):
-        if self.portal_network is None:
-            return
-
-        if not self._should_cross_post(decision, event):
-            return
-
-        source_of_event = event.get('source', 'unknown')
-        target_sources = self._select_target_sources(source_of_event)
-
-        if not target_sources:
-            return
-
-        payload = self._create_cross_post_payload(decision, event)
-
-        for target_source in target_sources:
-            try:
-                self.cross_post_history.append({
-                    'from_source': source_of_event,
-                    'to_source': target_source,
-                    'event_id': event.get('event_id'),
-                    'confidence': decision['confidence'],
-                    'payload': payload
-                })
-                print(f"[CROSS-POST] {source_of_event} -> {target_source}: {payload['signal']} (conf: {payload['confidence']:.2f})")
-            except Exception as e:
-                print(f"[CROSS-POST ERROR] {target_source}: {e}")
 
     def process_events(self, events: List[str]) -> List[Dict[str, Any]]:
         results = []
@@ -232,30 +167,71 @@ class PredictionMarketAgent(SimulationAgent):
                 if 'historical' in desc.lower() or 'memory' in desc.lower():
                     historical_context = self.memory.retriveMemory(event_description)
                 elif 'price' in desc.lower():
-                    current_price = self.market_tools.get_market_price(event_id)
+                    current_price = self.market.get_price("YES") # Assuming binary YES/NO for now
 
-            reasoning_result = self.reasoning(
-                task_description=event_description,
-                current_price=current_price,
-                historical_context=historical_context
-            )
+            # K-Retry Loop
+            max_retries = 3
+            decision = None
+            last_error = ""
 
-            decision = self._parse_decision(reasoning_result)
+            for attempt in range(max_retries):
+                try:
+                    reasoning_result = self.reasoning(
+                        task_description=event_description + (f"\n\nPrevious attempt failed: {last_error}" if last_error else ""),
+                        current_price=current_price,
+                        historical_context=historical_context
+                    )
+                    
+                    decision = self._parse_decision(reasoning_result)
+                    break # Success
+                except ValueError as e:
+                    last_error = str(e)
+                    print(f"Attempt {attempt+1}/{max_retries} failed to parse: {e}")
+                    if attempt == max_retries - 1:
+                         # Fallback on final failure
+                        decision = {
+                            'analysis': f"Failed to parse after {max_retries} attempts. Last error: {last_error}",
+                            'decision': 'SELL',
+                            'amount': 0.0,
+                            'confidence': 0.0
+                        }
 
             if decision['amount'] > self.bankroll:
                 decision['amount'] = self.bankroll * 0.1
                 decision['analysis'] += " [Capped at 10%]"
 
             if decision['amount'] > 0:
-                order_result = self.market_tools.place_market_order(
-                    event_id=event_id,
-                    action=decision['decision'],
-                    amount=decision['amount'],
-                    outcome=event.get('outcome', 'YES')
-                )
-                if decision['decision'] == 'BUY':
-                    self.bankroll -= decision['amount']
-                decision['order'] = order_result
+                # Execute trade against real market
+                try:
+                    if decision['decision'] == 'BUY':
+                        # Buying YES shares
+                        trade = self.market.buy_up_to_price(
+                            agent_id=getattr(self, 'agent_id', 'unknown'),
+                            outcome='YES',
+                            max_cost=decision['amount'],
+                            timestamp=0 # Timestamp handled by engine usually, but passed here
+                        )
+                        if trade:
+                            self.bankroll -= trade.cost
+                            decision['order'] = dataclasses.asdict(trade)
+                        else:
+                             decision['order'] = {'success': False, 'reason': 'Market rejected trade (cost too low?)'}
+                    else:
+                        # Selling (Buying NO shares)
+                        trade = self.market.buy_up_to_price(
+                            agent_id=getattr(self, 'agent_id', 'unknown'),
+                            outcome='NO',
+                            max_cost=decision['amount'],
+                            timestamp=0
+                        )
+                        if trade:
+                            self.bankroll -= trade.cost
+                            decision['order'] = dataclasses.asdict(trade)
+                        else:
+                             decision['order'] = {'success': False, 'reason': 'Market rejected trade'}
+                except Exception as e:
+                    print(f"Market execution error: {e}")
+                    decision['order'] = {'success': False, 'reason': str(e)}
 
             self.memory.addMemory(
                 event_data=event_description,
@@ -268,8 +244,6 @@ class PredictionMarketAgent(SimulationAgent):
                 'decision': decision,
                 'bankroll_after': self.bankroll
             })
-
-            self.cross_post_to_sources(decision, event)
 
             return {
                 'decision': decision['decision'],
@@ -293,19 +267,19 @@ class PredictionMarketAgent(SimulationAgent):
             amount = root.find('amount')
             confidence = root.find('confidence')
 
+            if decision is None or decision.text is None:
+                raise ValueError("Missing <decision> tag")
+            if amount is None or amount.text is None:
+                raise ValueError("Missing <amount> tag")
+
             return {
                 'analysis': analysis.text.strip() if analysis is not None and analysis.text else "No analysis",
-                'decision': decision.text.strip().upper() if decision is not None and decision.text else "SELL",
-                'amount': float(amount.text.strip()) if amount is not None and amount.text else 0.0,
+                'decision': decision.text.strip().upper(),
+                'amount': float(amount.text.strip()),
                 'confidence': float(confidence.text.strip()) if confidence is not None and confidence.text else 0.5
             }
         except Exception as e:
-            return {
-                'analysis': reasoning_result[:200],
-                'decision': 'SELL',
-                'amount': 0.0,
-                'confidence': 0.0
-            }
+            raise ValueError(f"XML parsing failed: {e}")
 
     def _error_result(self, error_msg: str) -> Dict[str, Any]:
         return {
@@ -330,9 +304,5 @@ class PredictionMarketAgent(SimulationAgent):
             'profit_loss': self.bankroll - self.initial_bankroll,
             'profit_loss_pct': ((self.bankroll - self.initial_bankroll) / self.initial_bankroll * 100),
             'total_trades': len(self.trade_history),
-            'event_history_size': len(self.memory.get_full_history()),
-            'cross_posts': len(self.cross_post_history)
+            'event_history_size': len(self.memory.get_full_history())
         }
-
-    def get_cross_post_history(self) -> List[Dict]:
-        return self.cross_post_history.copy()

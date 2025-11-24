@@ -3,8 +3,9 @@ import sys
 import os
 
 # Import the production PredictionMarketAgent and OllamaLLM
-from prediction_market_agent import PredictionMarketAgent
-from ollama_llm import OllamaLLM
+sys.path.append(os.path.join(os.path.dirname(__file__), '../src'))
+from prediction_market_sim.agents.prediction_market_agent import PredictionMarketAgent
+from prediction_market_sim.agents.ollama_llm import OllamaLLM
 
 
 class MockPortalNetwork:
@@ -33,9 +34,15 @@ def main():
     portal = MockPortalNetwork()
     print("✓ Portal created")
 
+    print("\n2b. Creating Market...")
+    from prediction_market_sim.market.lmsr import LMSRMarket
+    market = LMSRMarket()
+    print("✓ Market created")
+
     print("\n3. Creating PredictionMarketAgent with HIGH cross-post probability (50%)...")
     agent = PredictionMarketAgent(
         llm=llm,
+        market=market,
         personality_prompt="Conservative trader, risk-averse",
         initial_bankroll=10000.0,
         subscribed_sources=["twitter"],
@@ -96,10 +103,13 @@ def main():
     print(f"Final Bankroll:    ${summary['current_bankroll']:.2f}")
     print(f"Profit/Loss:       ${summary['profit_loss']:.2f} ({summary['profit_loss_pct']:.1f}%)")
     print(f"Total Trades:      {summary['total_trades']}")
-    print(f"Events Cross-posted: {events_that_cross_posted} ({(events_that_cross_posted/summary['total_trades']*100):.1f}%)")
+    if summary['total_trades'] > 0:
+        print(f"Events Cross-posted: {events_that_cross_posted} ({(events_that_cross_posted/summary['total_trades']*100):.1f}%)")
+    else:
+        print(f"Events Cross-posted: {events_that_cross_posted} (0.0%)")
     print(f"Total Cross-post Messages: {summary['cross_posts']}")
 
-    print("\n[DONE] TEST COMPLETE")
+    print("\nTEST COMPLETE")
 
 
 if __name__ == "__main__":

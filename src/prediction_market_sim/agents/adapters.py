@@ -45,6 +45,9 @@ class PredictionMarketAgentAdapter:
         self._last_inbox = []
         self._cached_decision = None
 
+    def set_market(self, market):
+        self.agent.set_market(market)
+
     def ingest(self, messages: Sequence[Mapping[str, object]]) -> None:
         self.inbox.extend(messages)
 
@@ -141,7 +144,7 @@ def create_prediction_agent(
     agent_id: str,
     personality: str = "rational trader",
     initial_cash: float = 10000.0,
-    llm_model: str = "llama3.1:8b",
+    llm_model: str = "llama3.2:3b",
     persona: Optional[dict] = None,
 ) -> PredictionMarketAgentAdapter:
     return PredictionMarketAgentAdapter(
