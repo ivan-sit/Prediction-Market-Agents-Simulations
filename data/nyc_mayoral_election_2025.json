@@ -9,171 +9,1046 @@
     },
     {
       "event_id": "nyc_002",
-      "initial_time": 2,
+      "initial_time": 1,
       "source_nodes": ["twitter", "reddit"],
       "tagline": "Social media buzzes with speculation about Adams replacement",
       "description": "Following the Adams indictment, social media platforms are flooded with speculation about potential Democratic challengers. Names being floated include Brad Lander, Zohran Mamdani, and even Andrew Cuomo making a comeback."
     },
     {
       "event_id": "nyc_003",
-      "initial_time": 5,
+      "initial_time": 2,
       "source_nodes": ["news_feed"],
-      "tagline": "Andrew Cuomo announces NYC mayoral campaign",
-      "description": "Former New York Governor Andrew Cuomo officially announces his candidacy for NYC mayor in March 2025, attempting a political comeback after resigning as governor in 2021 amid sexual harassment scandals. Running on a centrist platform focused on crime and combating antisemitism."
+      "tagline": "Brad Lander announces mayoral campaign",
+      "description": "NYC Comptroller Brad Lander officially announces his candidacy for mayor, positioning himself as a progressive alternative to Adams with a focus on affordable housing and police reform."
     },
     {
       "event_id": "nyc_004",
+      "initial_time": 3,
+      "source_nodes": ["news_feed"],
+      "tagline": "Scott Stringer joins mayoral race",
+      "description": "Former NYC Comptroller Scott Stringer announces his return to politics with a mayoral campaign, attempting a comeback after his 2021 campaign ended amid sexual harassment allegations."
+    },
+    {
+      "event_id": "nyc_005",
+      "initial_time": 4,
+      "source_nodes": ["twitter", "discord"],
+      "tagline": "Progressive activists organize 'Anybody But Adams' coalition",
+      "description": "Progressive groups launch coordinated effort to draft candidates and mobilize voters against Adams. Grassroots organizing intensifies on social media platforms."
+    },
+    {
+      "event_id": "nyc_006",
+      "initial_time": 5,
+      "source_nodes": ["news_feed"],
+      "tagline": "Andrew Cuomo announces NYC mayoral campaign",
+      "description": "Former New York Governor Andrew Cuomo officially announces his candidacy for NYC mayor, attempting a political comeback after resigning as governor in 2021 amid sexual harassment scandals. Running on a centrist platform focused on crime and combating antisemitism."
+    },
+    {
+      "event_id": "nyc_007",
+      "initial_time": 6,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Early Emerson poll: Cuomo leads with 28%, Adams 22%, Lander 18%",
+      "description": "First major poll shows Cuomo entering the race with immediate frontrunner status due to name recognition. Adams trails despite incumbency advantage."
+    },
+    {
+      "event_id": "nyc_008",
       "initial_time": 7,
+      "source_nodes": ["news_feed"],
+      "tagline": "State Senator Jessica Ramos enters mayoral race",
+      "description": "Queens State Senator Jessica Ramos announces her candidacy, becoming the first Latina candidate in the race. Focuses on immigrant rights and working families."
+    },
+    {
+      "event_id": "nyc_009",
+      "initial_time": 8,
       "source_nodes": ["twitter", "discord"],
       "tagline": "Progressive activists rally behind Mamdani",
       "description": "Young progressives and democratic socialists organize grassroots support for state assemblyman Zohran Mamdani. His campaign focuses on affordability with proposals for rent freeze, free bus service, and universal child care gaining traction among younger voters."
     },
     {
-      "event_id": "nyc_005",
-      "initial_time": 10,
-      "source_nodes": ["news_feed", "expert_analysis"],
-      "tagline": "Adams exits Democratic primary, federal charges dismissed",
-      "description": "Eric Adams announces he will exit the Democratic primary and seek re-election as an independent. Simultaneously, criminal charges against Adams are dismissed at the request of the Department of Justice in April 2025, adding another twist to the race."
-    },
-    {
-      "event_id": "nyc_006",
-      "initial_time": 15,
-      "source_nodes": ["news_feed"],
-      "tagline": "Democratic primary: Mamdani defeats Cuomo in major upset",
-      "description": "On June 24, 2025, Zohran Mamdani wins the Democratic primary, defeating Andrew Cuomo, City Comptroller Brad Lander, and eight other candidates. Mamdani's victory is considered a stunning upset, reshaping expectations for the general election."
-    },
-    {
-      "event_id": "nyc_007",
-      "initial_time": 18,
-      "source_nodes": ["twitter", "reddit"],
-      "tagline": "Viral celebration videos as young voters celebrate Mamdani win",
-      "description": "Social media explodes with celebration videos from young voters following Mamdani's primary victory. Hashtags #MamdaniForMayor and #GenerationChange trend nationwide. The energy suggests unprecedented youth turnout for the general election."
-    },
-    {
-      "event_id": "nyc_008",
-      "initial_time": 22,
-      "source_nodes": ["expert_analysis"],
-      "tagline": "Quinnipiac poll: Mamdani leads by 22 points in three-way race",
-      "description": "September 10, 2025 Quinnipiac University poll shows Mamdani dominating with a commanding 22-point lead over Cuomo in the general election race. Republican Curtis Sliwa trails in third. Poll reveals stark generational divide with 18-34 year olds backing Mamdani 64% to 20%."
-    },
-    {
-      "event_id": "nyc_009",
-      "initial_time": 25,
-      "source_nodes": ["news_feed"],
-      "tagline": "Gov. Hochul endorses Mamdani in NYT op-ed",
-      "description": "Governor Kathy Hochul endorses Zohran Mamdani for NYC mayor in an op-ed published in The New York Times on September 15, 2025. Assembly Speaker Carl Heastie and state Senate Majority Leader Andrea Stewart-Cousins follow with their endorsements days later."
-    },
-    {
       "event_id": "nyc_010",
-      "initial_time": 28,
-      "source_nodes": ["news_feed", "twitter"],
-      "tagline": "Adams ends re-election bid, endorses Cuomo",
-      "description": "Mayor Eric Adams announces on September 28, 2025 that he is ending his bid for a second term amid sagging poll numbers and lack of financing. In a surprising move, he endorses Andrew Cuomo as his successor, creating an unusual alliance."
+      "initial_time": 9,
+      "source_nodes": ["news_feed"],
+      "tagline": "Zohran Mamdani officially announces mayoral bid",
+      "description": "Queens Assemblyman Zohran Mamdani formally enters the race with a bold progressive platform including rent freeze, free public transit, and universal childcare. Campaign announcement video goes viral."
     },
     {
       "event_id": "nyc_011",
-      "initial_time": 32,
-      "source_nodes": ["discord", "reddit"],
-      "tagline": "Online communities discuss Adams-Cuomo endorsement implications",
-      "description": "Political discussion forums analyze the strategic implications of Adams' endorsement of Cuomo. Some see it as an attempt to consolidate moderate Democratic voters, while others view it as a desperate move that may backfire with progressive voters."
+      "initial_time": 10,
+      "source_nodes": ["reddit", "twitter"],
+      "tagline": "Mamdani campaign video reaches 5 million views",
+      "description": "Mamdani's launch video featuring his personal story and bold policy proposals becomes the most-viewed mayoral campaign content in NYC history, signaling strong grassroots enthusiasm."
     },
     {
       "event_id": "nyc_012",
-      "initial_time": 35,
+      "initial_time": 11,
       "source_nodes": ["news_feed"],
-      "tagline": "First general election debate: Candidates clash on crime, affordability",
-      "description": "October 16, 2025 first general election debate features heated exchanges between Mamdani, Cuomo, and Sliwa. Both Sliwa and Cuomo attack Mamdani over his progressive positions, lack of executive experience, and statements on Israel. Mamdani defends his affordability-focused platform."
+      "tagline": "Brooklyn Borough President Antonio Reynoso announces exploratory committee",
+      "description": "Brooklyn BP Antonio Reynoso forms exploratory committee for mayoral run, testing waters with focus on interborough equity and climate action."
     },
     {
       "event_id": "nyc_013",
-      "initial_time": 37,
-      "source_nodes": ["twitter", "expert_analysis"],
-      "tagline": "Post-debate polls show Mamdani maintaining lead",
-      "description": "Initial post-debate polling suggests Mamdani's performance held steady despite aggressive attacks. Analysts note his ability to pivot attacks back to his core message of affordability resonated with undecided voters, particularly younger demographics."
+      "initial_time": 12,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Siena poll: Crowded field splits Democratic vote",
+      "description": "Siena College poll shows fragmented field: Cuomo 24%, Adams 20%, Lander 16%, Mamdani 12%, Ramos 9%, with 19% undecided. Analysis suggests potential for ranked choice voting to determine winner."
     },
     {
       "event_id": "nyc_014",
-      "initial_time": 40,
+      "initial_time": 13,
       "source_nodes": ["news_feed"],
-      "tagline": "Final mayoral debate gets contentious",
-      "description": "October 22, 2025 final debate features crosstalk, laughter and zingers. Mamdani maintains composure while both Cuomo and Sliwa intensify attacks. Notably, Cuomo skips the post-debate media spin room and instead attends a Knicks game with Mayor Adams, generating controversy."
+      "tagline": "State Senator Zellnor Myrie announces mayoral campaign",
+      "description": "Brooklyn State Senator Zellnor Myrie joins the race, positioning himself as a unity candidate who can bridge progressive and moderate factions."
     },
     {
       "event_id": "nyc_015",
-      "initial_time": 42,
-      "source_nodes": ["twitter", "reddit"],
-      "tagline": "Cuomo's Knicks game with Adams sparks social media backlash",
-      "description": "Cuomo's decision to skip post-debate press availability to attend a basketball game with Adams draws criticism on social media. Critics call it arrogant and disconnected. Memes flood Twitter about 'billionaires at basketball games' versus 'working New Yorkers.'"
+      "initial_time": 14,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "Adams exits Democratic primary, federal charges dismissed",
+      "description": "Eric Adams announces he will exit the Democratic primary and seek re-election as an independent. Simultaneously, criminal charges against Adams are dismissed at the request of the Department of Justice, adding another twist to the race."
     },
     {
       "event_id": "nyc_016",
-      "initial_time": 45,
-      "source_nodes": ["expert_analysis", "news_feed"],
-      "tagline": "Marist Poll: Mamdani leads Cuomo by 16 points",
-      "description": "October 24-28, 2025 Marist poll shows Mamdani with 48% support among likely voters compared to Cuomo's 32% and Sliwa's 16%. The poll indicates Mamdani's lead has remained stable despite late-campaign attacks, with 3% undecided voters."
+      "initial_time": 15,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "DOJ dismissal sparks conspiracy theories online",
+      "description": "Social media erupts with theories about political interference in Adams case. Progressive activists express outrage while Adams supporters claim vindication."
     },
     {
       "event_id": "nyc_017",
-      "initial_time": 48,
+      "initial_time": 16,
       "source_nodes": ["news_feed"],
-      "tagline": "Quinnipiac poll: Race tightens as Mamdani leads 43-33",
-      "description": "October 29, 2025 Quinnipiac University poll shows the race tightening slightly with Mamdani at 43%, Cuomo at 33%, and Sliwa at 14%, with 6% undecided. The poll highlights a stark generational divide in voter preferences and suggests Cuomo may be consolidating older voters."
+      "tagline": "First candidate forum focuses on affordable housing crisis",
+      "description": "Eight candidates participate in housing-focused forum hosted by Real Affordability for All coalition. Sharp disagreements emerge on rent control and development policies."
     },
     {
       "event_id": "nyc_018",
+      "initial_time": 17,
+      "source_nodes": ["news_feed"],
+      "tagline": "DC 37 union endorses Brad Lander",
+      "description": "NYC's largest municipal workers union DC 37 endorses Brad Lander, providing crucial organizational support and signaling labor's preference."
+    },
+    {
+      "event_id": "nyc_019",
+      "initial_time": 18,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Quinnipiac poll: Cuomo 26%, Adams 18%, Lander 17%, Mamdani 14%",
+      "description": "Latest polling shows Cuomo maintaining lead but Adams losing ground. Mamdani's numbers climb as he gains name recognition, particularly among voters under 35."
+    },
+    {
+      "event_id": "nyc_020",
+      "initial_time": 19,
+      "source_nodes": ["twitter", "discord"],
+      "tagline": "Gen Z voters organize mass voter registration drive",
+      "description": "Youth-led organizations coordinate voter registration blitz targeting 18-24 year olds. Over 50,000 new voters registered in one week, mostly in support of Mamdani."
+    },
+    {
+      "event_id": "nyc_021",
+      "initial_time": 20,
+      "source_nodes": ["news_feed"],
+      "tagline": "Cuomo releases crime reduction plan",
+      "description": "Cuomo unveils comprehensive public safety plan including increased police funding and mental health response teams. Plan draws both praise and criticism."
+    },
+    {
+      "event_id": "nyc_022",
+      "initial_time": 21,
+      "source_nodes": ["news_feed"],
+      "tagline": "First Q1 fundraising reports show Cuomo leading with $8.2M",
+      "description": "Campaign finance filings reveal Cuomo raised $8.2M, Lander $4.1M, Adams $3.8M, Mamdani $2.9M (mostly small donors). Money primary establishes early frontrunners."
+    },
+    {
+      "event_id": "nyc_023",
+      "initial_time": 22,
+      "source_nodes": ["reddit", "twitter"],
+      "tagline": "Mamdani breaks small-donor record with 47,000 contributions",
+      "description": "Analysis of campaign finance data shows Mamdani received more individual contributions than any NYC candidate ever, signaling broad grassroots enthusiasm despite lower total."
+    },
+    {
+      "event_id": "nyc_024",
+      "initial_time": 23,
+      "source_nodes": ["news_feed"],
+      "tagline": "First televised debate features eight candidates",
+      "description": "Contentious two-hour debate sees candidates clash over policing, housing costs, and Adams' legacy. Mamdani's passionate performance draws attention."
+    },
+    {
+      "event_id": "nyc_025",
+      "initial_time": 24,
+      "source_nodes": ["twitter", "expert_analysis"],
+      "tagline": "Post-debate instant polls show Mamdani winning with younger viewers",
+      "description": "Rapid response polls indicate Mamdani perceived as debate winner by voters under 40, while Cuomo performed better with older demographics. Polarized reactions highlight generational divide."
+    },
+    {
+      "event_id": "nyc_026",
+      "initial_time": 25,
+      "source_nodes": ["news_feed"],
+      "tagline": "Stringer drops out, endorses Lander",
+      "description": "Scott Stringer ends his campaign after failing to gain traction, throwing support to Brad Lander in effort to consolidate progressive vote."
+    },
+    {
+      "event_id": "nyc_027",
+      "initial_time": 26,
+      "source_nodes": ["news_feed"],
+      "tagline": "UFT teachers union endorses Jessica Ramos",
+      "description": "United Federation of Teachers backs Jessica Ramos, citing her education advocacy and teacher-friendly policy positions."
+    },
+    {
+      "event_id": "nyc_028",
+      "initial_time": 27,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Marist poll: Post-debate bump for Mamdani - now at 18%",
+      "description": "Latest Marist poll shows Mamdani gaining 4 points post-debate. Race now: Cuomo 25%, Lander 19%, Mamdani 18%, Adams 16%, Ramos 8%, with pathway to victory via ranked choice."
+    },
+    {
+      "event_id": "nyc_029",
+      "initial_time": 28,
+      "source_nodes": ["news_feed"],
+      "tagline": "Transit forum highlights subway safety concerns",
+      "description": "Candidates debate MTA funding and subway safety at transportation-focused event. Mamdani's free transit proposal draws intense scrutiny from rivals."
+    },
+    {
+      "event_id": "nyc_030",
+      "initial_time": 29,
+      "source_nodes": ["twitter", "discord"],
+      "tagline": "Viral video shows Cuomo refusing to ride subway",
+      "description": "Campaign trail video of Cuomo declining to take subway with reporters goes viral, with critics calling him out of touch with everyday New Yorkers."
+    },
+    {
+      "event_id": "nyc_031",
+      "initial_time": 30,
+      "source_nodes": ["news_feed"],
+      "tagline": "Brooklyn community leaders endorse Zellnor Myrie",
+      "description": "Coalition of Brooklyn clergy, activists, and elected officials backs Myrie, praising his roots in the community and track record on criminal justice reform."
+    },
+    {
+      "event_id": "nyc_032",
+      "initial_time": 31,
+      "source_nodes": ["news_feed"],
+      "tagline": "Second debate focuses on climate and environmental justice",
+      "description": "Climate-focused debate highlights differences on offshore wind, building electrification, and climate adaptation. Reynoso's performance on climate issues draws praise."
+    },
+    {
+      "event_id": "nyc_033",
+      "initial_time": 32,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Emerson poll: Three-way statistical tie emerging",
+      "description": "Emerson College poll shows race tightening: Cuomo 22%, Mamdani 21%, Lander 20% within margin of error. Ranked choice voting analysis suggests Mamdani could win with second-choice votes."
+    },
+    {
+      "event_id": "nyc_034",
+      "initial_time": 33,
+      "source_nodes": ["reddit", "twitter"],
+      "tagline": "Mamdani's Reddit AMA draws 15,000 participants",
+      "description": "Mamdani hosts Ask Me Anything session on r/nyc, drawing unprecedented engagement. His direct responses on housing and transit resonate with younger voters."
+    },
+    {
+      "event_id": "nyc_035",
+      "initial_time": 34,
+      "source_nodes": ["news_feed"],
+      "tagline": "NYC & Company endorses Cuomo citing business experience",
+      "description": "City's tourism and business organization backs Cuomo, emphasizing need for leadership with executive experience to manage economic recovery."
+    },
+    {
+      "event_id": "nyc_036",
+      "initial_time": 35,
+      "source_nodes": ["news_feed"],
+      "tagline": "AOC endorses Zohran Mamdani at Queens rally",
+      "description": "Rep. Alexandria Ocasio-Cortez endorses fellow Queens progressive Mamdani at packed rally in Astoria. Rally draws 5,000+ supporters, largest campaign event to date."
+    },
+    {
+      "event_id": "nyc_037",
+      "initial_time": 36,
+      "source_nodes": ["twitter", "reddit", "discord"],
+      "tagline": "AOC endorsement electrifies progressive base",
+      "description": "Social media explodes following AOC's endorsement of Mamdani. Campaign sees surge in volunteers and donations. #MamdaniForMayor trends nationally."
+    },
+    {
+      "event_id": "nyc_038",
+      "initial_time": 37,
+      "source_nodes": ["news_feed"],
+      "tagline": "Reynoso drops out, endorses Mamdani",
+      "description": "Antonio Reynoso exits race and backs Mamdani, calling him the only candidate with bold vision for climate action and affordable housing."
+    },
+    {
+      "event_id": "nyc_039",
+      "initial_time": 38,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Siena poll: Mamdani surges to 24%, takes lead for first time",
+      "description": "Post-AOC endorsement poll shows Mamdani jumping to 24%, Cuomo 23%, Lander 19%. Among voters under 40, Mamdani leads 42-18. Consolidation of progressive vote appearing to work."
+    },
+    {
+      "event_id": "nyc_040",
+      "initial_time": 39,
+      "source_nodes": ["news_feed"],
+      "tagline": "Third debate focuses on education and childcare",
+      "description": "Education-focused debate sees Mamdani's universal childcare proposal contrasted with Cuomo's charter school expansion plan. Sharp ideological differences emerge."
+    },
+    {
+      "event_id": "nyc_041",
+      "initial_time": 40,
+      "source_nodes": ["news_feed"],
+      "tagline": "SEIU 32BJ union endorses Brad Lander",
+      "description": "Building service workers union SEIU 32BJ backs Lander after internal member vote, providing critical ground game support in final weeks."
+    },
+    {
+      "event_id": "nyc_042",
+      "initial_time": 41,
+      "source_nodes": ["twitter"],
+      "tagline": "Cuomo campaign ad features Adams testimonial",
+      "description": "New Cuomo TV spot features Eric Adams praising his leadership, attempting to consolidate moderate Democratic voters concerned about Mamdani's progressive platform."
+    },
+    {
+      "event_id": "nyc_043",
+      "initial_time": 42,
+      "source_nodes": ["news_feed"],
+      "tagline": "NY Times endorses Brad Lander for mayor",
+      "description": "New York Times editorial board endorses Lander, calling him 'a progressive with pragmatic streak' and praising his record as comptroller on fiscal oversight."
+    },
+    {
+      "event_id": "nyc_044",
+      "initial_time": 43,
+      "source_nodes": ["news_feed"],
+      "tagline": "Daily News endorses Andrew Cuomo",
+      "description": "New York Daily News backs Cuomo, emphasizing need for experienced leadership to address crime and economic challenges facing the city."
+    },
+    {
+      "event_id": "nyc_045",
+      "initial_time": 44,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Quinnipiac poll: Mamdani 26%, Cuomo 24%, Lander 18%",
+      "description": "One week before primary, poll shows Mamdani with narrow lead. Ranked choice analysis suggests he could win even if Cuomo finishes first, depending on vote transfers from eliminated candidates."
+    },
+    {
+      "event_id": "nyc_046",
+      "initial_time": 45,
+      "source_nodes": ["reddit", "discord"],
+      "tagline": "Redditors organize phonebank marathon for Mamdani",
+      "description": "Online communities coordinate 48-hour phonebanking push for Mamdani, making over 100,000 voter contact calls. Digital organizing reaches unprecedented scale."
+    },
+    {
+      "event_id": "nyc_047",
+      "initial_time": 46,
+      "source_nodes": ["news_feed"],
+      "tagline": "Q2 fundraising shows Mamdani raised $6.8M",
+      "description": "Campaign finance reports show Mamdani raised $6.8M in Q2, nearly matching Cuomo's $7.2M despite vastly smaller average donation size. Demonstrates unprecedented small-donor enthusiasm."
+    },
+    {
+      "event_id": "nyc_048",
+      "initial_time": 47,
+      "source_nodes": ["news_feed"],
+      "tagline": "Final pre-primary debate draws record viewership",
+      "description": "Last debate before primary draws 2.3 million viewers, highest for NYC mayoral debate in history. Social media engagement breaks records as young voters tune in."
+    },
+    {
+      "event_id": "nyc_049",
+      "initial_time": 48,
+      "source_nodes": ["twitter", "expert_analysis"],
+      "tagline": "Instant polls show Mamdani dominated final debate",
+      "description": "Post-debate surveys show 42% thought Mamdani won, versus 28% for Cuomo and 22% for Lander. His closing statement on generational change resonates strongly."
+    },
+    {
+      "event_id": "nyc_050",
+      "initial_time": 49,
+      "source_nodes": ["news_feed"],
+      "tagline": "Chuck Schumer endorses Brad Lander",
+      "description": "Senate Majority Leader Schumer backs Lander in surprising last-minute endorsement, citing his fiscal responsibility and progressive values."
+    },
+    {
+      "event_id": "nyc_051",
       "initial_time": 50,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Final pre-primary Marist poll: Mamdani 27%, Cuomo 25%, Lander 20%",
+      "description": "Last poll before primary shows Mamdani with narrow lead but within margin of error. Turnout among young voters expected to be decisive factor."
+    },
+    {
+      "event_id": "nyc_052",
+      "initial_time": 51,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Record voter registration among 18-29 year olds",
+      "description": "Voter registration data shows 150,000 new voters aged 18-29 registered since January, representing 40% increase from 2021. Youth turnout could reshape election."
+    },
+    {
+      "event_id": "nyc_053",
+      "initial_time": 52,
+      "source_nodes": ["news_feed"],
+      "tagline": "Primary Day: Record early voting turnout reported",
+      "description": "June 24, 2025 primary sees strong turnout in early voting with over 400,000 ballots cast before Election Day. Exit polls suggest higher youth participation than any prior election."
+    },
+    {
+      "event_id": "nyc_054",
+      "initial_time": 53,
+      "source_nodes": ["twitter", "discord"],
+      "tagline": "Long lines at polling sites in Queens and Brooklyn",
+      "description": "Social media filled with photos of long lines at polling locations in Mamdani strongholds. Voters report waiting 2+ hours but remaining enthusiastic."
+    },
+    {
+      "event_id": "nyc_055",
+      "initial_time": 54,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "Democratic primary: Mamdani defeats Cuomo in major upset",
+      "description": "On June 24, 2025, Zohran Mamdani wins the Democratic primary with 32% first-choice votes. After ranked choice tabulation, he defeats Andrew Cuomo 51-49. Brad Lander finishes third with 18%. Mamdani's victory is considered a stunning upset, reshaping expectations for general election."
+    },
+    {
+      "event_id": "nyc_056",
+      "initial_time": 55,
+      "source_nodes": ["twitter", "reddit", "discord"],
+      "tagline": "Viral celebration videos as young voters celebrate Mamdani win",
+      "description": "Social media explodes with celebration videos from young voters following Mamdani's primary victory. Hashtags #MamdaniForMayor and #GenerationChange trend nationwide. The energy suggests unprecedented youth turnout for general election."
+    },
+    {
+      "event_id": "nyc_057",
+      "initial_time": 56,
+      "source_nodes": ["news_feed"],
+      "tagline": "Cuomo concedes but doesn't endorse Mamdani",
+      "description": "Cuomo gives concession speech congratulating Mamdani but stops short of endorsement, saying he'll 'watch how he governs' before deciding on general election support."
+    },
+    {
+      "event_id": "nyc_058",
+      "initial_time": 57,
+      "source_nodes": ["news_feed"],
+      "tagline": "Republican Curtis Sliwa wins GOP primary",
+      "description": "Curtis Sliwa wins Republican primary with 68% of vote, setting up rematch from 2021 race. Promises to focus campaign on crime and fiscal responsibility."
+    },
+    {
+      "event_id": "nyc_059",
+      "initial_time": 58,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Analysis: How Mamdani built winning coalition",
+      "description": "Post-primary analysis shows Mamdani won with overwhelming support from voters under 35 (62%), strong performance in Queens (44%) and Brooklyn (35%), and successful consolidation of progressive vote after other candidates dropped out."
+    },
+    {
+      "event_id": "nyc_060",
+      "initial_time": 59,
+      "source_nodes": ["reddit", "twitter"],
+      "tagline": "National progressive leaders celebrate Mamdani win",
+      "description": "Bernie Sanders, Elizabeth Warren, and other progressive leaders praise Mamdani's victory as sign of generational shift. Media outlets nationally cover the upset as potential blueprint for other cities."
+    },
+    {
+      "event_id": "nyc_061",
+      "initial_time": 60,
+      "source_nodes": ["news_feed"],
+      "tagline": "NYC real estate industry expresses concern about Mamdani",
+      "description": "Real Estate Board of New York issues statement expressing concerns about Mamdani's rent freeze proposal and its potential impact on housing development."
+    },
+    {
+      "event_id": "nyc_062",
+      "initial_time": 61,
+      "source_nodes": ["news_feed"],
+      "tagline": "Mamdani names transition team, begins policy rollout",
+      "description": "Mamdani announces transition team co-chairs and begins detailed policy rollout for general election. Emphasizes pragmatic implementation of progressive vision."
+    },
+    {
+      "event_id": "nyc_063",
+      "initial_time": 62,
+      "source_nodes": ["news_feed"],
+      "tagline": "Working Families Party endorses Mamdani",
+      "description": "Working Families Party officially backs Mamdani, providing ballot line and organizing infrastructure for general election push."
+    },
+    {
+      "event_id": "nyc_064",
+      "initial_time": 63,
+      "source_nodes": ["twitter"],
+      "tagline": "Sliwa launches attack ads targeting Mamdani's progressive record",
+      "description": "Curtis Sliwa begins TV ad campaign attacking Mamdani as too radical for NYC, highlighting his DSA membership and criticism of NYPD."
+    },
+    {
+      "event_id": "nyc_065",
+      "initial_time": 64,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "First general election poll: Mamdani 48%, Sliwa 32%, Adams 12%",
+      "description": "Siena poll shows Mamdani with commanding lead in three-way general election race. NYC's Democratic voter registration advantage appears decisive."
+    },
+    {
+      "event_id": "nyc_066",
+      "initial_time": 65,
+      "source_nodes": ["news_feed"],
+      "tagline": "Eric Adams announces independent mayoral campaign",
+      "description": "Adams officially files to run as independent candidate in general election, vowing to provide 'common sense leadership' alternative to Mamdani."
+    },
+    {
+      "event_id": "nyc_067",
+      "initial_time": 66,
+      "source_nodes": ["reddit", "discord"],
+      "tagline": "Progressive groups mobilize to prevent Adams spoiler candidacy",
+      "description": "Online organizing intensifies to ensure Adams' independent bid doesn't split anti-Sliwa vote. Activists focus on turnout strategy."
+    },
+    {
+      "event_id": "nyc_068",
+      "initial_time": 67,
+      "source_nodes": ["news_feed"],
+      "tagline": "Mamdani releases detailed affordable housing plan",
+      "description": "Campaign unveils 50-page housing policy document with specific implementation timelines and funding mechanisms for rent stabilization expansion."
+    },
+    {
+      "event_id": "nyc_069",
+      "initial_time": 68,
+      "source_nodes": ["news_feed"],
+      "tagline": "Comptroller Lander endorses Mamdani at Brooklyn rally",
+      "description": "Brad Lander formally endorses Mamdani, urging supporters to unite behind Democratic nominee. Emphasizes shared progressive values and need to defeat Republicans."
+    },
+    {
+      "event_id": "nyc_070",
+      "initial_time": 69,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Quinnipiac poll: Mamdani 45%, Sliwa 28%, Adams 15%",
+      "description": "Latest poll confirms Mamdani's strong position, though Adams' independent bid complicates race. Analysis shows most Adams voters have Mamdani as second choice."
+    },
+    {
+      "event_id": "nyc_071",
+      "initial_time": 70,
+      "source_nodes": ["twitter", "news_feed"],
+      "tagline": "Controversy over Mamdani's past Israel comments resurfaces",
+      "description": "Conservative media highlights Mamdani's criticism of Israeli government policies. Campaign responds emphasizing distinction between criticizing policies and antisemitism."
+    },
+    {
+      "event_id": "nyc_072",
+      "initial_time": 71,
+      "source_nodes": ["news_feed"],
+      "tagline": "Jewish community leaders split on Mamdani candidacy",
+      "description": "Some Jewish organizations express concerns about Mamdani's Middle East policy positions, while progressive Jewish groups strongly support him, highlighting divide within community."
+    },
+    {
+      "event_id": "nyc_073",
+      "initial_time": 72,
+      "source_nodes": ["news_feed"],
+      "tagline": "Mamdani meets with Jewish community leaders",
+      "description": "Mamdani holds series of meetings with Jewish community organizations, emphasizing commitment to fighting antisemitism and supporting Jewish New Yorkers' safety."
+    },
+    {
+      "event_id": "nyc_074",
+      "initial_time": 73,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Emerson poll: Israel controversy has minimal impact on race",
+      "description": "New polling shows controversy over Israel positions has not significantly moved overall numbers. Mamdani maintains lead at 46%, Sliwa 30%, Adams 14%."
+    },
+    {
+      "event_id": "nyc_075",
+      "initial_time": 74,
+      "source_nodes": ["news_feed"],
+      "tagline": "Mamdani unveils climate adaptation plan",
+      "description": "Campaign releases comprehensive climate resiliency plan including coastal flood protection and green infrastructure investment. Environmental groups praise ambition."
+    },
+    {
+      "event_id": "nyc_076",
+      "initial_time": 75,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Climate activists stage rally supporting Mamdani plan",
+      "description": "1,000+ climate activists rally in Battery Park supporting Mamdani's climate proposals. Sunrise Movement and other youth groups lead demonstration."
+    },
+    {
+      "event_id": "nyc_077",
+      "initial_time": 76,
+      "source_nodes": ["news_feed"],
+      "tagline": "Public Advocate Jumaane Williams endorses Mamdani",
+      "description": "NYC Public Advocate endorses Mamdani, praising his commitment to equity and progressive values. Provides key institutional Democratic support."
+    },
+    {
+      "event_id": "nyc_078",
+      "initial_time": 77,
+      "source_nodes": ["news_feed"],
+      "tagline": "Sliwa releases public safety plan attacking Mamdani",
+      "description": "Republican candidate releases competing public safety vision, attempting to paint Mamdani as soft on crime. Plan includes increased police funding."
+    },
+    {
+      "event_id": "nyc_079",
+      "initial_time": 78,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Marist poll shows Mamdani dominating with 22-point lead",
+      "description": "September 10, 2025 Marist poll shows Mamdani with commanding 22-point lead: Mamdani 49%, Sliwa 27%, Adams 13%. Poll reveals stark generational divide with 18-34 year olds backing Mamdani 64% to 20%."
+    },
+    {
+      "event_id": "nyc_080",
+      "initial_time": 79,
+      "source_nodes": ["news_feed"],
+      "tagline": "Transport Workers Union endorses Mamdani",
+      "description": "TWU Local 100, representing subway and bus workers, endorses Mamdani citing his free transit proposal and support for transit workers. Significant organizational boost."
+    },
+    {
+      "event_id": "nyc_081",
+      "initial_time": 80,
+      "source_nodes": ["twitter", "discord"],
+      "tagline": "Mamdani campaign opens 50+ field offices citywide",
+      "description": "Campaign announces massive ground game expansion with field offices in every neighborhood. Volunteers mobilize for door-knocking push."
+    },
+    {
+      "event_id": "nyc_082",
+      "initial_time": 81,
+      "source_nodes": ["news_feed"],
+      "tagline": "Gov. Hochul endorses Mamdani in NYT op-ed",
+      "description": "Governor Kathy Hochul endorses Zohran Mamdani for NYC mayor in an op-ed published in The New York Times. Assembly Speaker Carl Heastie and state Senate Majority Leader Andrea Stewart-Cousins follow with their endorsements days later."
+    },
+    {
+      "event_id": "nyc_083",
+      "initial_time": 82,
+      "source_nodes": ["reddit", "twitter"],
+      "tagline": "Hochul endorsement surprises political establishment",
+      "description": "Political observers express surprise at Hochul's strong endorsement given her moderate positioning. Move seen as recognition of Democratic unity imperative."
+    },
+    {
+      "event_id": "nyc_084",
+      "initial_time": 83,
+      "source_nodes": ["news_feed"],
+      "tagline": "State Democratic Party officially backs Mamdani",
+      "description": "NY State Democratic Committee votes to endorse Mamdani, providing access to full party infrastructure and resources for general election push."
+    },
+    {
+      "event_id": "nyc_085",
+      "initial_time": 84,
+      "source_nodes": ["news_feed"],
+      "tagline": "Q3 fundraising shows Mamdani raised $9.2M",
+      "description": "Campaign finance reports show Mamdani raised $9.2 million in Q3, breaking records for NYC mayoral race. Average donation of $47 shows continued small-donor enthusiasm."
+    },
+    {
+      "event_id": "nyc_086",
+      "initial_time": 85,
+      "source_nodes": ["twitter"],
+      "tagline": "Cuomo appears in Sliwa campaign ad",
+      "description": "Andrew Cuomo appears in Curtis Sliwa attack ad criticizing Mamdani, drawing outrage from Democratic officials who call it betrayal of party."
+    },
+    {
+      "event_id": "nyc_087",
+      "initial_time": 86,
+      "source_nodes": ["reddit", "discord"],
+      "tagline": "Cuomo faces backlash from Democrats over Sliwa ad",
+      "description": "Social media erupts with criticism of Cuomo's cooperation with Republican campaign. #CuomoIsOver trends as Democrats express anger."
+    },
+    {
+      "event_id": "nyc_088",
+      "initial_time": 87,
+      "source_nodes": ["news_feed"],
+      "tagline": "Adams ends re-election bid, endorses Cuomo",
+      "description": "Mayor Eric Adams announces on September 28, 2025 that he is ending his independent campaign amid single-digit polling and lack of financing. In a surprising move, he endorses Andrew Cuomo's efforts to oppose Mamdani, creating unusual alliance."
+    },
+    {
+      "event_id": "nyc_089",
+      "initial_time": 88,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Analysis: Adams exit unlikely to change race trajectory",
+      "description": "Political analysts assess that Adams dropping out has minimal impact. Most Adams supporters already had Mamdani as second choice. His Cuomo endorsement may hurt more than help."
+    },
+    {
+      "event_id": "nyc_090",
+      "initial_time": 89,
+      "source_nodes": ["news_feed"],
+      "tagline": "Mamdani releases education policy platform",
+      "description": "Campaign unveils comprehensive education plan including universal 3-K expansion, teacher salary increases, and reduced class sizes. Teachers union expresses support."
+    },
+    {
+      "event_id": "nyc_091",
+      "initial_time": 90,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Quinnipiac poll post-Adams exit: Mamdani 50%, Sliwa 29%",
+      "description": "First poll after Adams withdrawal shows Mamdani consolidating Democratic vote. Poll indicates path to outright majority in three-way race."
+    },
+    {
+      "event_id": "nyc_092",
+      "initial_time": 91,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Voter enthusiasm metrics show Mamdani supporters most engaged",
+      "description": "Analysis of voter enthusiasm shows 78% of Mamdani supporters 'very enthusiastic' vs 42% for Sliwa. Turnout differential could be decisive."
+    },
+    {
+      "event_id": "nyc_093",
+      "initial_time": 92,
+      "source_nodes": ["news_feed"],
+      "tagline": "Sliwa campaign faces financial struggles",
+      "description": "Reports emerge that Sliwa campaign is struggling to raise funds, with Q3 totaling only $1.2 million. Financial disadvantage hampering ability to compete."
+    },
+    {
+      "event_id": "nyc_094",
+      "initial_time": 93,
+      "source_nodes": ["news_feed"],
+      "tagline": "First general election debate scheduled for October 16",
+      "description": "Debate commission announces first general election debate for October 16 with Mamdani and Sliwa participating. Adams-Cuomo alliance raises questions about third-party interference."
+    },
+    {
+      "event_id": "nyc_095",
+      "initial_time": 94,
+      "source_nodes": ["twitter", "discord"],
+      "tagline": "Progressive groups organize massive GOTV operation",
+      "description": "Coalition of progressive organizations launches coordinated voter turnout effort with goal of reaching 1 million voters. Focus on young voters and communities of color."
+    },
+    {
+      "event_id": "nyc_096",
+      "initial_time": 95,
+      "source_nodes": ["news_feed"],
+      "tagline": "NYC & Company business group backs Sliwa",
+      "description": "Business community consolidates behind Sliwa as alternative to Mamdani. Real estate and finance sectors contribute heavily to Sliwa campaign in final weeks."
+    },
+    {
+      "event_id": "nyc_097",
+      "initial_time": 96,
+      "source_nodes": ["news_feed"],
+      "tagline": "Mamdani proposes 'New Deal for NYC' economic agenda",
+      "description": "Campaign unveils sweeping economic plan including public banking, worker cooperatives support, and green jobs program. Compared to FDR's New Deal."
+    },
+    {
+      "event_id": "nyc_098",
+      "initial_time": 97,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Siena poll: Mamdani 47%, Sliwa 31%, Race appears stable",
+      "description": "Late September Siena poll shows race remarkably stable with Mamdani maintaining double-digit lead. Among likely voters, gap is 16 points."
+    },
+    {
+      "event_id": "nyc_099",
+      "initial_time": 98,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Early voting registration breaks records",
+      "description": "NYC Board of Elections reports record numbers requesting mail ballots and registering for early voting. Youth participation significantly higher than 2021."
+    },
+    {
+      "event_id": "nyc_100",
+      "initial_time": 99,
+      "source_nodes": ["news_feed"],
+      "tagline": "First general election debate: Candidates clash on crime, affordability",
+      "description": "October 16, 2025 first general election debate features heated exchanges between Mamdani and Sliwa. Sliwa attacks Mamdani over his progressive positions and statements on Israel. Mamdani defends his affordability-focused platform and presents detailed policy implementations."
+    },
+    {
+      "event_id": "nyc_101",
+      "initial_time": 100,
+      "source_nodes": ["twitter", "expert_analysis"],
+      "tagline": "Post-debate snap polls show Mamdani holding steady",
+      "description": "Immediate post-debate polling suggests Mamdani's performance held steady despite aggressive attacks. Analysts note his ability to pivot attacks back to core message resonated with undecided voters."
+    },
+    {
+      "event_id": "nyc_102",
+      "initial_time": 101,
+      "source_nodes": ["news_feed"],
+      "tagline": "Police union endorses Sliwa",
+      "description": "Police Benevolent Association endorses Curtis Sliwa, criticizing Mamdani's proposals to shift funding toward social services. PBA president appears in pro-Sliwa ads."
+    },
+    {
+      "event_id": "nyc_103",
+      "initial_time": 102,
+      "source_nodes": ["reddit", "discord"],
+      "tagline": "Criminal justice reform groups rally behind Mamdani",
+      "description": "Coalition of reform organizations holds press conference supporting Mamdani's public safety vision. Emphasize community-based approaches and addressing root causes."
+    },
+    {
+      "event_id": "nyc_104",
+      "initial_time": 103,
+      "source_nodes": ["news_feed"],
+      "tagline": "Final mayoral debate scheduled for October 22",
+      "description": "Debate commission announces final debate for October 22, with focus on rapid-fire questions and direct candidate confrontation format."
+    },
+    {
+      "event_id": "nyc_105",
+      "initial_time": 104,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Emerson poll: Mamdani 49%, Sliwa 30%, lead solidifying",
+      "description": "Mid-October Emerson poll shows Mamdani approaching majority support. Analysis indicates he's consolidating both progressive and moderate Democratic voters."
+    },
+    {
+      "event_id": "nyc_106",
+      "initial_time": 105,
+      "source_nodes": ["twitter", "news_feed"],
+      "tagline": "Final mayoral debate gets contentious",
+      "description": "October 22, 2025 final debate features crosstalk, laughter and zingers. Mamdani maintains composure while Sliwa intensifies attacks. Notable that Andrew Cuomo appears in audience with Mayor Adams, generating controversy about their role."
+    },
+    {
+      "event_id": "nyc_107",
+      "initial_time": 106,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Cuomo-Adams post-debate appearance sparks social media backlash",
+      "description": "Cuomo and Adams' joint appearance at post-debate reception draws criticism on social media. Critics call it attempt to undermine Democratic nominee. #DemocratsForMamdani trends in response."
+    },
+    {
+      "event_id": "nyc_108",
+      "initial_time": 107,
+      "source_nodes": ["news_feed"],
+      "tagline": "Post-debate polling shows minimal movement",
+      "description": "Surveys conducted after final debate show race remaining stable. Mamdani maintained lead with most voters having already made up their minds."
+    },
+    {
+      "event_id": "nyc_109",
+      "initial_time": 108,
+      "source_nodes": ["news_feed"],
+      "tagline": "Make the Road Action endorses Mamdani",
+      "description": "Major immigrant rights organization endorses Mamdani, mobilizing volunteer network to reach immigrant communities across NYC in final weeks."
+    },
+    {
+      "event_id": "nyc_110",
+      "initial_time": 109,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Marist Poll: Mamdani leads by 16 points",
+      "description": "October 24-28, 2025 Marist poll shows Mamdani with 48% support among likely voters compared to Sliwa's 32%. Poll indicates lead has remained remarkably stable, with 4% undecided voters."
+    },
+    {
+      "event_id": "nyc_111",
+      "initial_time": 110,
+      "source_nodes": ["twitter", "discord"],
+      "tagline": "Youth voter early voting surge reported citywide",
+      "description": "Social media reports show long lines at early voting sites near colleges and universities. Youth turnout significantly exceeding expectations and historical patterns."
+    },
+    {
+      "event_id": "nyc_112",
+      "initial_time": 111,
+      "source_nodes": ["news_feed"],
+      "tagline": "Cuomo holds press conference criticizing Mamdani",
+      "description": "Andrew Cuomo holds press conference warning about Mamdani's 'radical agenda.' Move is seen as coordination with Sliwa campaign to damage Democratic nominee."
+    },
+    {
+      "event_id": "nyc_113",
+      "initial_time": 112,
+      "source_nodes": ["reddit", "twitter"],
+      "tagline": "Democratic officials condemn Cuomo interference",
+      "description": "State Democratic Party officials issue statements condemning Cuomo's attacks on party nominee. Calls grow for him to be censured or expelled from party."
+    },
+    {
+      "event_id": "nyc_114",
+      "initial_time": 113,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Quinnipiac poll: Race stable at Mamdani 43%, Sliwa 33%",
+      "description": "October 29, 2025 Quinnipiac University poll shows Mamdani at 43%, Sliwa at 33%. Poll highlights stark generational divide but also shows Mamdani making inroads with voters over 50."
+    },
+    {
+      "event_id": "nyc_115",
+      "initial_time": 114,
+      "source_nodes": ["news_feed"],
+      "tagline": "Major unions coordinate final GOTV push for Mamdani",
+      "description": "Coalition of labor unions including TWU, SEIU, DC 37 launch coordinated door-knocking operation reaching 500,000 households in final week."
+    },
+    {
+      "event_id": "nyc_116",
+      "initial_time": 115,
       "source_nodes": ["twitter", "discord"],
       "tagline": "Early voting surges with record youth turnout",
       "description": "Early voting period from October 25 to November 2 sees unprecedented participation with over 735,300 ballots cast. Reports indicate significantly higher youth turnout compared to previous elections, potentially favoring Mamdani's campaign."
     },
     {
-      "event_id": "nyc_019",
-      "initial_time": 52,
+      "event_id": "nyc_117",
+      "initial_time": 116,
+      "source_nodes": ["news_feed"],
+      "tagline": "Sliwa campaign doubles down on crime message",
+      "description": "Final week of Sliwa campaign focuses exclusively on crime and public safety, attempting to make closing argument against Mamdani's progressive platform."
+    },
+    {
+      "event_id": "nyc_118",
+      "initial_time": 117,
       "source_nodes": ["expert_analysis"],
-      "tagline": "AtlasIntel poll shows race narrowing: Mamdani 43.9%, Cuomo 39.4%",
-      "description": "October 31-November 2, 2025 AtlasIntel poll indicates the closest race yet, with Mamdani at 43.9%, Cuomo at 39.4%, and Sliwa at 15.5%. The tightening suggests Cuomo's late campaign strategy and high-profile endorsements may be gaining traction with moderate voters."
+      "tagline": "AtlasIntel poll shows race narrowing: Mamdani 43.9%, Sliwa 39.4%",
+      "description": "October 31-November 2, 2025 AtlasIntel poll indicates closer race than other polls, with Mamdani at 43.9%, Sliwa at 39.4%. The result suggests some late movement, though other polls don't confirm the tightening."
     },
     {
-      "event_id": "nyc_020",
-      "initial_time": 55,
-      "source_nodes": ["news_feed", "twitter"],
-      "tagline": "Trump and Musk endorse Cuomo day before election",
-      "description": "On November 3, 2025, President Donald Trump and businessman Elon Musk publicly back Andrew Cuomo. The last-minute endorsements from controversial figures create uncertainty about whether they will help or hurt Cuomo with NYC voters, particularly independents and moderate Democrats."
+      "event_id": "nyc_119",
+      "initial_time": 118,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Viral videos show massive youth mobilization for Mamdani",
+      "description": "Social media filled with videos of college students canvassing, making calls, and organizing rides to polls. Scale of youth engagement unprecedented in NYC politics."
     },
     {
-      "event_id": "nyc_021",
-      "initial_time": 57,
+      "event_id": "nyc_120",
+      "initial_time": 119,
+      "source_nodes": ["news_feed"],
+      "tagline": "Final campaign rallies draw huge crowds",
+      "description": "Both candidates hold final rallies on November 2. Mamdani's rally in Flushing draws 8,000+ supporters, largest of campaign. Sliwa rally in Staten Island draws 2,000."
+    },
+    {
+      "event_id": "nyc_121",
+      "initial_time": 120,
+      "source_nodes": ["twitter", "news_feed"],
+      "tagline": "Trump endorses Sliwa in last-minute push",
+      "description": "On November 3, 2025, President Donald Trump publicly backs Curtis Sliwa. The last-minute endorsement from controversial figure creates uncertainty about whether it will help or hurt with NYC voters."
+    },
+    {
+      "event_id": "nyc_122",
+      "initial_time": 121,
       "source_nodes": ["twitter", "reddit", "discord"],
-      "tagline": "Social media erupts over Trump-Musk endorsements",
-      "description": "The Trump-Musk endorsement of Cuomo dominates social media discourse on election eve. Progressive activists argue the endorsements prove Cuomo is not a real Democrat, while Cuomo supporters claim he can work across the aisle. The hashtag #TrumpsCuomo trends."
+      "tagline": "Trump endorsement sparks Democratic unity appeals",
+      "description": "The Trump endorsement of Sliwa becomes rallying cry for Democratic turnout. Progressive activists argue it proves importance of electing Mamdani. #TrumpsNYC trends."
     },
     {
-      "event_id": "nyc_022",
-      "initial_time": 58,
+      "event_id": "nyc_123",
+      "initial_time": 122,
       "source_nodes": ["twitter", "news_feed"],
       "tagline": "Trump threatens to withhold federal funds if Mamdani wins",
-      "description": "Hours before polls close, President Trump posts on social media threatening to withhold federal funding from NYC if Mamdani is elected, citing his progressive policies. The threat is widely condemned as inappropriate federal interference in a local election."
+      "description": "Hours before polls close, President Trump posts on social media threatening to withhold federal funding from NYC if Mamdani is elected, citing his progressive policies. The threat is widely condemned as inappropriate federal interference in local election."
     },
     {
-      "event_id": "nyc_023",
-      "initial_time": 60,
+      "event_id": "nyc_124",
+      "initial_time": 123,
+      "source_nodes": ["reddit", "twitter"],
+      "tagline": "Trump threat backfires, energizes Mamdani supporters",
+      "description": "Political observers note Trump's threat appears to be backfiring, energizing Democratic voters rather than deterring them. Social media rallies around #StandWithNYC."
+    },
+    {
+      "event_id": "nyc_125",
+      "initial_time": 124,
+      "source_nodes": ["news_feed"],
+      "tagline": "Record Election Day turnout reported across NYC",
+      "description": "November 4, 2025 Election Day sees exceptional turnout with long lines reported at polling sites across all boroughs. Board of Elections projects highest turnout since 1989."
+    },
+    {
+      "event_id": "nyc_126",
+      "initial_time": 125,
+      "source_nodes": ["twitter", "discord"],
+      "tagline": "Social media documents massive turnout in Queens, Brooklyn",
+      "description": "Voters share photos and videos of packed polling sites in Mamdani strongholds. Enthusiasm and energy remain high throughout the day despite long waits."
+    },
+    {
+      "event_id": "nyc_127",
+      "initial_time": 126,
+      "source_nodes": ["news_feed"],
+      "tagline": "Exit polls show historic youth turnout",
+      "description": "Edison Research exit polls indicate voters aged 18-29 comprise 28% of electorate, up from 14% in 2021. Generational shift in participation reshaping NYC politics."
+    },
+    {
+      "event_id": "nyc_128",
+      "initial_time": 127,
       "source_nodes": ["news_feed", "expert_analysis"],
       "tagline": "Mamdani wins NYC mayoral race with 50.4% of vote",
-      "description": "Election Day results on November 4, 2025 show Zohran Mamdani winning with 50.4% of the vote, defeating Andrew Cuomo and Curtis Sliwa. Highest turnout for NYC mayoral election in decades, driven by significant young voter registration. Mamdani will become NYC's first Muslim and South Asian mayor."
+      "description": "Election Day results on November 4, 2025 show Zohran Mamdani winning with 50.4% of the vote, defeating Curtis Sliwa who received 42.8%. Highest turnout for NYC mayoral election in decades, driven by significant young voter registration. Mamdani will become NYC's first Muslim and South Asian mayor."
     },
     {
-      "event_id": "nyc_024",
-      "initial_time": 62,
+      "event_id": "nyc_129",
+      "initial_time": 128,
       "source_nodes": ["twitter", "reddit", "discord"],
       "tagline": "Celebration erupts across NYC as Mamdani declared winner",
       "description": "Victory celebrations break out across NYC neighborhoods as Mamdani's win is announced. Large crowds gather in Queens, Brooklyn, and Manhattan. Social media flooded with videos of young people celebrating what they call a 'political revolution' and historic moment for representation."
     },
     {
-      "event_id": "nyc_025",
-      "initial_time": 65,
+      "event_id": "nyc_130",
+      "initial_time": 129,
+      "source_nodes": ["news_feed"],
+      "tagline": "Mamdani delivers victory speech in Queens",
+      "description": "Mayor-elect Mamdani gives emotional victory speech in his Queens district, thanking volunteers and promising to deliver on campaign promises of affordability and equity."
+    },
+    {
+      "event_id": "nyc_131",
+      "initial_time": 130,
+      "source_nodes": ["news_feed"],
+      "tagline": "Sliwa concedes race, congratulates Mamdani",
+      "description": "Curtis Sliwa gives gracious concession speech, congratulating Mamdani and expressing hope for city's future. Promises to hold new administration accountable as opposition voice."
+    },
+    {
+      "event_id": "nyc_132",
+      "initial_time": 131,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "International media covers historic Mamdani victory",
+      "description": "Global news outlets cover Mamdani's victory as significant moment for Muslim representation in American politics. International reaction largely positive."
+    },
+    {
+      "event_id": "nyc_133",
+      "initial_time": 132,
       "source_nodes": ["news_feed", "expert_analysis"],
       "tagline": "Analysts dissect Mamdani's coalition and path to victory",
-      "description": "Political analysts examine Mamdani's winning coalition: overwhelming support from voters under 35, strong performance in diverse outer borough neighborhoods, and his ability to maintain progressive voters while not alienating moderates. His grassroots organizing and focus on affordability proved decisive."
+      "description": "Political analysts examine Mamdani's winning coalition: overwhelming support from voters under 35 (68%), strong performance in diverse outer borough neighborhoods, and his ability to maintain progressive base while winning over moderate Democrats. His grassroots organizing and focus on affordability proved decisive."
+    },
+    {
+      "event_id": "nyc_134",
+      "initial_time": 133,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Turnout analysis shows youth vote was decisive factor",
+      "description": "Detailed turnout analysis confirms youth mobilization was key to Mamdani victory. 18-29 turnout increased 120% from 2021, while 65+ turnout increased only 15%."
+    },
+    {
+      "event_id": "nyc_135",
+      "initial_time": 134,
+      "source_nodes": ["news_feed"],
+      "tagline": "Democratic Party leaders congratulate Mamdani",
+      "description": "Governor Hochul, Senate Leader Schumer, and other party leaders issue congratulatory statements. Schumer calls it 'new chapter for NYC.'"
+    },
+    {
+      "event_id": "nyc_136",
+      "initial_time": 135,
+      "source_nodes": ["reddit", "twitter"],
+      "tagline": "Progressive groups celebrate as model for other cities",
+      "description": "National progressive organizations point to Mamdani victory as blueprint for winning in diverse urban areas. Discussion of replicating strategy in other cities."
+    },
+    {
+      "event_id": "nyc_137",
+      "initial_time": 136,
+      "source_nodes": ["news_feed"],
+      "tagline": "Mayor Adams offers to help with transition",
+      "description": "Outgoing Mayor Adams releases statement offering full cooperation with transition team, despite earlier tensions and his support for opponents."
+    },
+    {
+      "event_id": "nyc_138",
+      "initial_time": 137,
+      "source_nodes": ["news_feed"],
+      "tagline": "Mamdani begins forming transition team",
+      "description": "Mayor-elect announces key transition team members, including policy experts on housing, transit, and climate. Emphasizes diverse representation and technical expertise."
+    },
+    {
+      "event_id": "nyc_139",
+      "initial_time": 138,
+      "source_nodes": ["news_feed"],
+      "tagline": "Real estate industry pledges to work with new administration",
+      "description": "Real Estate Board of NY releases statement committing to constructive engagement with Mamdani administration on housing policy, despite earlier opposition."
+    },
+    {
+      "event_id": "nyc_140",
+      "initial_time": 139,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Analysis: How Mamdani overcame 'electability' concerns",
+      "description": "Political scientists examine how Mamdani defied conventional wisdom about progressive candidates' electability in diverse cities. Key factors: authentic messaging, strong ground game, generational politics."
+    },
+    {
+      "event_id": "nyc_141",
+      "initial_time": 140,
+      "source_nodes": ["twitter", "discord"],
+      "tagline": "Volunteers celebrate and plan for governing phase",
+      "description": "Campaign volunteers who powered victory hold celebrations and begin organizing for implementation phase. Many express interest in continuing civic engagement."
+    },
+    {
+      "event_id": "nyc_142",
+      "initial_time": 141,
+      "source_nodes": ["news_feed"],
+      "tagline": "Mamdani holds first press conference as mayor-elect",
+      "description": "Mayor-elect Mamdani holds first formal press conference, outlining transition priorities and reaffirming commitment to campaign promises. Takes questions on implementation timeline."
+    },
+    {
+      "event_id": "nyc_143",
+      "initial_time": 142,
+      "source_nodes": ["news_feed"],
+      "tagline": "City Council leaders express support for Mamdani agenda",
+      "description": "City Council Speaker and key committee chairs release statement supporting mayor-elect's priorities, suggesting strong working relationship ahead."
+    },
+    {
+      "event_id": "nyc_144",
+      "initial_time": 143,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Budget experts analyze feasibility of Mamdani's proposals",
+      "description": "Independent fiscal analysts release assessment of Mamdani's policy platform. While noting challenges, most proposals deemed achievable with careful implementation and revenue generation."
+    },
+    {
+      "event_id": "nyc_145",
+      "initial_time": 144,
+      "source_nodes": ["news_feed"],
+      "tagline": "Mamdani names chief of staff and key advisors",
+      "description": "Mayor-elect announces senior staff appointments, including chief of staff, senior advisors, and communications director. Team features mix of campaign veterans and policy experts."
+    },
+    {
+      "event_id": "nyc_146",
+      "initial_time": 145,
+      "source_nodes": ["reddit", "twitter"],
+      "tagline": "Think tanks begin analyzing Mamdani victory",
+      "description": "Policy organizations across political spectrum publish analyses of election results. Consensus emerging that youth mobilization and focus on material issues were key factors."
+    },
+    {
+      "event_id": "nyc_147",
+      "initial_time": 146,
+      "source_nodes": ["news_feed"],
+      "tagline": "Inauguration planning begins for January ceremony",
+      "description": "Transition team announces plans for January 1, 2026 inauguration. Event expected to draw large crowds and feature diverse representation of NYC communities."
+    },
+    {
+      "event_id": "nyc_148",
+      "initial_time": 147,
+      "source_nodes": ["news_feed"],
+      "tagline": "First detailed policy implementation timeline released",
+      "description": "Transition team releases 100-day action plan with specific milestones for key campaign promises. Timeline provides transparency on governing priorities."
+    },
+    {
+      "event_id": "nyc_149",
+      "initial_time": 148,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Final vote count confirms Mamdani won by 140,000 votes",
+      "description": "Official certified results show Mamdani received 1,650,000 votes (50.4%) to Sliwa's 1,510,000 (42.8%). Total turnout of 3.27 million highest since 1989."
+    },
+    {
+      "event_id": "nyc_150",
+      "initial_time": 149,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "Mamdani's victory signals generational shift in urban politics",
+      "description": "Political observers conclude Mamdani's election represents broader generational realignment in American cities. Youth mobilization and progressive economic populism proved decisive. Election likely to influence mayoral races nationwide."
     }
   ]
 }
