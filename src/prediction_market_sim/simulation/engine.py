@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+import concurrent.futures
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Mapping, MutableMapping, Optional, Sequence
@@ -97,6 +98,12 @@ class SimulationEngine:
         portal = self._portal_factory()
         agents = [factory() for factory in self._agent_factories]
         market = self._market_factory()
+        
+        # Inject market into agents if they support it
+        for agent in agents:
+            if hasattr(agent, 'set_market'):
+                agent.set_market(market)
+        
         evaluators = [factory() for factory in self._evaluator_factories]
 
         stream.bootstrap(seed=seed)
@@ -131,31 +138,28 @@ class SimulationEngine:
 
                 pbar_timestep.write(f"[Timestep {timestep}] Processing {len(agents)} agents, {len(messages)} messages...")
 
-                with tqdm(total=len(agents), desc="  Agents", position=1, leave=False, disable=len(agents) <= 1) as pbar_agents:
+                # Parallel agent processing
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    future_to_agent = {}
                     for agent in agents:
-                        agent_start = time.time()
-                        pbar_agents.set_description(f"  Agent {agent.agent_id}")
-
                         inbox = routed.get(agent.agent_id, [])
-                        if inbox:
-                            agent.ingest(inbox)
-                        belief = agent.update_belief(timestep, current_price)
-                        belief_snapshot[agent.agent_id] = belief
+                        future = executor.submit(self._process_agent, agent, inbox, timestep, current_price, portal)
+                        future_to_agent[future] = agent
 
-                        maybe_order = agent.generate_order(belief, current_price)
-                        if maybe_order is not None:
-                            orders.append(maybe_order)
-
-                        # Optional: agent-generated posts to source nodes
-                        generate_posts = getattr(agent, "generate_posts", None)
-                        if callable(generate_posts):
-                            posts = generate_posts(timestep)
-                            for post in posts:
-                                portal.ingest_agent_feedback(agent.agent_id, post)
-
-                        agent_time = time.time() - agent_start
-                        pbar_agents.set_postfix(time=f"{agent_time:.1f}s", belief=f"{belief:.3f}")
-                        pbar_agents.update(1)
+                    with tqdm(total=len(agents), desc="  Agents", position=1, leave=False, disable=len(agents) <= 1) as pbar_agents:
+                        for future in concurrent.futures.as_completed(future_to_agent):
+                            agent = future_to_agent[future]
+                            try:
+                                agent_result = future.result()
+                                belief_snapshot[agent.agent_id] = agent_result['belief']
+                                if agent_result['order']:
+                                    orders.append(agent_result['order'])
+                                
+                                agent_time = agent_result['time']
+                                pbar_agents.set_postfix(time=f"{agent_time:.1f}s", belief=f"{agent_result['belief']:.3f}")
+                                pbar_agents.update(1)
+                            except Exception as e:
+                                print(f"Agent {agent.agent_id} failed: {e}")
 
                 if orders:
                     market.submit_orders(orders, timestep)
@@ -217,3 +221,25 @@ class SimulationEngine:
                 result.trade_log = []
 
         return result
+
+    def _process_agent(self, agent, inbox, timestep, current_price, portal):
+        agent_start = time.time()
+        
+        if inbox:
+            agent.ingest(inbox)
+        
+        belief = agent.update_belief(timestep, current_price)
+        maybe_order = agent.generate_order(belief, current_price)
+        
+        # Optional: agent-generated posts
+        generate_posts = getattr(agent, "generate_posts", None)
+        if callable(generate_posts):
+            posts = generate_posts(timestep)
+            for post in posts:
+                portal.ingest_agent_feedback(agent.agent_id, post)
+                
+        return {
+            'belief': belief,
+            'order': maybe_order,
+            'time': time.time() - agent_start
+        }

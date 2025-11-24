@@ -16,12 +16,12 @@ from ..simulation.interfaces import MessageStream, PortalNetwork
 class EventDatabaseStream(MessageStream):
     """
     Adapter that wraps EventDatabase to provide MessageStream interface.
-    
+
     Reads events from JSON database and serves them at appropriate timesteps.
     """
-    
-    def __init__(self, db_path: str = "events_database.json"):
-        self.db = EventDatabase(db_path=db_path)
+
+    def __init__(self, db_path: str = "events_database.json", read_only: bool = True):
+        self.db = EventDatabase(db_path=db_path, read_only=read_only)
         self.current_timestep = 0
         self._finished = False
         
@@ -181,17 +181,18 @@ class SourceNodeNetworkAdapter(PortalNetwork):
         node.post_event(event)
 
 
-def create_event_stream(db_path: str = "events_database.json") -> EventDatabaseStream:
+def create_event_stream(db_path: str = "events_database.json", read_only: bool = True) -> EventDatabaseStream:
     """
     Factory function to create an EventDatabase message stream.
-    
+
     Args:
         db_path: Path to the events JSON database
-        
+        read_only: If True, prevents destructive modifications to the event file
+
     Returns:
         MessageStream adapter wrapping EventDatabase
     """
-    return EventDatabaseStream(db_path=db_path)
+    return EventDatabaseStream(db_path=db_path, read_only=read_only)
 
 
 def create_portal_network(node_configs: list[dict] | None = None) -> SourceNodeNetworkAdapter:

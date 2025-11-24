@@ -61,14 +61,16 @@ class EventDatabase:
     Events are assumed to be sorted by initial_time in the file.
     """
 
-    def __init__(self, db_path: str = "events_database.json"):
+    def __init__(self, db_path: str = "events_database.json", read_only: bool = True):
         """
         Initialize the event database manager.
 
         Args:
             db_path: Path to the JSON file containing events
+            read_only: If True, prevents destructive modifications to the event file
         """
         self.db_path = Path(db_path)
+        self.read_only = read_only
         self._ensure_db_exists()
 
     def _ensure_db_exists(self):
@@ -119,8 +121,10 @@ class EventDatabase:
             # Events with initial_time < current_time are skipped (already processed)
 
         # Write back the remaining events (optimization: remove processed ones)
-        with open(self.db_path, 'w') as f:
-            json.dump({"events": remaining_events}, f, indent=2)
+        # Skip file modification in read-only mode
+        if not self.read_only:
+            with open(self.db_path, 'w') as f:
+                json.dump({"events": remaining_events}, f, indent=2)
 
         return current_events
 

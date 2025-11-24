@@ -457,7 +457,210 @@
       "lastAccessed": "2025-11-19T00:46:23.373Z",
       "lastVerified": "2025-11-19T00:46:23.373Z",
       "status": "fresh"
+    },
+    {
+      "id": "mem_1763607776355_kmwk7ze9q",
+      "content": "LMSR Overflow Fix - Numerical Stability Solution\n\nProblem: OverflowError in LMSR market at line 93 in get_cost() function when computing b * log(exp(q_yes/b) + exp(q_no/b)) with large share quantities.\n\nRoot Cause: When q_yes or q_no become large relative to liquidity parameter b, exp(q/b) overflows Python's float range (~10^308).\n\nSolution: Implemented log-sum-exp trick for numerical stability:\n1. In get_cost(): Instead of log(exp(a) + exp(b)), use max(a,b) + log(1 + exp(-|a-b|))\n2. In get_price(): Instead of exp(a)/(exp(a) + exp(b)), use 1/(1 + exp(b-a))\n3. Added safeguards for extreme values (diff > 100 or < -100)\n\nFiles Modified: /home/brody/Desktop/Prediction-Market-Agents-Simulations/src/prediction_market_sim/market/lmsr.py\n\nMathematical Equivalence Verified:\n- Prices still sum to 1.0\n- Equal shares give equal prices (0.5 each)\n- Extreme imbalance handled correctly\n- All 20+ trades complete without overflow even with low liquidity parameter\n\nKey Insight: The original formulas were mathematically correct but numerically unstable. The log-sum-exp trick maintains mathematical correctness while preventing overflow by avoiding direct computation of large exponentials.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "python",
+        "lmsr",
+        "overflow",
+        "numerical-stability",
+        "log-sum-exp",
+        "bug-fix",
+        "prediction-markets"
+      ],
+      "timestamp": "2025-11-20T03:02:56.355Z",
+      "context": "Critical fix for LMSR market implementation that was causing simulations to crash after ~15 steps",
+      "accessCount": 0,
+      "lastAccessed": "2025-11-20T03:02:56.355Z",
+      "lastVerified": "2025-11-20T03:02:56.355Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1763607828784_opgwz7lap",
+      "content": "Fixed critical LMSR overflow error in prediction market simulation. Root cause: exp() overflow in cost/price calculations when share quantities become large. Solution: Implemented log-sum-exp trick in get_cost() and algebraic simplification in get_price() in lmsr.py. Both methods now numerically stable for any share quantities. Verified mathematical correctness preserved (prices sum to 1.0, proper monotonicity).",
+      "type": "error",
+      "tags": [
+        "error",
+        "bug-fix",
+        "numerical-stability",
+        "lmsr",
+        "overflow-error"
+      ],
+      "timestamp": "2025-11-20T03:03:48.784Z",
+      "context": "Prediction Market Agents Simulation - LMSR market mechanism fix",
+      "accessCount": 0,
+      "lastAccessed": "2025-11-20T03:03:48.784Z",
+      "lastVerified": "2025-11-20T03:03:48.784Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1763940272321_i7akkqnlg",
+      "content": "Critical bug found in simulation: data/sample_election_events.json is EMPTY (contains only {\"events\": []}), causing simulation to terminate immediately after timestep 0. The EventDatabaseStream marks itself as finished when get_event_count() == 0, and the engine respects stop_when_stream_finishes=True, causing early termination. This is the root cause of the 1-timestep simulation.",
+      "type": "error",
+      "tags": [
+        "error",
+        "bug",
+        "simulation",
+        "events",
+        "critical"
+      ],
+      "timestamp": "2025-11-23T23:24:32.321Z",
+      "context": "Debugging simulation stopping after 1 timestep in /home/brody/Desktop/Prediction-Market-Agents-Simulations",
+      "accessCount": 0,
+      "lastAccessed": "2025-11-23T23:24:32.321Z",
+      "lastVerified": "2025-11-23T23:24:32.321Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1763940272325_9hg2egais",
+      "content": "Agents cannot place orders without events: PredictionMarketAgentAdapter.update_belief() only runs agent workflow when inbox has messages. No messages = no workflow = no cached decision = generate_order() returns None. The flow is: events → portal routing → agent inbox → workflow → cached decision → order generation.",
+      "type": "general",
+      "tags": [
+        "general",
+        "simulation",
+        "agents",
+        "orders",
+        "workflow"
+      ],
+      "timestamp": "2025-11-23T23:24:32.325Z",
+      "context": "Understanding why agents aren't placing orders in prediction market simulation",
+      "accessCount": 0,
+      "lastAccessed": "2025-11-23T23:24:32.325Z",
+      "lastVerified": "2025-11-23T23:24:32.325Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1763940272327_te4vx6sj1",
+      "content": "Ollama connection warnings (port 11434 connection refused) are handled gracefully by OllamaLLM._check_model_available() - they print warnings but don't crash. Since agents never receive events, they never call the LLM, so Ollama connection is NOT the root cause of the simulation issue.",
+      "type": "warning",
+      "tags": [
+        "warning",
+        "ollama",
+        "llm",
+        "warnings",
+        "not-critical"
+      ],
+      "timestamp": "2025-11-23T23:24:32.327Z",
+      "context": "Analyzing Ollama connection warnings in simulation logs",
+      "accessCount": 0,
+      "lastAccessed": "2025-11-23T23:24:32.327Z",
+      "lastVerified": "2025-11-23T23:24:32.327Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1763940320374_x7uu46jh1",
+      "content": "Simulation completing after 1 timestep because data/sample_election_events.json is EMPTY (contains only {\"events\": []}). Root cause: EventDatabaseStream marks finished when event count = 0, triggering early termination. Agents don't place orders because they need events → inbox messages → workflow execution → cached decisions → order generation. Ollama warnings are harmless (graceful failure handling).",
+      "type": "warning",
+      "tags": [
+        "warning",
+        "bug-analysis",
+        "simulation",
+        "empty-events",
+        "early-termination"
+      ],
+      "timestamp": "2025-11-23T23:25:20.374Z",
+      "context": "Prediction Market Simulation debugging - why simulation stops after 1/10 timesteps",
+      "accessCount": 0,
+      "lastAccessed": "2025-11-23T23:25:20.374Z",
+      "lastVerified": "2025-11-23T23:25:20.374Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1763940905148_ug25irhsb",
+      "content": "Fixed simulation early termination issue: (1) Populated data/sample_election_events.json with 13 election events spread across timesteps 0-9, (2) Added timeout parameters to OllamaLLM HTTP requests (timeout=10 for chat, timeout=5 for model check) to prevent indefinite blocking when Ollama not running. Simulation now completes all 10 timesteps successfully with graceful LLM failure handling.",
+      "type": "troubleshooting",
+      "tags": [
+        "troubleshooting",
+        "fix",
+        "simulation",
+        "timeout",
+        "ollama",
+        "events"
+      ],
+      "timestamp": "2025-11-23T23:35:05.148Z",
+      "context": "Prediction Market Simulation - fixed empty events and LLM timeout issues",
+      "accessCount": 0,
+      "lastAccessed": "2025-11-23T23:35:05.148Z",
+      "lastVerified": "2025-11-23T23:35:05.148Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1763941838439_lgutu9cwt",
+      "content": "EventDatabase.get_events_at_timestep() destructively modifies the events JSON file by removing consumed events (lines 121-123 in data/data_module.py). This is an optimization but means the source file gets emptied after simulation runs. Solution: Created election_events_template.json as master copy, copy to sample_election_events.json before each run with: cat data/election_events_template.json > data/sample_election_events.json",
+      "type": "solution",
+      "tags": [
+        "solution",
+        "optimization",
+        "simulation",
+        "events",
+        "data-persistence",
+        "workaround"
+      ],
+      "timestamp": "2025-11-23T23:50:38.439Z",
+      "context": "Event database file gets consumed during simulation - need template file",
+      "accessCount": 0,
+      "lastAccessed": "2025-11-23T23:50:38.439Z",
+      "lastVerified": "2025-11-23T23:50:38.439Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1763944135797_hmgigcs6t",
+      "content": "Event file consumption issue analysis:\n\nPROBLEM:\n- sample_election_events.json is being emptied after simulation runs (destructively consumed)\n- Template has 13 events but sample becomes empty\n- Simulation finishes instantly on subsequent runs because there are no events\n\nROOT CAUSE:\nIn EventDatabase.get_events_at_timestep() (line 92-125 in data_module.py):\n- Reads events from JSON file\n- Splits them into current_events (matching current_time) and remaining_events (future events)\n- DESTRUCTIVELY overwrites the file with only remaining_events (line 122-123)\n- This is an optimization to avoid re-processing past events\n- Problem: if all events are consumed, file becomes {\"events\": []}\n\nDESIGN ISSUE:\nThe EventDatabaseStream adapter (adapters.py lines 16-68) calls get_events_at_timestep() each timestep, which progressively empties the file. The stream marks finished when db.get_event_count() == 0 (line 62).\n\nWHY INSTANT FINISH:\nOn second run, EventDatabaseStream.next_batch() finds 0 events immediately, sets _finished=True after first timestep, and simulation stops due to stop_when_stream_finishes=True flag (line 169 in run_with_synthetic_data.py).",
+      "type": "warning",
+      "tags": [
+        "warning",
+        "optimization",
+        "bug-analysis",
+        "event-consumption",
+        "data-persistence"
+      ],
+      "timestamp": "2025-11-24T00:28:55.797Z",
+      "accessCount": 0,
+      "lastAccessed": "2025-11-24T00:28:55.797Z",
+      "lastVerified": "2025-11-24T00:28:55.797Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1763945150139_kljrfpq03",
+      "content": "Successfully implemented read-only mode for EventDatabase. Added --read-only CLI flag that prevents event file from being modified during simulation. Changes: (1) EventDatabase.__init__ accepts read_only param, (2) get_events_at_timestep() skips file rewrite if read_only=True, (3) EventDatabaseStream and create_event_stream() pass through read_only, (4) run_with_synthetic_data.py has --read-only flag. Verified working: events file preserved after simulation run (13 events remain).",
+      "type": "general",
+      "tags": [
+        "general",
+        "feature",
+        "read-only",
+        "events",
+        "cli",
+        "testing"
+      ],
+      "timestamp": "2025-11-24T00:45:50.139Z",
+      "context": "Added read-only mode to prevent event file consumption",
+      "accessCount": 0,
+      "lastAccessed": "2025-11-24T00:45:50.139Z",
+      "lastVerified": "2025-11-24T00:45:50.139Z",
+      "status": "fresh"
+    },
+    {
+      "id": "mem_1763945552682_3lng3vnfe",
+      "content": "Switched default LLM model from llama3.1:8b to llama3.2:3b for faster inference. Changed in ollama_llm.py:65 and adapters.py:147. Model pulled successfully (2.0 GB). llama3.2:3b is ~2-3x faster than llama3.1:8b, which should reduce per-agent processing time from 60s to ~20-30s.",
+      "type": "tip",
+      "tags": [
+        "tip",
+        "llm",
+        "performance",
+        "model-switch",
+        "llama3.2"
+      ],
+      "timestamp": "2025-11-24T00:52:32.682Z",
+      "context": "Switched to faster LLM model for better simulation performance",
+      "accessCount": 0,
+      "lastAccessed": "2025-11-24T00:52:32.682Z",
+      "lastVerified": "2025-11-24T00:52:32.682Z",
+      "status": "fresh"
     }
   ],
-  "lastUpdated": "2025-11-19T00:46:23.373Z"
+  "lastUpdated": "2025-11-24T00:52:32.682Z"
 }

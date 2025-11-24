@@ -116,7 +116,8 @@ def build_simulation_engine(
     num_agents: int = 3,
     timesteps: int = 50,
     liquidity_param: float = 100.0,
-    run_name: str = 'synthetic_data_sim'
+    run_name: str = 'synthetic_data_sim',
+    read_only: bool = True
 ):
     """
     Build the complete simulation engine with all modules integrated.
@@ -134,15 +135,15 @@ def build_simulation_engine(
     """
 
     # 1. Create portal network with standard portals
-    print("📡 Setting up information portal network...")
+    print("Setting up information portal network...")
     portal_network = create_standard_portals()
 
     # 2. Create agents and subscribe them to portals
-    print(f"🤖 Creating {num_agents} agents with different strategies...")
+    print(f"Creating {num_agents} agents with different strategies...")
     agent_factories = create_agents_with_subscriptions(portal_network, num_agents)
 
     # 3. Create market
-    print(f"💹 Setting up {market_type.upper()} market...")
+    print(f"Setting up {market_type.upper()} market...")
     if market_type.lower() == 'lmsr':
         market_factory = lambda: LMSRMarketAdapter(
             liquidity_param=liquidity_param,
@@ -157,8 +158,8 @@ def build_simulation_engine(
         )
 
     # 4. Create event stream from JSON file
-    print(f"📂 Loading events from: {events_path}")
-    stream_factory = lambda: create_event_stream(str(events_path))
+    print(f"Loading events from: {events_path}")
+    stream_factory = lambda: create_event_stream(str(events_path), read_only=read_only)
 
     # 5. Configure simulation runtime
     runtime_config = SimulationRuntimeConfig(
@@ -173,7 +174,7 @@ def build_simulation_engine(
     )
 
     # 6. Build the engine
-    print("🔧 Building simulation engine...")
+    print("Building simulation engine...")
     engine = SimulationEngine(
         stream_factory=stream_factory,
         portal_factory=lambda: portal_network,
@@ -183,7 +184,7 @@ def build_simulation_engine(
         runtime_config=runtime_config
     )
 
-    print("✅ Engine ready!\n")
+    print("Engine ready!\n")
     return engine
 
 
@@ -234,18 +235,25 @@ def main():
         default=None,
         help='Custom run name (default: auto-generated)'
     )
+    parser.add_argument(
+        '--no-read-only',
+        dest='read_only',
+        action='store_false',
+        help='Allow event file to be consumed during simulation (default: read-only mode enabled)'
+    )
+    parser.set_defaults(read_only=True)
 
     args = parser.parse_args()
 
     # Validate inputs
     if args.agents < 1 or args.agents > 5:
-        print("⚠️  Warning: Number of agents should be between 1 and 5")
+        print("Warning: Number of agents should be between 1 and 5")
         args.agents = max(1, min(5, args.agents))
 
     # Check if events file exists
     events_path = Path(args.events)
     if not events_path.exists():
-        print(f"❌ Error: Events file not found: {events_path}")
+        print(f"Error: Events file not found: {events_path}")
         print(f"\nCreate a JSON file with this structure:")
         print("""
 {
@@ -267,7 +275,7 @@ def main():
 
     # Print configuration
     print("\n" + "="*60)
-    print("🚀 PREDICTION MARKET SIMULATION WITH SYNTHETIC DATA")
+    print("PREDICTION MARKET SIMULATION WITH SYNTHETIC DATA")
     print("="*60)
     print(f"Events file:    {events_path}")
     print(f"Market type:    {args.market.upper()}")
@@ -286,19 +294,20 @@ def main():
             num_agents=args.agents,
             timesteps=args.timesteps,
             liquidity_param=args.liquidity,
-            run_name=run_name
+            run_name=run_name,
+            read_only=args.read_only
         )
 
-        print("▶️  Starting simulation...\n")
+        print("Starting simulation...\n")
         print("-" * 60)
 
         result = engine.run_once(run_id=1, seed=args.seed)
 
         print("\n" + "-" * 60)
-        print("✅ Simulation complete!\n")
+        print("Simulation complete!\n")
 
         # Display results
-        print("📊 RESULTS SUMMARY")
+        print("RESULTS SUMMARY")
         print("="*60)
         if result.prices:
             print(f"Total timesteps:  {len(result.prices)}")

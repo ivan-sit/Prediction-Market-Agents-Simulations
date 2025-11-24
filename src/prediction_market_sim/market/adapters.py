@@ -164,6 +164,31 @@ class LMSRMarketAdapter(MarketAdapter):
         """Return all executed trades recorded by this adapter."""
         return list(self._trade_log)
 
+    def buy_up_to_price(self, agent_id: str, outcome: str, max_cost: float, timestamp: int) -> object:
+        """Delegate buy_up_to_price to the underlying LMSR market."""
+        trade = self._market.buy_up_to_price(
+            agent_id=agent_id,
+            outcome=outcome,
+            max_cost=max_cost,
+            timestamp=timestamp
+        )
+        if trade:
+            self._trade_log.append(trade)
+            # Track net flow
+            if outcome.upper() == "YES": # Buying YES
+                self._net_flow_tick += trade.shares
+            else: # Buying NO (selling YES)
+                self._net_flow_tick -= trade.shares
+            
+            self._tick_volume += abs(trade.shares)
+
+            if self._track_positions:
+                agent_pos = self._positions[trade.agent_id]
+                agent_pos[trade.outcome] += trade.shares
+                agent_pos["cash"] -= trade.cost
+        
+        return trade
+
 
 class OrderBookMarketAdapter(MarketAdapter):
     """

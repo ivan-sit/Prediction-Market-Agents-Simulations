@@ -52,45 +52,70 @@ class LMSRMarket:
         
     def get_price(self, outcome: str) -> float:
         """Calculate the current marginal price for an outcome.
-        
+
         The price is the derivative of the cost function with respect to the
         quantity of shares for that outcome.
-        
+
         Args:
             outcome: "YES" or "NO"
-            
+
         Returns:
             Current price for the outcome (between 0 and 1)
         """
         q_yes = self._outstanding_shares["YES"]
         q_no = self._outstanding_shares["NO"]
         b = self.liquidity_param
-        
+
+        # Use numerically stable computation to avoid overflow
+        # Instead of exp(a)/(exp(a) + exp(b)), use 1/(1 + exp(b-a))
         if outcome.upper() == "YES":
-            exp_yes = math.exp(q_yes / b)
-            exp_no = math.exp(q_no / b)
-            price = exp_yes / (exp_yes + exp_no)
+            # Price of YES = exp(q_yes/b) / (exp(q_yes/b) + exp(q_no/b))
+            #              = 1 / (1 + exp((q_no - q_yes)/b))
+            diff = (q_no - q_yes) / b
+            if diff > 100:  # Prevent overflow in exp
+                price = 0.0
+            elif diff < -100:
+                price = 1.0
+            else:
+                price = 1.0 / (1.0 + math.exp(diff))
         else:  # NO
-            exp_yes = math.exp(q_yes / b)
-            exp_no = math.exp(q_no / b)
-            price = exp_no / (exp_yes + exp_no)
-            
+            # Price of NO = exp(q_no/b) / (exp(q_yes/b) + exp(q_no/b))
+            #             = 1 / (1 + exp((q_yes - q_no)/b))
+            diff = (q_yes - q_no) / b
+            if diff > 100:  # Prevent overflow in exp
+                price = 0.0
+            elif diff < -100:
+                price = 1.0
+            else:
+                price = 1.0 / (1.0 + math.exp(diff))
+
         return price
     
     def get_cost(self, shares: Dict[str, float]) -> float:
         """Calculate the cost function for a given quantity of shares.
-        
+
         Args:
             shares: Dictionary mapping outcomes to share quantities
-            
+
         Returns:
             Cost value
         """
         q_yes = shares.get("YES", 0.0)
         q_no = shares.get("NO", 0.0)
         b = self.liquidity_param
-        
-        return b * math.log(math.exp(q_yes / b) + math.exp(q_no / b))
+
+        # Use log-sum-exp trick for numerical stability
+        # log(exp(a) + exp(b)) = max(a,b) + log(1 + exp(-|a-b|))
+        a = q_yes / b
+        b_val = q_no / b
+        max_val = max(a, b_val)
+        diff = abs(a - b_val)
+
+        # If diff is very large, exp(-diff) ≈ 0, so we can use the approximation
+        if diff > 100:
+            return b * max_val
+        else:
+            return b * (max_val + math.log(1.0 + math.exp(-diff)))
     
     def calculate_cost_for_shares(self, outcome: str, num_shares: float) -> float:
         """Calculate the cost to purchase a given number of shares.
