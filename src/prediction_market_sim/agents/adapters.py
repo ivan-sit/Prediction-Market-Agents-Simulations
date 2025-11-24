@@ -127,7 +127,7 @@ class PredictionMarketAgentAdapter:
             self.cash = self._cached_decision.get('bankroll', self.cash)
 
         except Exception as e:
-            print(f"⚠️  Agent {self.agent_id} workflow failed: {e}")
+            print(f"[WARNING] Agent {self.agent_id} workflow failed: {e}")
             self._cached_decision = {
                 'decision': 'SELL',
                 'amount': 0.0,

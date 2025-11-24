@@ -1,0 +1,179 @@
+{
+  "events": [
+    {
+      "event_id": "nyc_001",
+      "initial_time": 0,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "Adams indicted on federal bribery and fraud charges",
+      "description": "NYC Mayor Eric Adams indicted on federal charges including bribery, fraud, and soliciting illegal foreign campaign donations. This development significantly reshapes the 2025 mayoral race landscape and raises questions about his re-election viability."
+    },
+    {
+      "event_id": "nyc_002",
+      "initial_time": 2,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Social media buzzes with speculation about Adams replacement",
+      "description": "Following the Adams indictment, social media platforms are flooded with speculation about potential Democratic challengers. Names being floated include Brad Lander, Zohran Mamdani, and even Andrew Cuomo making a comeback."
+    },
+    {
+      "event_id": "nyc_003",
+      "initial_time": 5,
+      "source_nodes": ["news_feed"],
+      "tagline": "Andrew Cuomo announces NYC mayoral campaign",
+      "description": "Former New York Governor Andrew Cuomo officially announces his candidacy for NYC mayor in March 2025, attempting a political comeback after resigning as governor in 2021 amid sexual harassment scandals. Running on a centrist platform focused on crime and combating antisemitism."
+    },
+    {
+      "event_id": "nyc_004",
+      "initial_time": 7,
+      "source_nodes": ["twitter", "discord"],
+      "tagline": "Progressive activists rally behind Mamdani",
+      "description": "Young progressives and democratic socialists organize grassroots support for state assemblyman Zohran Mamdani. His campaign focuses on affordability with proposals for rent freeze, free bus service, and universal child care gaining traction among younger voters."
+    },
+    {
+      "event_id": "nyc_005",
+      "initial_time": 10,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "Adams exits Democratic primary, federal charges dismissed",
+      "description": "Eric Adams announces he will exit the Democratic primary and seek re-election as an independent. Simultaneously, criminal charges against Adams are dismissed at the request of the Department of Justice in April 2025, adding another twist to the race."
+    },
+    {
+      "event_id": "nyc_006",
+      "initial_time": 15,
+      "source_nodes": ["news_feed"],
+      "tagline": "Democratic primary: Mamdani defeats Cuomo in major upset",
+      "description": "On June 24, 2025, Zohran Mamdani wins the Democratic primary, defeating Andrew Cuomo, City Comptroller Brad Lander, and eight other candidates. Mamdani's victory is considered a stunning upset, reshaping expectations for the general election."
+    },
+    {
+      "event_id": "nyc_007",
+      "initial_time": 18,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Viral celebration videos as young voters celebrate Mamdani win",
+      "description": "Social media explodes with celebration videos from young voters following Mamdani's primary victory. Hashtags #MamdaniForMayor and #GenerationChange trend nationwide. The energy suggests unprecedented youth turnout for the general election."
+    },
+    {
+      "event_id": "nyc_008",
+      "initial_time": 22,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Quinnipiac poll: Mamdani leads by 22 points in three-way race",
+      "description": "September 10, 2025 Quinnipiac University poll shows Mamdani dominating with a commanding 22-point lead over Cuomo in the general election race. Republican Curtis Sliwa trails in third. Poll reveals stark generational divide with 18-34 year olds backing Mamdani 64% to 20%."
+    },
+    {
+      "event_id": "nyc_009",
+      "initial_time": 25,
+      "source_nodes": ["news_feed"],
+      "tagline": "Gov. Hochul endorses Mamdani in NYT op-ed",
+      "description": "Governor Kathy Hochul endorses Zohran Mamdani for NYC mayor in an op-ed published in The New York Times on September 15, 2025. Assembly Speaker Carl Heastie and state Senate Majority Leader Andrea Stewart-Cousins follow with their endorsements days later."
+    },
+    {
+      "event_id": "nyc_010",
+      "initial_time": 28,
+      "source_nodes": ["news_feed", "twitter"],
+      "tagline": "Adams ends re-election bid, endorses Cuomo",
+      "description": "Mayor Eric Adams announces on September 28, 2025 that he is ending his bid for a second term amid sagging poll numbers and lack of financing. In a surprising move, he endorses Andrew Cuomo as his successor, creating an unusual alliance."
+    },
+    {
+      "event_id": "nyc_011",
+      "initial_time": 32,
+      "source_nodes": ["discord", "reddit"],
+      "tagline": "Online communities discuss Adams-Cuomo endorsement implications",
+      "description": "Political discussion forums analyze the strategic implications of Adams' endorsement of Cuomo. Some see it as an attempt to consolidate moderate Democratic voters, while others view it as a desperate move that may backfire with progressive voters."
+    },
+    {
+      "event_id": "nyc_012",
+      "initial_time": 35,
+      "source_nodes": ["news_feed"],
+      "tagline": "First general election debate: Candidates clash on crime, affordability",
+      "description": "October 16, 2025 first general election debate features heated exchanges between Mamdani, Cuomo, and Sliwa. Both Sliwa and Cuomo attack Mamdani over his progressive positions, lack of executive experience, and statements on Israel. Mamdani defends his affordability-focused platform."
+    },
+    {
+      "event_id": "nyc_013",
+      "initial_time": 37,
+      "source_nodes": ["twitter", "expert_analysis"],
+      "tagline": "Post-debate polls show Mamdani maintaining lead",
+      "description": "Initial post-debate polling suggests Mamdani's performance held steady despite aggressive attacks. Analysts note his ability to pivot attacks back to his core message of affordability resonated with undecided voters, particularly younger demographics."
+    },
+    {
+      "event_id": "nyc_014",
+      "initial_time": 40,
+      "source_nodes": ["news_feed"],
+      "tagline": "Final mayoral debate gets contentious",
+      "description": "October 22, 2025 final debate features crosstalk, laughter and zingers. Mamdani maintains composure while both Cuomo and Sliwa intensify attacks. Notably, Cuomo skips the post-debate media spin room and instead attends a Knicks game with Mayor Adams, generating controversy."
+    },
+    {
+      "event_id": "nyc_015",
+      "initial_time": 42,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Cuomo's Knicks game with Adams sparks social media backlash",
+      "description": "Cuomo's decision to skip post-debate press availability to attend a basketball game with Adams draws criticism on social media. Critics call it arrogant and disconnected. Memes flood Twitter about 'billionaires at basketball games' versus 'working New Yorkers.'"
+    },
+    {
+      "event_id": "nyc_016",
+      "initial_time": 45,
+      "source_nodes": ["expert_analysis", "news_feed"],
+      "tagline": "Marist Poll: Mamdani leads Cuomo by 16 points",
+      "description": "October 24-28, 2025 Marist poll shows Mamdani with 48% support among likely voters compared to Cuomo's 32% and Sliwa's 16%. The poll indicates Mamdani's lead has remained stable despite late-campaign attacks, with 3% undecided voters."
+    },
+    {
+      "event_id": "nyc_017",
+      "initial_time": 48,
+      "source_nodes": ["news_feed"],
+      "tagline": "Quinnipiac poll: Race tightens as Mamdani leads 43-33",
+      "description": "October 29, 2025 Quinnipiac University poll shows the race tightening slightly with Mamdani at 43%, Cuomo at 33%, and Sliwa at 14%, with 6% undecided. The poll highlights a stark generational divide in voter preferences and suggests Cuomo may be consolidating older voters."
+    },
+    {
+      "event_id": "nyc_018",
+      "initial_time": 50,
+      "source_nodes": ["twitter", "discord"],
+      "tagline": "Early voting surges with record youth turnout",
+      "description": "Early voting period from October 25 to November 2 sees unprecedented participation with over 735,300 ballots cast. Reports indicate significantly higher youth turnout compared to previous elections, potentially favoring Mamdani's campaign."
+    },
+    {
+      "event_id": "nyc_019",
+      "initial_time": 52,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "AtlasIntel poll shows race narrowing: Mamdani 43.9%, Cuomo 39.4%",
+      "description": "October 31-November 2, 2025 AtlasIntel poll indicates the closest race yet, with Mamdani at 43.9%, Cuomo at 39.4%, and Sliwa at 15.5%. The tightening suggests Cuomo's late campaign strategy and high-profile endorsements may be gaining traction with moderate voters."
+    },
+    {
+      "event_id": "nyc_020",
+      "initial_time": 55,
+      "source_nodes": ["news_feed", "twitter"],
+      "tagline": "Trump and Musk endorse Cuomo day before election",
+      "description": "On November 3, 2025, President Donald Trump and businessman Elon Musk publicly back Andrew Cuomo. The last-minute endorsements from controversial figures create uncertainty about whether they will help or hurt Cuomo with NYC voters, particularly independents and moderate Democrats."
+    },
+    {
+      "event_id": "nyc_021",
+      "initial_time": 57,
+      "source_nodes": ["twitter", "reddit", "discord"],
+      "tagline": "Social media erupts over Trump-Musk endorsements",
+      "description": "The Trump-Musk endorsement of Cuomo dominates social media discourse on election eve. Progressive activists argue the endorsements prove Cuomo is not a real Democrat, while Cuomo supporters claim he can work across the aisle. The hashtag #TrumpsCuomo trends."
+    },
+    {
+      "event_id": "nyc_022",
+      "initial_time": 58,
+      "source_nodes": ["twitter", "news_feed"],
+      "tagline": "Trump threatens to withhold federal funds if Mamdani wins",
+      "description": "Hours before polls close, President Trump posts on social media threatening to withhold federal funding from NYC if Mamdani is elected, citing his progressive policies. The threat is widely condemned as inappropriate federal interference in a local election."
+    },
+    {
+      "event_id": "nyc_023",
+      "initial_time": 60,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "Mamdani wins NYC mayoral race with 50.4% of vote",
+      "description": "Election Day results on November 4, 2025 show Zohran Mamdani winning with 50.4% of the vote, defeating Andrew Cuomo and Curtis Sliwa. Highest turnout for NYC mayoral election in decades, driven by significant young voter registration. Mamdani will become NYC's first Muslim and South Asian mayor."
+    },
+    {
+      "event_id": "nyc_024",
+      "initial_time": 62,
+      "source_nodes": ["twitter", "reddit", "discord"],
+      "tagline": "Celebration erupts across NYC as Mamdani declared winner",
+      "description": "Victory celebrations break out across NYC neighborhoods as Mamdani's win is announced. Large crowds gather in Queens, Brooklyn, and Manhattan. Social media flooded with videos of young people celebrating what they call a 'political revolution' and historic moment for representation."
+    },
+    {
+      "event_id": "nyc_025",
+      "initial_time": 65,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "Analysts dissect Mamdani's coalition and path to victory",
+      "description": "Political analysts examine Mamdani's winning coalition: overwhelming support from voters under 35, strong performance in diverse outer borough neighborhoods, and his ability to maintain progressive voters while not alienating moderates. His grassroots organizing and focus on affordability proved decisive."
+    }
+  ]
+}

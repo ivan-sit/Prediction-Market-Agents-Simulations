@@ -16,7 +16,7 @@ market = LMSRMarket(
     initial_shares={"YES": 0.0, "NO": 0.0}
 )
 
-print("\n📊 Testing LMSR Pricing Formula")
+print("\nTesting LMSR Pricing Formula")
 print("-"*80)
 
 # Track prices
@@ -33,7 +33,7 @@ prices.append(initial_price)
 volumes.append(0.0)
 
 # Simulate trades
-print("\n🔄 Simulating 30 trades...")
+print("\nSimulating 30 trades...")
 trades = [
     ("BUY", 10),   # Buy 10 YES shares
     ("BUY", 15),   # Buy 15 more
@@ -85,7 +85,7 @@ csv_file = output_dir / "price_data.csv"
 with open(csv_file, 'w') as f:
     f.write(csv_data)
 
-print(f"\n💾 Saved: {csv_file}")
+print(f"\n[SAVED] {csv_file}")
 
 # Create simple markdown
 md = f"""# LMSR Pricing Test Results
@@ -114,10 +114,10 @@ Where:
 
 ## Key Points
 
-✅ **Automated Market Maker** - No order matching needed  
-✅ **Always Liquid** - Can trade at any time  
-✅ **Formula-Based Pricing** - Prices adjust algorithmically  
-✅ **Probability Interpretation** - Price ≈ probability of YES outcome  
+**Automated Market Maker** - No order matching needed
+**Always Liquid** - Can trade at any time
+**Formula-Based Pricing** - Prices adjust algorithmically
+**Probability Interpretation** - Price = probability of YES outcome  
 
 ## Price Data
 
@@ -132,13 +132,13 @@ md_file = output_dir / "README.md"
 with open(md_file, 'w') as f:
     f.write(md)
 
-print(f"💾 Saved: {md_file}")
+print(f"[SAVED] {md_file}")
 
 print("\n" + "="*80)
-print("✅ TEST COMPLETE")
+print("[DONE] TEST COMPLETE")
 print("="*80)
 print(f"\nFiles in {output_dir}/:")
 print(f"  • README.md       - Results summary")
 print(f"  • price_data.csv  - Raw price data")
-print("\n✨ Now generating graph...")
+print("\nNow generating graph...")
 

@@ -9,8 +9,17 @@ This script properly integrates all modules:
 - market: LMSR or OrderBook for price discovery
 - simulation: SimulationEngine orchestration
 
+Configuration is loaded from config.env with command-line overrides.
+
 Usage:
-    python examples/run_with_synthetic_data.py --events data/my_events.json --timesteps 50
+    # Use defaults from config.env
+    python examples/run_with_synthetic_data.py
+
+    # Override specific settings
+    python examples/run_with_synthetic_data.py --events data/other.json --agents 5
+
+    # Override all settings
+    python examples/run_with_synthetic_data.py --events data/my_events.json --market lmsr --agents 3
 """
 
 import sys
@@ -23,6 +32,74 @@ import matplotlib.pyplot as plt
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+
+
+def load_env_config(env_path: Path = None) -> dict:
+    """
+    Load configuration from config.env file.
+
+    Returns dict with defaults that can be overridden by command-line args.
+    """
+    # Default config values
+    config = {
+        'events_file': 'data/sample_election_events.json',
+        'market_type': 'lmsr',
+        'num_agents': 3,
+        'max_timesteps': 100,
+        'liquidity_param': 100.0,
+        'run_name': 'prediction_sim',
+        'random_seed': 42,
+        'log_dir': 'simulation_logs',
+    }
+
+    # Find config.env - check multiple locations
+    if env_path is None:
+        possible_paths = [
+            Path(__file__).parent.parent / "config.env",
+            Path.cwd() / "config.env",
+        ]
+        for p in possible_paths:
+            if p.exists():
+                env_path = p
+                break
+
+    if env_path is None or not env_path.exists():
+        print("[INFO] No config.env found, using defaults")
+        return config
+
+    print(f"[CONFIG] Loading config from: {env_path}")
+
+    # Parse config.env
+    with open(env_path, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            if '=' in line:
+                key, value = line.split('=', 1)
+                key = key.strip()
+                value = value.strip()
+
+                # Map env vars to config keys
+                mapping = {
+                    'EVENTS_FILE': ('events_file', str),
+                    'MARKET_TYPE': ('market_type', str),
+                    'NUM_AGENTS': ('num_agents', int),
+                    'MAX_TICKS': ('max_timesteps', int),
+                    'LMSR_LIQUIDITY_PARAM': ('liquidity_param', float),
+                    'RUN_NAME': ('run_name', str),
+                    'RANDOM_SEED': ('random_seed', int),
+                    'LOG_DIR': ('log_dir', str),
+                }
+
+                if key in mapping:
+                    config_key, converter = mapping[key]
+                    try:
+                        config[config_key] = converter(value)
+                    except ValueError:
+                        pass  # Keep default if conversion fails
+
+    return config
 
 from prediction_market_sim.simulation.engine import (
     SimulationEngine,
@@ -134,15 +211,15 @@ def build_simulation_engine(
     """
 
     # 1. Create portal network with standard portals
-    print("📡 Setting up information portal network...")
+    print("[SETUP] Setting up information portal network...")
     portal_network = create_standard_portals()
 
     # 2. Create agents and subscribe them to portals
-    print(f"🤖 Creating {num_agents} agents with different strategies...")
+    print(f"[AGENTS] Creating {num_agents} agents with different strategies...")
     agent_factories = create_agents_with_subscriptions(portal_network, num_agents)
 
     # 3. Create market
-    print(f"💹 Setting up {market_type.upper()} market...")
+    print(f"[MARKET] Setting up {market_type.upper()} market...")
     if market_type.lower() == 'lmsr':
         market_factory = lambda: LMSRMarketAdapter(
             liquidity_param=liquidity_param,
@@ -157,7 +234,7 @@ def build_simulation_engine(
         )
 
     # 4. Create event stream from JSON file
-    print(f"📂 Loading events from: {events_path}")
+    print(f"[DATA] Loading events from: {events_path}")
     stream_factory = lambda: create_event_stream(str(events_path))
 
     # 5. Configure simulation runtime
@@ -173,7 +250,7 @@ def build_simulation_engine(
     )
 
     # 6. Build the engine
-    print("🔧 Building simulation engine...")
+    print("[BUILD] Building simulation engine...")
     engine = SimulationEngine(
         stream_factory=stream_factory,
         portal_factory=lambda: portal_network,
@@ -183,69 +260,96 @@ def build_simulation_engine(
         runtime_config=runtime_config
     )
 
-    print("✅ Engine ready!\n")
+    print("[OK] Engine ready!\n")
     return engine
 
 
 def main():
+    # Load defaults from config.env
+    env_config = load_env_config()
+
     parser = argparse.ArgumentParser(
-        description="Run prediction market simulation with synthetic event data"
+        description="Run prediction market simulation with synthetic event data",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Use defaults from config.env
+  python examples/run_with_synthetic_data.py
+
+  # Override events file only
+  python examples/run_with_synthetic_data.py --events data/other_events.json
+
+  # Override multiple settings
+  python examples/run_with_synthetic_data.py --market orderbook --agents 5 --seed 123
+        """
     )
     parser.add_argument(
         '--events',
         type=str,
-        default='artifacts/sample_events.json',
-        help='Path to JSON file with event data (default: artifacts/sample_events.json)'
+        default=env_config['events_file'],
+        help=f"Path to JSON file with event data (default from config.env: {env_config['events_file']})"
     )
     parser.add_argument(
         '--market',
         type=str,
         choices=['lmsr', 'orderbook'],
-        default='lmsr',
-        help='Market type: lmsr or orderbook (default: lmsr)'
+        default=env_config['market_type'],
+        help=f"Market type: lmsr or orderbook (default from config.env: {env_config['market_type']})"
     )
     parser.add_argument(
         '--agents',
         type=int,
-        default=3,
-        help='Number of agents (1-5, default: 3)'
+        default=env_config['num_agents'],
+        help=f"Number of agents 1-5 (default from config.env: {env_config['num_agents']})"
     )
     parser.add_argument(
         '--timesteps',
         type=int,
-        default=50,
-        help='Maximum timesteps (default: 50)'
+        default=env_config['max_timesteps'],
+        help=f"Maximum timesteps (default from config.env: {env_config['max_timesteps']})"
     )
     parser.add_argument(
         '--liquidity',
         type=float,
-        default=100.0,
-        help='Market liquidity parameter (default: 100.0)'
+        default=env_config['liquidity_param'],
+        help=f"Market liquidity parameter for LMSR (default from config.env: {env_config['liquidity_param']})"
     )
     parser.add_argument(
         '--seed',
         type=int,
-        default=42,
-        help='Random seed for reproducibility (default: 42)'
+        default=env_config['random_seed'],
+        help=f"Random seed for reproducibility, -1 for random (default from config.env: {env_config['random_seed']})"
     )
     parser.add_argument(
         '--name',
         type=str,
+        default=env_config['run_name'],
+        help=f"Run name for output files (default from config.env: {env_config['run_name']})"
+    )
+    parser.add_argument(
+        '--config',
+        type=str,
         default=None,
-        help='Custom run name (default: auto-generated)'
+        help="Path to custom config.env file (optional)"
     )
 
     args = parser.parse_args()
 
+    # Handle random seed
+    if args.seed == -1:
+        import random
+        args.seed = random.randint(0, 999999)
+        print(f"[RANDOM] Using random seed: {args.seed}")
+
     # Validate inputs
     if args.agents < 1 or args.agents > 5:
-        print("⚠️  Warning: Number of agents should be between 1 and 5")
+        print("[WARNING] Number of agents should be between 1 and 5")
         args.agents = max(1, min(5, args.agents))
 
     # Check if events file exists
     events_path = Path(args.events)
     if not events_path.exists():
-        print(f"❌ Error: Events file not found: {events_path}")
+        print(f"[ERROR] Events file not found: {events_path}")
         print(f"\nCreate a JSON file with this structure:")
         print("""
 {
@@ -262,12 +366,12 @@ def main():
         """)
         sys.exit(1)
 
-    # Generate run name
-    run_name = args.name or f"{args.market}_a{args.agents}_t{args.timesteps}_seed{args.seed}"
+    # Use provided run name (already has default from config.env)
+    run_name = args.name
 
     # Print configuration
     print("\n" + "="*60)
-    print("🚀 PREDICTION MARKET SIMULATION WITH SYNTHETIC DATA")
+    print("PREDICTION MARKET SIMULATION WITH SYNTHETIC DATA")
     print("="*60)
     print(f"Events file:    {events_path}")
     print(f"Market type:    {args.market.upper()}")
@@ -289,16 +393,16 @@ def main():
             run_name=run_name
         )
 
-        print("▶️  Starting simulation...\n")
+        print("[RUN] Starting simulation...\n")
         print("-" * 60)
 
         result = engine.run_once(run_id=1, seed=args.seed)
 
         print("\n" + "-" * 60)
-        print("✅ Simulation complete!\n")
+        print("[DONE] Simulation complete!\n")
 
         # Display results
-        print("📊 RESULTS SUMMARY")
+        print("RESULTS SUMMARY")
         print("="*60)
         if result.prices:
             print(f"Total timesteps:  {len(result.prices)}")
@@ -309,12 +413,12 @@ def main():
         else:
             print("No price data (no events or trades)")
 
-        print("\n📁 Log files saved:")
+        print("\nLog files saved:")
         for log_type, path in result.log_files.items():
             print(f"   {log_type}: {path}")
 
         print("\n" + "="*60)
-        print("🎉 Simulation successful!")
+        print("Simulation successful!")
         print("="*60)
         print("\nAnalyze results with:")
         print(f"  - CSV files in: artifacts/")
@@ -355,11 +459,11 @@ def main():
             print(f"  - Trades log: {trades_path}")
 
     except Exception as e:
-        print(f"\n❌ Error during simulation: {e}")
+        print(f"\n[ERROR] Error during simulation: {e}")
         import traceback
         traceback.print_exc()
 
-        print("\n💡 Troubleshooting:")
+        print("\nTroubleshooting:")
         print("  1. Verify events JSON file has correct format")
         print("  2. Check that source_nodes in events match: twitter, news_feed, expert_analysis, reddit, discord")
         print("  3. Ensure Ollama is running for LLM agents: ollama serve")

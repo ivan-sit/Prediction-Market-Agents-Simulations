@@ -17,7 +17,7 @@ from src.prediction_market_sim.market import LMSRMarketAdapter
 # Create output directory
 output_dir = Path("pricing_test")
 output_dir.mkdir(exist_ok=True)
-print(f"📁 Created output directory: {output_dir}/")
+print(f"[DIR] Created output directory: {output_dir}/")
 
 # ===========================
 # STUB COMPONENTS
@@ -89,7 +89,7 @@ class SimpleEvaluator(Evaluator):
 # RUN SIMULATION
 # ===========================
 
-print("\n🚀 Running LMSR pricing simulation...")
+print("\n[RUN] Running LMSR pricing simulation...")
 print("="*80)
 
 # Create market
@@ -150,7 +150,7 @@ price_history.append(final_price)
 
 print(f"t={num_ticks:3d}: Price = {final_price:.4f} ({final_price*100:.2f}%)")
 print("\n" + "="*80)
-print("✅ Simulation complete!")
+print("[DONE] Simulation complete!")
 print(f"   Initial Price: {price_history[0]:.4f}")
 print(f"   Final Price:   {price_history[-1]:.4f}")
 print(f"   Change:        {price_history[-1] - price_history[0]:+.4f}")
@@ -161,7 +161,7 @@ print(f"   Total Trades:  {final_state['num_trades']}")
 # CREATE PLOT
 # ===========================
 
-print("\n📊 Creating price graph...")
+print("\n[PLOT] Creating price graph...")
 
 fig, ax = plt.subplots(figsize=(12, 6))
 
@@ -188,13 +188,13 @@ plt.tight_layout()
 plt.savefig(plot_filename, dpi=150, bbox_inches='tight')
 plt.close()
 
-print(f"✅ Saved plot: {plot_filename}")
+print(f"[SAVED] Saved plot: {plot_filename}")
 
 # ===========================
 # CREATE MARKDOWN REPORT
 # ===========================
 
-print("\n📝 Creating markdown report...")
+print("\n[DOC] Creating markdown report...")
 
 md_content = f"""# LMSR Pricing Test Results
 
@@ -243,10 +243,10 @@ Where:
 
 Unlike order-book markets (like Kalshi), LMSR uses an **automated market maker** that:
 
-- ✅ **Always provides liquidity** - agents can trade at any time
-- ✅ **Prices adjust algorithmically** - based on supply/demand via formula
-- ✅ **No order matching needed** - instant execution at calculated price
-- ✅ **Prices reflect probabilities** - converge to market consensus
+- **Always provides liquidity** - agents can trade at any time
+- **Prices adjust algorithmically** - based on supply/demand via formula
+- **No order matching needed** - instant execution at calculated price
+- **Prices reflect probabilities** - converge to market consensus
 
 This makes LMSR ideal for prediction markets where continuous trading and price discovery are essential.
 
@@ -259,13 +259,13 @@ md_filename = output_dir / "README.md"
 with open(md_filename, 'w') as f:
     f.write(md_content)
 
-print(f"✅ Saved report: {md_filename}")
+print(f"[SAVED] Saved report: {md_filename}")
 
 # ===========================
 # SAVE RAW DATA
 # ===========================
 
-print("\n💾 Saving raw data...")
+print("\n[DATA] Saving raw data...")
 
 df = pd.DataFrame({
     'timestep': timesteps,
@@ -275,16 +275,16 @@ df = pd.DataFrame({
 csv_filename = output_dir / "price_data.csv"
 df.to_csv(csv_filename, index=False)
 
-print(f"✅ Saved data: {csv_filename}")
+print(f"[SAVED] Saved data: {csv_filename}")
 
 # ===========================
 # SUMMARY
 # ===========================
 
 print("\n" + "="*80)
-print("🎉 TEST COMPLETE!")
+print("TEST COMPLETE!")
 print("="*80)
-print(f"\n📂 All files saved in: {output_dir}/")
+print(f"\nAll files saved in: {output_dir}/")
 print(f"   • README.md          - Markdown report with graph")
 print(f"   • price_evolution.png - Price chart")
 print(f"   • price_data.csv      - Raw price data")

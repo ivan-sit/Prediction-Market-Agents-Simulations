@@ -99,7 +99,7 @@ def main():
     print(f"Events Cross-posted: {events_that_cross_posted} ({(events_that_cross_posted/summary['total_trades']*100):.1f}%)")
     print(f"Total Cross-post Messages: {summary['cross_posts']}")
 
-    print("\n✅ TEST COMPLETE")
+    print("\n[DONE] TEST COMPLETE")
 
 
 if __name__ == "__main__":

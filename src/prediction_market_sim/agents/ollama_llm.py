@@ -21,7 +21,7 @@ class OllamaEmbeddings:
         try:
             # Handle empty or whitespace-only text
             if not text or not text.strip():
-                print("⚠️  Empty text provided to embed_query, returning zero vector")
+                print("[WARNING] Empty text provided to embed_query, returning zero vector")
                 return [0.0] * EMBEDDING_DIM
 
             # Make API request with timeout
@@ -51,7 +51,7 @@ class OllamaEmbeddings:
         except Exception as e:
             # Log error with context but don't crash
             text_preview = text[:100] + "..." if len(text) > 100 else text
-            print(f"⚠️  Embedding failed (len={len(text)}): {e}")
+            print(f"[WARNING] Embedding failed (len={len(text)}): {e}")
             print(f"   Text preview: {text_preview}")
             print(f"   Returning zero vector to prevent crash")
 
