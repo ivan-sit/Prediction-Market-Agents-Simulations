@@ -68,16 +68,20 @@ class LMSRMarketAdapter(MarketAdapter):
             lambda: {"YES": 0.0, "NO": 0.0, "cash": 0.0}
         )
         
+    def reset_tick_stats(self) -> None:
+        """Reset per-tick statistics. Call at start of each timestep."""
+        self._net_flow_tick = 0.0
+        self._tick_volume = 0.0
+
     def submit_orders(self, orders: Sequence[MarketOrder], timestep: int) -> None:
         """Submit orders to the LMSR market.
-        
+
         Args:
             orders: Sequence of market orders
             timestep: Current simulation timestep
         """
-        self._net_flow_tick = 0.0
-        self._tick_volume = 0.0
-        
+        # Note: Don't reset tick stats here - they're reset at timestep start
+
         for order in orders:
             # Convert order to LMSR trade
             trade = self._converter.submit_limit_order(

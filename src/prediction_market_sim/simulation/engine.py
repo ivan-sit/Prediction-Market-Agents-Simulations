@@ -127,6 +127,11 @@ class SimulationEngine:
                 set_current_time(timestep)
 
                 timestep_start = time.time()
+
+                # Reset per-tick market stats at start of each timestep
+                if hasattr(market, 'reset_tick_stats'):
+                    market.reset_tick_stats()
+
                 messages = stream.next_batch()
                 routed = portal.route(messages) if messages else {}
                 belief_snapshot: Dict[str, float] = {}

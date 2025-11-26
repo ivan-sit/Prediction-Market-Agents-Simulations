@@ -525,6 +525,175 @@ Examples:
             plt.close()
             print(f"  - PnL chart: {pnl_path}")
 
+        # Get agent colors for consistent styling across charts
+        agent_ids = list(pnl_df.columns) if result.agent_pnl_history else []
+        agent_colors = {agent: f"C{i}" for i, agent in enumerate(agent_ids)}
+
+        # 1. Price Trend Chart
+        if result.prices:
+            fig, ax = plt.subplots(figsize=(10, 5))
+            timesteps = list(range(len(result.prices)))
+            ax.plot(timesteps, result.prices, linewidth=2, color='#2E86AB', marker='o', markersize=4)
+            ax.set_xlabel("Timestep")
+            ax.set_ylabel("Price")
+            ax.set_title(f"Market Price — {run_name}")
+            ax.set_ylim(0, 1)
+            ax.grid(True, alpha=0.3)
+            plt.tight_layout()
+            price_path = dashboard_dir / f"{run_name}_price.png"
+            plt.savefig(price_path, dpi=150)
+            plt.close()
+            print(f"  - Price chart: {price_path}")
+
+        # 2. Volume & Order Flow Chart
+        if result.market_snapshots:
+            fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
+            timesteps = [s.get('timestep', i) for i, s in enumerate(result.market_snapshots)]
+            volumes = [s.get('tick_volume', 0) for s in result.market_snapshots]
+            net_flows = [s.get('net_flow', 0) for s in result.market_snapshots]
+
+            # Volume bars
+            ax1.bar(timesteps, volumes, color='#A23B72', alpha=0.8)
+            ax1.set_ylabel("Volume (shares)")
+            ax1.set_title(f"Trading Volume & Order Flow — {run_name}")
+            ax1.grid(True, alpha=0.3)
+
+            # Net flow bars (green=buy, red=sell)
+            colors = ['green' if nf >= 0 else 'red' for nf in net_flows]
+            ax2.bar(timesteps, net_flows, color=colors, alpha=0.8)
+            ax2.axhline(y=0, color='gray', linestyle='-', alpha=0.5)
+            ax2.set_xlabel("Timestep")
+            ax2.set_ylabel("Net Flow (+ buy / - sell)")
+            ax2.grid(True, alpha=0.3)
+
+            plt.tight_layout()
+            volume_path = dashboard_dir / f"{run_name}_volume.png"
+            plt.savefig(volume_path, dpi=150)
+            plt.close()
+            print(f"  - Volume chart: {volume_path}")
+
+        # 3. Agent Beliefs Chart
+        if result.belief_history:
+            fig, ax = plt.subplots(figsize=(10, 5))
+
+            # Agent beliefs
+            belief_by_agent = {}
+            for t, beliefs in enumerate(result.belief_history):
+                for agent_id, belief in beliefs.items():
+                    if agent_id not in belief_by_agent:
+                        belief_by_agent[agent_id] = {}
+                    belief_by_agent[agent_id][t] = belief
+
+            for agent_id, beliefs in belief_by_agent.items():
+                ts = sorted(beliefs.keys())
+                vals = [beliefs[t] for t in ts]
+                color = agent_colors.get(agent_id, None)
+                ax.plot(ts, vals, linewidth=2, label=agent_id, color=color, marker='o', markersize=4)
+
+            ax.set_xlabel("Timestep")
+            ax.set_ylabel("Belief (Probability)")
+            ax.set_title(f"Agent Beliefs — {run_name}")
+            ax.set_ylim(0, 1)
+            ax.legend(loc='best')
+            ax.grid(True, alpha=0.3)
+            plt.tight_layout()
+            beliefs_path = dashboard_dir / f"{run_name}_beliefs.png"
+            plt.savefig(beliefs_path, dpi=150)
+            plt.close()
+            print(f"  - Beliefs chart: {beliefs_path}")
+
+        # 4. Price Returns Chart
+        if result.prices and len(result.prices) > 1:
+            fig, ax = plt.subplots(figsize=(10, 5))
+            returns = [result.prices[i] - result.prices[i-1] for i in range(1, len(result.prices))]
+            timesteps = list(range(1, len(result.prices)))
+            colors = ['green' if r >= 0 else 'red' for r in returns]
+
+            ax.bar(timesteps, returns, color=colors, alpha=0.8)
+            ax.axhline(y=0, color='gray', linestyle='-', alpha=0.5)
+            ax.set_xlabel("Timestep")
+            ax.set_ylabel("Price Change")
+            ax.set_title(f"Price Returns (Period-over-Period) — {run_name}")
+            ax.grid(True, alpha=0.3)
+            plt.tight_layout()
+            returns_path = dashboard_dir / f"{run_name}_returns.png"
+            plt.savefig(returns_path, dpi=150)
+            plt.close()
+            print(f"  - Returns chart: {returns_path}")
+
+        # 5. Trade Volume Chart (shares traded per agent per timestep)
+        if result.trade_log:
+            fig, ax = plt.subplots(figsize=(10, 5))
+
+            # Sum shares traded per timestep per agent
+            trade_volumes = {}
+            for trade in result.trade_log:
+                t = getattr(trade, 'timestamp', 0) if hasattr(trade, 'timestamp') else trade.get('timestamp', 0)
+                agent = getattr(trade, 'agent_id', 'unknown') if hasattr(trade, 'agent_id') else trade.get('agent_id', 'unknown')
+                shares = getattr(trade, 'shares', 0) if hasattr(trade, 'shares') else trade.get('shares', 0)
+                if t not in trade_volumes:
+                    trade_volumes[t] = {}
+                trade_volumes[t][agent] = trade_volumes[t].get(agent, 0) + abs(shares)
+
+            if trade_volumes:
+                timesteps = sorted(trade_volumes.keys())
+                agents = sorted(set(a for tv in trade_volumes.values() for a in tv.keys()))
+
+                x = range(len(timesteps))
+                width = 0.8 / len(agents) if agents else 0.8
+
+                for i, agent in enumerate(agents):
+                    volumes = [trade_volumes.get(t, {}).get(agent, 0) for t in timesteps]
+                    offset = (i - len(agents)/2 + 0.5) * width
+                    color = agent_colors.get(agent, f"C{i}")
+                    ax.bar([xi + offset for xi in x], volumes, width, label=agent, color=color, alpha=0.8)
+
+                ax.set_xticks(x)
+                ax.set_xticklabels(timesteps)
+                ax.set_xlabel("Timestep")
+                ax.set_ylabel("Shares Traded")
+                ax.set_title(f"Trading Volume by Agent — {run_name}")
+                ax.legend()
+                ax.grid(True, alpha=0.3, axis='y')
+                plt.tight_layout()
+                trades_chart_path = dashboard_dir / f"{run_name}_trades.png"
+                plt.savefig(trades_chart_path, dpi=150)
+                plt.close()
+                print(f"  - Trade volume chart: {trades_chart_path}")
+
+        # 6. Agent Net Position Over Time Chart
+        if result.market_snapshots and any('positions' in s for s in result.market_snapshots):
+            fig, ax = plt.subplots(figsize=(10, 5))
+
+            positions_over_time = {}
+            for t, snapshot in enumerate(result.market_snapshots):
+                positions = snapshot.get('positions', {})
+                for agent_id, pos in positions.items():
+                    if agent_id not in positions_over_time:
+                        positions_over_time[agent_id] = {'timesteps': [], 'net': []}
+                    positions_over_time[agent_id]['timesteps'].append(t)
+                    # Net position: YES shares - NO shares (positive = bullish, negative = bearish)
+                    net_pos = pos.get('YES', 0) - pos.get('NO', 0)
+                    positions_over_time[agent_id]['net'].append(net_pos)
+
+            if positions_over_time:
+                for agent_id, data in positions_over_time.items():
+                    color = agent_colors.get(agent_id, None)
+                    ax.plot(data['timesteps'], data['net'], linewidth=2, label=agent_id,
+                           color=color, marker='o', markersize=4)
+
+                ax.axhline(y=0, color='gray', linestyle='-', alpha=0.5)
+                ax.set_xlabel("Timestep")
+                ax.set_ylabel("Net Position (YES - NO shares)")
+                ax.set_title(f"Agent Net Position — {run_name}")
+                ax.legend(loc='best')
+                ax.grid(True, alpha=0.3)
+                plt.tight_layout()
+                positions_path = dashboard_dir / f"{run_name}_positions.png"
+                plt.savefig(positions_path, dpi=150)
+                plt.close()
+                print(f"  - Positions chart: {positions_path}")
+
         # Save trade log per agent if available
         if result.trade_log:
             trades_dir = Path("artifacts/trades")
