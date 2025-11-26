@@ -109,8 +109,9 @@ class MarketMemoryModule(MemoryBase):
 
 
 class PredictionMarketAgent(SimulationAgent):
-    def __init__(self, llm: LLMBase, market: Optional[LMSRMarket] = None, personality_prompt: str = "", initial_bankroll: float = 10000.0):
+    def __init__(self, llm: LLMBase, market: Optional[LMSRMarket] = None, personality_prompt: str = "", initial_bankroll: float = 10000.0, agent_id: str = "unknown"):
         super().__init__(llm=llm)
+        self.agent_id = agent_id
         self.bankroll = initial_bankroll
         self.initial_bankroll = initial_bankroll
         self.trade_history = []
@@ -142,7 +143,7 @@ class PredictionMarketAgent(SimulationAgent):
             results.append(self.workflow())
         return results
 
-    def workflow(self) -> Dict[str, Any]:
+    def workflow(self, timestep: int = 0) -> Dict[str, Any]:
         try:
             event = getattr(self, 'current_event', None)
             if not event:
@@ -209,7 +210,7 @@ class PredictionMarketAgent(SimulationAgent):
                             agent_id=getattr(self, 'agent_id', 'unknown'),
                             outcome='YES',
                             max_cost=decision['amount'],
-                            timestamp=0 # Timestamp handled by engine usually, but passed here
+                            timestamp=timestep
                         )
                         if trade:
                             self.bankroll -= trade.cost
@@ -222,7 +223,7 @@ class PredictionMarketAgent(SimulationAgent):
                             agent_id=getattr(self, 'agent_id', 'unknown'),
                             outcome='NO',
                             max_cost=decision['amount'],
-                            timestamp=0
+                            timestamp=timestep
                         )
                         if trade:
                             self.bankroll -= trade.cost

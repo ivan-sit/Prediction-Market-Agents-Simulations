@@ -38,7 +38,8 @@ class PredictionMarketAgentAdapter:
         self.agent = PredictionMarketAgent(
             llm=llm,
             personality_prompt=personality,
-            initial_bankroll=initial_cash
+            initial_bankroll=initial_cash,
+            agent_id=agent_id
         )
 
         self.inbox = []
@@ -56,7 +57,7 @@ class PredictionMarketAgentAdapter:
             return self._cached_decision.get('confidence', 0.5) if self._cached_decision else 0.5
 
         self._last_inbox = list(self.inbox)
-        self._run_workflow()
+        self._run_workflow(timestep)
         self.inbox.clear()
 
         return self._cached_decision.get('confidence', 0.5)
@@ -113,7 +114,7 @@ class PredictionMarketAgentAdapter:
             )
         return posts
 
-    def _run_workflow(self):
+    def _run_workflow(self, timestep: int = 0):
         try:
             event = {
                 'event_id': f'BATCH_{len(self.inbox)}',
@@ -125,7 +126,7 @@ class PredictionMarketAgentAdapter:
             }
 
             self.agent.insert_event(event)
-            self._cached_decision = self.agent.workflow()
+            self._cached_decision = self.agent.workflow(timestep=timestep)
 
             self.cash = self._cached_decision.get('bankroll', self.cash)
 
