@@ -1,0 +1,529 @@
+{
+  "events": [
+    {
+      "event_id": "nba_001",
+      "initial_time": 0,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "Thunder defeat Timberwolves 4-1 in Western Conference Finals",
+      "description": "Oklahoma City Thunder defeat Minnesota Timberwolves in 5 games to advance to NBA Finals. Thunder earn their first Finals appearance since 2012. Shai Gilgeous-Alexander dominates Conference Finals."
+    },
+    {
+      "event_id": "nba_002",
+      "initial_time": 1,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "Pacers defeat Knicks 4-2 to reach NBA Finals",
+      "description": "Indiana Pacers overcome New York Knicks in 6 games to advance to first NBA Finals since 2000. Tyrese Haliburton and Pascal Siakam lead Pacers to historic Finals berth."
+    },
+    {
+      "event_id": "nba_003",
+      "initial_time": 2,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Small market Finals matchup excites NBA fans",
+      "description": "Thunder-Pacers Finals generates excitement as refreshing change from typical big market dominance. Both franchises chasing first championship creates compelling storyline."
+    },
+    {
+      "event_id": "nba_004",
+      "initial_time": 3,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Sportsbooks install Thunder as Finals favorites",
+      "description": "Vegas oddsmakers set Thunder as series favorites based on dominant playoff performance and regular season MVP Shai Gilgeous-Alexander. Pacers enter as underdogs."
+    },
+    {
+      "event_id": "nba_005",
+      "initial_time": 4,
+      "source_nodes": ["news_feed"],
+      "tagline": "Game 1 set for June 5 at Paycom Center in Oklahoma City",
+      "description": "NBA Finals Game 1 scheduled for June 5, 2025 in Oklahoma City. Thunder have home court advantage throughout series after finishing with better regular season record."
+    },
+    {
+      "event_id": "nba_006",
+      "initial_time": 5,
+      "source_nodes": ["news_feed"],
+      "tagline": "SGA wins 2024-25 regular season MVP",
+      "description": "Shai Gilgeous-Alexander officially named 2024-25 NBA MVP before Finals begin. First Thunder player to win MVP since Kevin Durant in 2014. Sets up historic MVP + Finals MVP chase."
+    },
+    {
+      "event_id": "nba_007",
+      "initial_time": 6,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Historical significance: First Finals Game 7 since 2016 possible",
+      "description": "Analysts note potential for first Finals Game 7 since Cavaliers defeated Warriors in 2016. Both teams evenly matched creating potential for dramatic series."
+    },
+    {
+      "event_id": "nba_008",
+      "initial_time": 7,
+      "source_nodes": ["news_feed"],
+      "tagline": "Paycom Center announces sellout for Game 1",
+      "description": "All 18,203 seats sold out for Finals opener in Oklahoma City. Thunder Kingdom ready to provide home court advantage. Secondary market prices surge 400% above face value."
+    },
+    {
+      "event_id": "nba_009",
+      "initial_time": 8,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Thunder fans prepare for first Finals home game since 2012",
+      "description": "OKC community buzzing with excitement for Finals return. Memories of 2012 Finals loss to Heat fuel motivation. Thunder Kingdom organizing coordinated game atmosphere."
+    },
+    {
+      "event_id": "nba_010",
+      "initial_time": 9,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "GAME 1: Pacers stun Thunder 111-110 on Haliburton game-winner",
+      "description": "Indiana steals Game 1 in Oklahoma City, 111-110. Tyrese Haliburton hits game-winning jumper to cap massive fourth quarter rally. Shai Gilgeous-Alexander scores 38 points but Thunder couldn't hold lead. Pacers overcome 25 turnovers with 48% FG, 46% 3PT shooting. Siakam adds 19 points. Thunder shot 40% FG. Attendance: 18,203."
+    },
+    {
+      "event_id": "nba_011",
+      "initial_time": 10,
+      "source_nodes": ["twitter", "reddit", "discord"],
+      "tagline": "Haliburton's clutch shot sends shockwaves through NBA",
+      "description": "Basketball social media erupts after Haliburton's game-winner. Pacers' road victory in Game 1 shifts series momentum. Thunder fans stunned by collapse after strong start."
+    },
+    {
+      "event_id": "nba_012",
+      "initial_time": 11,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Betting markets adjust after Game 1 upset",
+      "description": "Sportsbooks shift odds following Pacers' Game 1 road win. Thunder remain series favorites but line tightens. Game 2 becomes crucial for OKC to avoid 0-2 deficit."
+    },
+    {
+      "event_id": "nba_013",
+      "initial_time": 12,
+      "source_nodes": ["news_feed"],
+      "tagline": "Thunder promise adjustments for Game 2",
+      "description": "Coach Mark Daigneault addresses media, promises defensive adjustments. Thunder must protect home court in Game 2 or face difficult series deficit going to Indiana."
+    },
+    {
+      "event_id": "nba_014",
+      "initial_time": 13,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "GAME 2: Thunder dominate 123-107, even series 1-1",
+      "description": "Oklahoma City responds with dominant Game 2 victory, 123-107. Thunder defense holds Pacers to 41.4% shooting. Shai Gilgeous-Alexander leads balanced attack. Series tied 1-1 heading to Indianapolis. Thunder's offensive execution much improved from Game 1."
+    },
+    {
+      "event_id": "nba_015",
+      "initial_time": 14,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Thunder's Game 2 response praised across NBA",
+      "description": "Basketball community commends Thunder's championship poise. Blowout win demonstrates maturity and adjustability. Series now best-of-five with home court returning to OKC."
+    },
+    {
+      "event_id": "nba_016",
+      "initial_time": 15,
+      "source_nodes": ["news_feed"],
+      "tagline": "Series shifts to Indianapolis for Games 3 and 4",
+      "description": "Gainbridge Fieldhouse preparing for first Finals home games since 2000. Indiana fanbase energized by 1-1 series tie. Pacers need to defend home court to maintain momentum."
+    },
+    {
+      "event_id": "nba_017",
+      "initial_time": 16,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Finals MVP odds after Game 2: SGA takes commanding lead",
+      "description": "Shai Gilgeous-Alexander moves to heavy Finals MVP favorite after two strong games. Averaging 38 points through two games. Haliburton and Siakam trail in odds."
+    },
+    {
+      "event_id": "nba_018",
+      "initial_time": 17,
+      "source_nodes": ["news_feed"],
+      "tagline": "Gainbridge Fieldhouse announces Game 3 sellout",
+      "description": "All seats sold for Pacers' Finals home opener. Indianapolis electric with anticipation. Reggie Miller expected to attend Game 3. Home crowd factor crucial for Pacers."
+    },
+    {
+      "event_id": "nba_019",
+      "initial_time": 18,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "GAME 3: Pacers take 2-1 lead with 116-107 home win",
+      "description": "Indiana seizes 2-1 series advantage with Game 3 victory at home, 116-107. Gainbridge Fieldhouse crowd provides massive boost. Pascal Siakam leads Pacers' balanced scoring. Thunder unable to slow Indiana's high-powered offense. Home court advantage proving decisive."
+    },
+    {
+      "event_id": "nba_020",
+      "initial_time": 19,
+      "source_nodes": ["twitter", "reddit", "discord"],
+      "tagline": "Pacers one win from championship after Game 3 upset",
+      "description": "NBA social media reacting to Indiana's 2-1 series lead. Pacers' home court dominance continues Finals momentum. Thunder facing must-win Game 4 situation."
+    },
+    {
+      "event_id": "nba_021",
+      "initial_time": 20,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Historical data shows team winning Game 3 wins series 70% of time",
+      "description": "Analytics suggest Pacers now favorites to win championship. Team leading 2-1 has historically won Finals series 70% of time. Thunder need Game 4 to avoid elimination scenario."
+    },
+    {
+      "event_id": "nba_022",
+      "initial_time": 21,
+      "source_nodes": ["news_feed"],
+      "tagline": "Thunder emphasize urgency ahead of Game 4",
+      "description": "Oklahoma City players and coaches stress do-or-die mentality. Must protect against 1-3 deficit. SGA promises aggressive performance in crucial Game 4."
+    },
+    {
+      "event_id": "nba_023",
+      "initial_time": 22,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "GAME 4: Thunder survive with 111-104 win on SGA's clutch 4th quarter",
+      "description": "Oklahoma City forces Game 5 with crucial road victory, 111-104. Shai Gilgeous-Alexander delivers clutch fourth quarter performance to save Thunder's season. Series tied 2-2 returning to OKC. Thunder's defense stepped up in critical moments. Pacers couldn't maintain home court advantage."
+    },
+    {
+      "event_id": "nba_024",
+      "initial_time": 23,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "SGA's clutch gene on display in Game 4",
+      "description": "Basketball world praising Gilgeous-Alexander's championship composure. His fourth quarter takeover saved Thunder's title hopes. Series reset heading back to Oklahoma City."
+    },
+    {
+      "event_id": "nba_025",
+      "initial_time": 24,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Series odds reset to even after Game 4",
+      "description": "Betting markets reflect 2-2 tie with Thunder regaining slight edge due to home court in Games 5 and 7. Game 5 historically decisive - winner of 2-2 Game 5 wins series 82% of time."
+    },
+    {
+      "event_id": "nba_026",
+      "initial_time": 25,
+      "source_nodes": ["news_feed"],
+      "tagline": "Game 5 returns to Oklahoma City for pivotal matchup",
+      "description": "Thunder return home with chance to take 3-2 series lead. Paycom Center expected to be deafening. Pacers face difficult road environment in must-win situation."
+    },
+    {
+      "event_id": "nba_027",
+      "initial_time": 26,
+      "source_nodes": ["news_feed"],
+      "tagline": "Jalen Williams promises breakout Game 5 performance",
+      "description": "Thunder forward Jalen Williams tells media he's ready for biggest game of career. Needs to complement SGA's scoring. OKC requires balanced attack to win Game 5."
+    },
+    {
+      "event_id": "nba_028",
+      "initial_time": 27,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "GAME 5: Thunder take 3-2 lead as Jalen Williams explodes for career-high 40 points",
+      "description": "Oklahoma City dominates Game 5, 120-109, behind Jalen Williams' career playoff-high 40 points on 14-24 shooting. Shai Gilgeous-Alexander adds 31 points and 10 assists. Thunder duo combines for 71 points, 10th time exceeding 70 points. Pascal Siakam leads Pacers with 28, TJ McConnell adds 18. Thunder one win from championship. Attendance: 18,203. Williams on performance: 'That was honestly the same exact game as Game 1.'"
+    },
+    {
+      "event_id": "nba_029",
+      "initial_time": 28,
+      "source_nodes": ["twitter", "reddit", "discord"],
+      "tagline": "Jalen Williams' 40-point masterpiece stuns NBA",
+      "description": "Basketball world in awe of Williams' breakout Finals performance. Social media flooded with highlight reels. Thunder now overwhelming favorites to clinch in Game 6."
+    },
+    {
+      "event_id": "nba_030",
+      "initial_time": 29,
+      "source_nodes": ["news_feed"],
+      "tagline": "INJURY REPORT: Tyrese Haliburton suffers calf strain in Game 5",
+      "description": "Critical injury news: Pacers star Tyrese Haliburton suffers calf strain during Game 5. Haliburton finishes with just 4 points, goes 0-for-6 from field. Injury significantly impacts his mobility and effectiveness. Status for Game 6 uncertain."
+    },
+    {
+      "event_id": "nba_031",
+      "initial_time": 30,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Haliburton injury raises concerns for Pacers' Game 6 hopes",
+      "description": "Indiana fanbase worried about franchise player's health. Calf strain could severely limit Haliburton's effectiveness. Pacers' championship hopes in jeopardy heading into elimination game."
+    },
+    {
+      "event_id": "nba_032",
+      "initial_time": 31,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Thunder championship odds surge to 88% after Game 5",
+      "description": "Betting markets overwhelmingly favor Thunder to close out series. 3-2 lead plus home Game 7 advantage if needed. Haliburton injury further tilts odds toward OKC."
+    },
+    {
+      "event_id": "nba_033",
+      "initial_time": 32,
+      "source_nodes": ["news_feed"],
+      "tagline": "Indianapolis prepares for potential championship parade",
+      "description": "Despite facing elimination, Indianapolis city officials finalize parade route plans. Remaining optimistic about forcing Game 7 and potential championship."
+    },
+    {
+      "event_id": "nba_034",
+      "initial_time": 33,
+      "source_nodes": ["news_feed"],
+      "tagline": "Haliburton commits to playing Game 6 despite calf injury",
+      "description": "Tyrese Haliburton tells media he will play through calf strain in Game 6. Acknowledges risks but refuses to miss elimination game. Determination praised by teammates and coaches."
+    },
+    {
+      "event_id": "nba_035",
+      "initial_time": 34,
+      "source_nodes": ["news_feed"],
+      "tagline": "Game 6 ticket prices reach record Finals levels",
+      "description": "Demand for potential closeout Game 6 drives prices to historic highs. Average resale price exceeding $3,000. Indiana desperate to witness potential championship or force Game 7."
+    },
+    {
+      "event_id": "nba_036",
+      "initial_time": 35,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Thunder fans traveling to Indianapolis expecting championship celebration",
+      "description": "OKC supporters organizing road trip for Game 6. Confident in team's ability to close out series. Thunder Kingdom expecting first championship since 2012."
+    },
+    {
+      "event_id": "nba_037",
+      "initial_time": 36,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "GAME 6: Pacers force Game 7 with dominant 108-91 blowout",
+      "description": "Indiana staves off elimination with commanding Game 6 victory, 108-91. Pacers start slow missing first 8 shots then outscore Thunder 68-32 over next 24 minutes. Led by 31 points at one point, Thunder's second-largest deficit of season. Obi Toppin 20 pts, Andrew Nembhard 17, Siakam 16 pts/13 reb, Haliburton battles through injury for 14 pts. Thunder starters pulled in blowout. SGA 21 pts, J-Will 16 pts. Coach Daigneault: 'They earned the win. They outplayed us for most of the 48 minutes.' Series tied 3-3, Game 7 in OKC."
+    },
+    {
+      "event_id": "nba_038",
+      "initial_time": 37,
+      "source_nodes": ["twitter", "reddit", "discord"],
+      "tagline": "Pacers' Game 6 dominance forces winner-take-all Game 7",
+      "description": "Basketball world shocked by Indiana's blowout victory. Haliburton's gutsy performance through injury inspires teammates. Momentum completely shifts heading into Game 7."
+    },
+    {
+      "event_id": "nba_039",
+      "initial_time": 38,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Historical data favors Thunder in Game 7 at home",
+      "description": "Home teams win Finals Game 7 at 78% rate historically (15-4 record since 1980). Thunder's home court advantage significant. First Finals Game 7 since 2016 Cavaliers-Warriors."
+    },
+    {
+      "event_id": "nba_040",
+      "initial_time": 39,
+      "source_nodes": ["news_feed"],
+      "tagline": "Game 7 set for June 22 in Oklahoma City",
+      "description": "NBA Finals will be decided Sunday, June 22, 2025 at Paycom Center. Winner-take-all game for championship. Thunder's home court vs Pacers' momentum creates compelling finale."
+    },
+    {
+      "event_id": "nba_041",
+      "initial_time": 40,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Game 7 hype dominates NBA social media",
+      "description": "Basketball community buzzing with anticipation for Finals Game 7. Predictions split between Thunder's home court and Pacers' resilience. Projected to be most-watched game in years."
+    },
+    {
+      "event_id": "nba_042",
+      "initial_time": 41,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Game 7 betting line: Thunder -4, 73% to win championship",
+      "description": "Sportsbooks install Thunder as 4-point favorites for Game 7. Thunder -185 series favorites, Pacers +160 underdogs. Home court historically decisive in Game 7."
+    },
+    {
+      "event_id": "nba_043",
+      "initial_time": 42,
+      "source_nodes": ["news_feed"],
+      "tagline": "Haliburton's injury status monitored closely for Game 7",
+      "description": "Pacers' medical staff evaluating Haliburton's calf strain daily. Played through pain in Game 6, but Game 7 effectiveness uncertain. Indiana needs their star healthy for championship chance."
+    },
+    {
+      "event_id": "nba_044",
+      "initial_time": 43,
+      "source_nodes": ["news_feed"],
+      "tagline": "Paycom Center announces Game 7 sellout in minutes",
+      "description": "All 18,203 seats plus standing room sold out within minutes of going on sale. Average ticket price $4,500, courtside exceeding $50,000. Oklahoma City preparing for historic night."
+    },
+    {
+      "event_id": "nba_045",
+      "initial_time": 44,
+      "source_nodes": ["news_feed"],
+      "tagline": "Game 7 projected to draw 25+ million viewers",
+      "description": "ESPN/ABC projects massive television audience for Finals Game 7. First winner-take-all Finals game since 2016. Could be most-watched NBA game in years."
+    },
+    {
+      "event_id": "nba_046",
+      "initial_time": 45,
+      "source_nodes": ["twitter", "discord"],
+      "tagline": "Thunder Kingdom prepares for loudest game in arena history",
+      "description": "OKC fan section organizing coordinated chants and maximum noise. Goal to create most hostile environment in Finals history. Thunder 7-0 at home this postseason."
+    },
+    {
+      "event_id": "nba_047",
+      "initial_time": 46,
+      "source_nodes": ["news_feed"],
+      "tagline": "Both teams complete final preparations for Game 7",
+      "description": "Thunder and Pacers hold closed practices before Game 7. All players report healthy and available. Coaches finalizing gameplans for winner-take-all championship game."
+    },
+    {
+      "event_id": "nba_048",
+      "initial_time": 47,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Finals MVP odds entering Game 7: SGA heavy favorite",
+      "description": "Shai Gilgeous-Alexander overwhelming Finals MVP favorite at -400 if Thunder win. Averaging 30+ PPG in series. Haliburton and Siakam distant second choices if Pacers complete comeback."
+    },
+    {
+      "event_id": "nba_049",
+      "initial_time": 48,
+      "source_nodes": ["news_feed"],
+      "tagline": "Rick Carlisle emphasizes underdog mentality for Game 7",
+      "description": "Pacers coach tells team to embrace underdog role. Playing with house money. Loose mindset could be dangerous for Thunder. No pressure on Indiana."
+    },
+    {
+      "event_id": "nba_050",
+      "initial_time": 49,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "NBA legends weigh in on Game 7 predictions",
+      "description": "Former players split on Game 7 outcome. Thunder's talent vs Pacers' momentum creates genuine toss-up. No consensus prediction emerging from basketball community."
+    },
+    {
+      "event_id": "nba_051",
+      "initial_time": 50,
+      "source_nodes": ["news_feed"],
+      "tagline": "Game 7 officials announced: veteran crew assigned",
+      "description": "NBA assigns experienced officiating crew for Game 7. Veteran referees chosen for biggest game of season. Crew expected to let players decide outcome."
+    },
+    {
+      "event_id": "nba_052",
+      "initial_time": 51,
+      "source_nodes": ["news_feed"],
+      "tagline": "GAME 7 PREGAME: Paycom Center atmosphere reaches fever pitch",
+      "description": "Sold-out crowd of 18,203 creates deafening atmosphere. Decibel levels exceed 120 during player introductions. Thunder players visibly energized by home support. Pacers face ultimate hostile road environment."
+    },
+    {
+      "event_id": "nba_053",
+      "initial_time": 52,
+      "source_nodes": ["news_feed"],
+      "tagline": "GAME 7 FIRST QUARTER: Thunder lead 28-24",
+      "description": "OKC takes early Game 7 lead behind strong defensive intensity. Home crowd factor evident. Pacers staying competitive despite hostile environment. Haliburton managing through injury."
+    },
+    {
+      "event_id": "nba_054",
+      "initial_time": 53,
+      "source_nodes": ["news_feed"],
+      "tagline": "DEVASTATING: Haliburton exits Game 7 with torn right Achilles",
+      "description": "BREAKING: Tyrese Haliburton suffers torn right Achilles tendon in Game 7. Pacers star exits game after just 6 minutes in first quarter. Catastrophic injury ends Haliburton's Finals. Pacers' championship hopes severely damaged. Emotional moment as Haliburton carried off court."
+    },
+    {
+      "event_id": "nba_055",
+      "initial_time": 54,
+      "source_nodes": ["twitter", "reddit", "discord"],
+      "tagline": "Basketball world devastated by Haliburton's Achilles injury",
+      "description": "NBA community expressing shock and sadness over Haliburton's torn Achilles. Heroic effort playing through calf injury leads to catastrophic result. Outpouring of support for Pacers star."
+    },
+    {
+      "event_id": "nba_056",
+      "initial_time": 55,
+      "source_nodes": ["news_feed"],
+      "tagline": "GAME 7 HALFTIME: Thunder lead 52-45 without Haliburton",
+      "description": "Oklahoma City extends lead in second quarter as Pacers adjust to losing Haliburton. Indiana showing resilience but missing their star point guard. Thunder controlling pace and tempo."
+    },
+    {
+      "event_id": "nba_057",
+      "initial_time": 56,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "In-game betting heavily shifts toward Thunder after Haliburton injury",
+      "description": "Live betting markets dramatically favor Thunder after Haliburton's exit. OKC now -2000 to win championship. Pacers' chances virtually eliminated without their franchise player."
+    },
+    {
+      "event_id": "nba_058",
+      "initial_time": 57,
+      "source_nodes": ["news_feed"],
+      "tagline": "GAME 7 THIRD QUARTER: Thunder extend lead to 78-65",
+      "description": "Oklahoma City pulling away in third quarter. Pacers fighting valiantly without Haliburton but Thunder's talent advantage overwhelming. Championship within Thunder's grasp."
+    },
+    {
+      "event_id": "nba_059",
+      "initial_time": 58,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Thunder fans sensing championship as Game 7 lead grows",
+      "description": "OKC community celebrating as Thunder build comfortable lead. First championship since 2012 minutes away. Paycom Center rocking with anticipation."
+    },
+    {
+      "event_id": "nba_060",
+      "initial_time": 59,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "GAME 7 FINAL: Thunder win championship 103-91, SGA wins Finals MVP",
+      "description": "OKLAHOMA CITY THUNDER ARE NBA CHAMPIONS! Thunder defeat Pacers 103-91 in Game 7 to win franchise's first championship. Shai Gilgeous-Alexander leads with 29 points and 12 assists, named Finals MVP unanimously (11 votes). SGA averaged 30.3 PPG in series. Becomes first player to win regular season MVP and Finals MVP in same year since LeBron James in 2013. Pacers outscored 87-75 after Haliburton's injury. Bennedict Mathurin leads Indiana with 24 points (10-10 FT). Siakam 16 pts, TJ McConnell 16 pts. Historic championship for Oklahoma City."
+    },
+    {
+      "event_id": "nba_061",
+      "initial_time": 60,
+      "source_nodes": ["twitter", "reddit", "discord"],
+      "tagline": "Thunder championship celebration erupts across NBA",
+      "description": "Basketball world celebrates Oklahoma City's championship. Emotional scenes as young Thunder team achieves ultimate goal. SGA's legacy cemented with MVP double. #ThunderUp trends #1 worldwide."
+    },
+    {
+      "event_id": "nba_062",
+      "initial_time": 61,
+      "source_nodes": ["news_feed"],
+      "tagline": "SGA wins Finals MVP unanimously, historic season complete",
+      "description": "Shai Gilgeous-Alexander receives all 11 Finals MVP votes. Only 4th player ever to win MVP, scoring title, and Finals MVP in same season (Jordan 4x, Kareem 1971, Shaq 2000). At 26 years old, SGA cements superstar status with championship and individual honors."
+    },
+    {
+      "event_id": "nba_063",
+      "initial_time": 62,
+      "source_nodes": ["news_feed"],
+      "tagline": "Haliburton's torn Achilles confirmed, out entire 2025-26 season",
+      "description": "Medical imaging confirms Tyrese Haliburton suffered complete Achilles tendon rupture. Pacers announce he will miss entire 2025-26 season for recovery. Devastating end to heroic Finals performance. Surgery scheduled for next week."
+    },
+    {
+      "event_id": "nba_064",
+      "initial_time": 63,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "NBA community praises Haliburton's courage despite tragic outcome",
+      "description": "Basketball world applauds Haliburton for playing through calf injury in Games 6-7. Warrior mentality praised despite catastrophic result. Pacers proud of his championship effort."
+    },
+    {
+      "event_id": "nba_065",
+      "initial_time": 64,
+      "source_nodes": ["news_feed"],
+      "tagline": "Thunder championship parade scheduled for Thursday",
+      "description": "Oklahoma City announces championship celebration parade for Thursday. Route through downtown expected to draw 400,000+ fans. First championship parade in OKC franchise history."
+    },
+    {
+      "event_id": "nba_066",
+      "initial_time": 65,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Game 7 draws 28.4 million viewers, highest since 2019",
+      "description": "Finals Game 7 delivers massive 28.4 million U.S. television audience. Most-watched NBA game in 6 years. Small market matchup proves compelling storylines drive ratings."
+    },
+    {
+      "event_id": "nba_067",
+      "initial_time": 66,
+      "source_nodes": ["news_feed"],
+      "tagline": "Mark Daigneault wins Coach of Year after championship",
+      "description": "Thunder coach Mark Daigneault receives Coach of Year award following championship. Youngest coach to win title since Bill Russell. Tactical excellence throughout playoffs praised."
+    },
+    {
+      "event_id": "nba_068",
+      "initial_time": 67,
+      "source_nodes": ["news_feed"],
+      "tagline": "Sam Presti wins Executive of Year for Thunder rebuild",
+      "description": "Thunder GM Sam Presti receives Executive of Year award. Masterful rebuild from Durant era complete. Draft selections of SGA, Holmgren, Williams create championship core."
+    },
+    {
+      "event_id": "nba_069",
+      "initial_time": 68,
+      "source_nodes": ["twitter", "reddit"],
+      "tagline": "Thunder parade draws 450,000 fans in Oklahoma City",
+      "description": "Massive crowd celebrates Thunder championship. Emotional scenes as team brings Larry O'Brien trophy through downtown. SGA receives thunderous ovation from passionate fanbase."
+    },
+    {
+      "event_id": "nba_070",
+      "initial_time": 69,
+      "source_nodes": ["news_feed"],
+      "tagline": "Rick Carlisle: Proud of Pacers' championship effort",
+      "description": "Indiana coach praises team's resilience and heart. Exceeded expectations reaching Finals. Haliburton's injury tragic but effort inspired entire organization. Foundation built for future."
+    },
+    {
+      "event_id": "nba_071",
+      "initial_time": 70,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "Thunder installed as favorites for 2026 championship",
+      "description": "Sportsbooks set Thunder as +350 second favorites for 2026 title behind Celtics. Young core with championship experience. Dynasty potential with SGA, Holmgren, Williams."
+    },
+    {
+      "event_id": "nba_072",
+      "initial_time": 71,
+      "source_nodes": ["news_feed"],
+      "tagline": "Finals betting recap: $1.2 billion wagered on series",
+      "description": "Analysis shows estimated $1.2 billion wagered on Finals series. Thunder bettors who held through adversity cashed. Game 7 total went over. Record Finals betting handle."
+    },
+    {
+      "event_id": "nba_073",
+      "initial_time": 72,
+      "source_nodes": ["news_feed"],
+      "tagline": "Haliburton begins Achilles rehab, vows to return stronger",
+      "description": "Tyrese Haliburton releases statement thanking supporters. Committed to rehabilitation process. Vows to return from injury stronger. Pacers organization fully supporting recovery."
+    },
+    {
+      "event_id": "nba_074",
+      "initial_time": 73,
+      "source_nodes": ["expert_analysis"],
+      "tagline": "2025 Finals legacy: Thunder dynasty begins, Haliburton's tragedy",
+      "description": "Historical analysis of 2025 Finals. Thunder's championship marks beginning of potential dynasty. Haliburton's injury tragic footnote to incredible Finals. Series remembered for both triumph and heartbreak."
+    },
+    {
+      "event_id": "nba_075",
+      "initial_time": 74,
+      "source_nodes": ["news_feed", "expert_analysis"],
+      "tagline": "2025 NBA Finals concludes with Thunder's historic championship",
+      "description": "Oklahoma City Thunder capture franchise's first NBA championship, defeating Indiana Pacers 4-3 in dramatic seven-game series. Shai Gilgeous-Alexander's MVP season culminates in Finals MVP award. Series marred by Tyrese Haliburton's Game 7 Achilles injury but showcased competitive basketball at highest level. Thunder's young core poised for sustained excellence. Pacers' valiant Finals run exceeds expectations despite tragic ending."
+    }
+  ]
+}
