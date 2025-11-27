@@ -111,7 +111,18 @@ class LMSRMarketAdapter(MarketAdapter):
     def current_price(self) -> float:
         """Get the current market price for YES outcome."""
         return self._market.get_price("YES")
-    
+
+    def get_price(self, outcome: str) -> float:
+        """Get the current market price for a specific outcome.
+
+        Args:
+            outcome: 'YES' or 'NO'
+
+        Returns:
+            Current price for that outcome
+        """
+        return self._market.get_price(outcome)
+
     def snapshot(self) -> Mapping[str, object]:
         """Get comprehensive market state snapshot."""
         market_snapshot = self._market.snapshot()
