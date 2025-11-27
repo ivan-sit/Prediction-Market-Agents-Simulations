@@ -294,36 +294,73 @@ class SimulationLogger:
         return stats
         
     @staticmethod
+    def _sanitize_text(value: Any) -> Any:
+        """Sanitize text values to remove problematic Unicode characters.
+
+        Args:
+            value: Value to sanitize
+
+        Returns:
+            Sanitized value (strings cleaned, other types unchanged)
+        """
+        if isinstance(value, str):
+            # Remove Unicode replacement character and other problematic chars
+            # Replace \ufffd (replacement char) and encode/decode to handle others
+            sanitized = value.replace('\ufffd', '?')
+            # Also handle any other non-encodable characters by replacing them
+            try:
+                sanitized.encode('utf-8')
+            except UnicodeEncodeError:
+                sanitized = sanitized.encode('utf-8', errors='replace').decode('utf-8')
+            return sanitized
+        return value
+
+    @staticmethod
+    def _sanitize_record(record: Dict[str, Any]) -> Dict[str, Any]:
+        """Sanitize all string values in a record.
+
+        Args:
+            record: Record dictionary
+
+        Returns:
+            Sanitized record with cleaned string values
+        """
+        return {k: SimulationLogger._sanitize_text(v) for k, v in record.items()}
+
+    @staticmethod
     def _save_csv(path: Path, records: List[Dict[str, Any]]) -> None:
         """Save records to CSV file.
-        
+
         Args:
             path: Output file path
             records: List of record dictionaries
         """
         if not records:
             return
-            
+
         # Get all unique keys across all records
         fieldnames = set()
         for record in records:
             fieldnames.update(record.keys())
         fieldnames = sorted(fieldnames)
-        
-        with open(path, 'w', newline='') as f:
+
+        # Sanitize records to handle problematic Unicode characters
+        sanitized_records = [SimulationLogger._sanitize_record(r) for r in records]
+
+        with open(path, 'w', newline='', encoding='utf-8') as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
-            writer.writerows(records)
-            
+            writer.writerows(sanitized_records)
+
     @staticmethod
     def _save_json(path: Path, records: List[Dict[str, Any]]) -> None:
         """Save records to JSON file.
-        
+
         Args:
             path: Output file path
             records: List of record dictionaries
         """
-        with open(path, 'w') as f:
+        with open(path, 'w', encoding='utf-8') as f:
             json.dump(records, f, indent=2, default=str)
 
 
