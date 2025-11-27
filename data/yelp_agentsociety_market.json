@@ -1,0 +1,574 @@
+{
+  "market_type": "restaurant_success_rate",
+  "market_question": "What percentage of reviewed restaurants will receive 4.0+ star ratings?",
+  "ground_truth": {
+    "success_rate": 0.26666666666666666,
+    "threshold": 4.0,
+    "total_reviews": 30,
+    "successful_reviews": 8
+  },
+  "events": [
+    {
+      "event_id": "yelp_000",
+      "initial_time": 0,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"I had mixed feelings about my experience with Mad Batter Bakery. While the cupcakes and desserts were indeed delicious and beautifully presented, the service was unreliable, which is a big deal for me. The owner, Chelle, was responsive at first but then became uncommunicative, especially when issues arose. This inconsistency and lack of professionalism, particularly for important events, is a sign...\"",
+      "metadata": {
+        "user_id": "wAo7casDFsbUR4O8Vb3u8A",
+        "item_id": "cVoyA9wrdF5E8OroBahxCg",
+        "actual_stars": 2.0,
+        "is_success": false,
+        "review_length": 589,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_001",
+      "initial_time": 1,
+      "source_nodes": [
+        "news_feed",
+        "twitter",
+        "reddit",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (negative sentiment)",
+      "description": "A customer left the following review:\n\n\"I had a terrible experience with Brighthouse Networks. The service is unreliable, with frequent outages and slow internet speeds. The customer service is a nightmare, with unhelpful representatives and long wait times. I also faced unexpected increases in my bill, and the company failed to honor promotions. It's frustrating to deal with a service provider that doesn't seem to care about their cust...\"",
+      "metadata": {
+        "user_id": "tkSCd4gCwgh2XvDYmPlsPg",
+        "item_id": "T72WVqMPc67-DWCS8R_ASA",
+        "actual_stars": 1.0,
+        "is_success": false,
+        "review_length": 466,
+        "sentiment": "negative"
+      }
+    },
+    {
+      "event_id": "yelp_002",
+      "initial_time": 2,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis",
+        "discord"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"Bar Asia offers a unique dining experience with its modern and chic decor, which I found very appealing. The outdoor seating area is a nice touch, making it a great spot for a casual dinner. However, the service was a bit hit or miss. While some servers were attentive and friendly, others were slow and understaffed, which affected the overall dining experience. The food was fresh and the portions ...\"",
+      "metadata": {
+        "user_id": "1q6v24bV-zYk9trWszBB4A",
+        "item_id": "9Ti9wdW4CGlF2b_ZuvtpdQ",
+        "actual_stars": 3.0,
+        "is_success": false,
+        "review_length": 562,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_003",
+      "initial_time": 3,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (negative sentiment)",
+      "description": "A customer left the following review:\n\n\"Jet Rock Bar and Grill has a few redeeming qualities, such as its reasonable prices and good breakfast options, which align with my preference for affordability. However, the poor service, subpar food quality, and long wait times are significant drawbacks. The staff's inattentiveness and the unappealing menu options, especially for a casual dining bar, are particularly disappointing. While the pla...\"",
+      "metadata": {
+        "user_id": "IXAcl59yp4JyifX9A4KWkw",
+        "item_id": "0-evjpRKnht75t9J3NE8Zw",
+        "actual_stars": 2.0,
+        "is_success": false,
+        "review_length": 521,
+        "sentiment": "negative"
+      }
+    },
+    {
+      "event_id": "yelp_004",
+      "initial_time": 4,
+      "source_nodes": [
+        "news_feed",
+        "twitter",
+        "reddit",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (negative sentiment)",
+      "description": "A customer left the following review:\n\n\"I had a terrible experience with Katona James A Sr Roofing. The service was unreliable and unresponsive, which is a huge red flag for me. Jim initially quoted a low price but kept increasing it as the work progressed, leading to significant financial stress. The quality of work was also poor, resulting in further leaks and water damage. His unprofessional behavior, including rude interactions and ...\"",
+      "metadata": {
+        "user_id": "dWgnBvdmIvLtk6Ciw9xCEg",
+        "item_id": "RROICJV1SdNKeua8QOSfhA",
+        "actual_stars": 1.0,
+        "is_success": false,
+        "review_length": 502,
+        "sentiment": "negative"
+      }
+    },
+    {
+      "event_id": "yelp_005",
+      "initial_time": 5,
+      "source_nodes": [
+        "news_feed",
+        "twitter",
+        "reddit"
+      ],
+      "tagline": "New restaurant review posted (negative sentiment)",
+      "description": "A customer left the following review:\n\n\"I decided to give Barnet Fair a try, but unfortunately, it didn't meet my expectations. The stylists were praised by others, but my experience was far from positive. My brows were shaped poorly, and the customer service was lacking. I felt rushed and undervalued, and the overall atmosphere didn't make me feel comfortable. Given my past experiences, I won't be returning.\"",
+      "metadata": {
+        "user_id": "6JcBAl3H_VGT5ipcPrpDOA",
+        "item_id": "vLpLGCbAtuxFzu2ka138aA",
+        "actual_stars": 1.0,
+        "is_success": false,
+        "review_length": 372,
+        "sentiment": "negative"
+      }
+    },
+    {
+      "event_id": "yelp_006",
+      "initial_time": 6,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis",
+        "discord"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"Twirls Frozen Yogurt is a place that caught my attention due to its bright and inviting atmosphere. The variety of delicious frozen yogurt flavors, especially the tart and pomegranate raspberry sorbet, is impressive, and the extensive topping selection, including fresh fruits and unique options like butterscotch chips, is a real plus. However, the service can be hit or miss, with some staff being ...\"",
+      "metadata": {
+        "user_id": "meJ9sHOd-fE0jn1rw2nXow",
+        "item_id": "AKtLOAuqcb2GWXuiRW5Www",
+        "actual_stars": 3.0,
+        "is_success": false,
+        "review_length": 675,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_007",
+      "initial_time": 7,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"I had a great experience renting an RV from Cruise America Motorhome Rental & Sales. The staff, especially Hank, were incredibly helpful and made the entire process smooth and stress-free. The RV was clean, well-maintained, and comfortable, which made our trip enjoyable. The prices were also reasonable, and the check-in and check-out processes were efficient. While I did hear about some maintenanc...\"",
+      "metadata": {
+        "user_id": "ScHwaxyOrnZZsk66S4NHrA",
+        "item_id": "Flut-RAHgxOwe_4FlkqGSQ",
+        "actual_stars": 4.0,
+        "is_success": true,
+        "review_length": 540,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_008",
+      "initial_time": 8,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis",
+        "discord"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"I visited Iron Hill Brewery & Restaurant and had a mixed experience. The atmosphere is clean and welcoming, and the staff was friendly and attentive, which I appreciated. The food was decent, with some standout dishes like the buffalo wings and pretzel sticks. However, the prices were a bit steep, and I felt that some of the portions were on the smaller side, which didn't provide the best value fo...\"",
+      "metadata": {
+        "user_id": "FzTqrbKr-Bxle-eL2rNPbg",
+        "item_id": "KrKQChZ1hwHHVaUK9Zc-Ag",
+        "actual_stars": 3.0,
+        "is_success": false,
+        "review_length": 545,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_009",
+      "initial_time": 9,
+      "source_nodes": [
+        "news_feed",
+        "twitter",
+        "reddit",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"Family Eyecare at Westchase is an exceptional optometry practice that truly stands out. The staff, particularly Dr. Mertzlufft, are incredibly knowledgeable, friendly, and attentive, making the entire experience delightful. The office is clean and well-maintained, and they offer convenient hours, including Saturdays, which is a huge plus. The only potential downside could be the parking lot, but i...\"",
+      "metadata": {
+        "user_id": "JkSiLxs14OOaD8hATWR-PQ",
+        "item_id": "L-f8TzrPaOztNMz7xikbNA",
+        "actual_stars": 5.0,
+        "is_success": true,
+        "review_length": 477,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_010",
+      "initial_time": 10,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"Creme Brulee Bistro & Cafe is a delightful spot that offers a cozy, casual, and classy atmosphere. The food quality is top-notch, especially the pastries and baked goods, which are fresh and delicious. The service is generally friendly and attentive, making the dining experience enjoyable. However, the place can get crowded, and the limited seating might be a drawback during peak hours. Despite th...\"",
+      "metadata": {
+        "user_id": "hG72KnoH6BqJUriH76ZjcA",
+        "item_id": "RBCtHLVvc230q8zkRWIoyQ",
+        "actual_stars": 4.0,
+        "is_success": true,
+        "review_length": 517,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_011",
+      "initial_time": 11,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"I had mixed feelings about Sansom Cleaners. While the alterations were top-notch and the staff were friendly and professional, the smoky smell on my clothes after cleaning was a significant downside. The prices were also higher than I'm comfortable with, especially for regular dry cleaning. Additionally, the long turn-around times and issues with stain removal made the overall experience less than...\"",
+      "metadata": {
+        "user_id": "Iu_0caGip_vp8EaTZIPhEA",
+        "item_id": "mcA7_ZHBxL30OLKjlmNmng",
+        "actual_stars": 2.0,
+        "is_success": false,
+        "review_length": 521,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_012",
+      "initial_time": 12,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis",
+        "discord"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"Photographic Works offers a mix of high-quality services and a knowledgeable, friendly staff, which aligns well with my preference for excellent customer service and expertise. However, the business has some issues with inconsistency and reliability, which can be frustrating. Additionally, the prices are on the higher side, especially for basic services. While I appreciate the local and longstandi...\"",
+      "metadata": {
+        "user_id": "Aoii1MTXAnc8G6kOC3j4gA",
+        "item_id": "WANyiYJgedwrNuV63x8s1g",
+        "actual_stars": 3.0,
+        "is_success": false,
+        "review_length": 573,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_013",
+      "initial_time": 13,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"I had a fantastic experience at Booker's Restaurant and Bar. The ambiance is elegant and comfortable, with a romantic and trendy vibe that suits both casual and special occasions. The service was top-notch\u2014attentive without being intrusive, and the staff was very accommodating. I particularly enjoyed the outdoor seating, which was a pleasant surprise. The food was delicious, with well-executed dis...\"",
+      "metadata": {
+        "user_id": "BYj5LjLS7mMl7aExIcBe8Q",
+        "item_id": "t3PkHzVTvPA8qRxKe9TIkQ",
+        "actual_stars": 4.0,
+        "is_success": true,
+        "review_length": 617,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_014",
+      "initial_time": 14,
+      "source_nodes": [
+        "news_feed",
+        "twitter",
+        "reddit",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"East Falls Beverage is a fantastic spot for beer and wine enthusiasts. The staff, particularly the owner John, are incredibly friendly and knowledgeable, making the shopping experience both enjoyable and informative. The store offers a wide and diverse selection of beers, including craft brews and imports, which is perfect for someone looking to try new things. The products are always fresh and co...\"",
+      "metadata": {
+        "user_id": "PpCc7-9dC5PKfXenSvgixQ",
+        "item_id": "nA4by92WDrSbxooQOe5rMQ",
+        "actual_stars": 5.0,
+        "is_success": true,
+        "review_length": 560,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_015",
+      "initial_time": 15,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"Cuenelli's Peruvian Restaurant is a pleasant surprise, offering healthy and delicious food in a casual, welcoming atmosphere. The rotisserie chicken is moist and flavorful, and the sides like cilantro rice are a perfect complement. The staff is friendly and attentive, making the dining experience enjoyable. While it's not a food truck, the quality and taste of the food align well with my preferenc...\"",
+      "metadata": {
+        "user_id": "UId9V4QgwTdn3XDkeD2xKA",
+        "item_id": "Mha77MN_BYGB-w7DONZ5YA",
+        "actual_stars": 4.0,
+        "is_success": true,
+        "review_length": 542,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_016",
+      "initial_time": 16,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"\"I visited El Rincon Latino and was pleased with the overall experience. The food was delicious and authentic, especially the mofongo and chicharr\u00f3n, which were both well-prepared and full of flavor. The prices were reasonable, and the portions were generous. The staff was friendly and attentive, making me feel welcome. However, I did notice some inconsistencies in service, which could be improved...\"",
+      "metadata": {
+        "user_id": "-q8QTgZ8UKIgFKnI8A-seA",
+        "item_id": "ijrWM-bKfFfqbnkvT1MYMQ",
+        "actual_stars": 4.0,
+        "is_success": true,
+        "review_length": 512,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_017",
+      "initial_time": 17,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis",
+        "discord"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"Kwality Fusion offers a unique fusion of Pakistani and Indian cuisines, which I found to be quite interesting. The food was generally well-prepared and flavorful, and the takeout and delivery options were convenient. However, the service could use some improvement. The staff seemed a bit overwhelmed during peak hours, and the wait times were longer than expected. While I appreciate the effort put ...\"",
+      "metadata": {
+        "user_id": "7GcuC5_UL2PBjTqRRYbNhw",
+        "item_id": "sWhPGcyYJoOTAabh2NjbRA",
+        "actual_stars": 3.0,
+        "is_success": false,
+        "review_length": 662,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_018",
+      "initial_time": 18,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (mixed sentiment)",
+      "description": "A customer left the following review:\n\n\"I visited Wawa at 1300 Chestnut St in Philadelphia and had a mixed experience. The store is clean and modern, and the variety of food and drink options is impressive. The food quality, especially the sandwiches and coffee, is good. However, the service was a significant letdown. The staff was often inattentive, and the wait times were excessively long, especially during peak hours. The store also ...\"",
+      "metadata": {
+        "user_id": "sJKPdJqoR7wP8cj-utik1A",
+        "item_id": "4-TKASCNK5-XBWdXmeXWbA",
+        "actual_stars": 2.0,
+        "is_success": false,
+        "review_length": 601,
+        "sentiment": "mixed"
+      }
+    },
+    {
+      "event_id": "yelp_019",
+      "initial_time": 19,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis",
+        "discord"
+      ],
+      "tagline": "New restaurant review posted (mixed sentiment)",
+      "description": "A customer left the following review:\n\n\"I visited Little Istanbul and found it to be a mixed experience. The Turkish cuisine, particularly the lamb and chicken gyros, was quite flavorful and satisfying, which aligns with my appreciation for high-quality and well-executed dishes. However, the service was somewhat inconsistent; while some staff were friendly, others seemed less attentive. The atmosphere was cozy and welcoming, but the por...\"",
+      "metadata": {
+        "user_id": "LY1fw6YZ6jgA8xcPVIZRPw",
+        "item_id": "yvpwN5321mM3x8G2ZiEZmw",
+        "actual_stars": 3.0,
+        "is_success": false,
+        "review_length": 565,
+        "sentiment": "mixed"
+      }
+    },
+    {
+      "event_id": "yelp_020",
+      "initial_time": 20,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis",
+        "discord"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"The Flycatcher has a lot to offer, especially for a casual night out in Tucson. The atmosphere is cool and laid-back, with a nice outdoor patio that adds to the experience. The staff is generally friendly and attentive, and the drink prices are quite reasonable, which is a plus. However, the layout can be a bit challenging during busy events, and the karaoke DJ has been a hit-or-miss experience. W...\"",
+      "metadata": {
+        "user_id": "w_ScPR6QVQKgI3njSdC7KQ",
+        "item_id": "UMLpPE8Ut-VQPRohqm1HFQ",
+        "actual_stars": 3.0,
+        "is_success": false,
+        "review_length": 493,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_021",
+      "initial_time": 21,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"I visited Great Clips Encore Commons for a haircut and was disappointed with the overall experience. The staff was friendly, and the service was quick, which are positives. However, the quality of the haircut was poor, and it was uneven, requiring me to fix it myself. This is a significant issue, especially when I expect a professional and consistent service. The salon also had some issues with th...\"",
+      "metadata": {
+        "user_id": "uMKWYISQKvlbKyy22RG3wg",
+        "item_id": "jwRB-z8DeRmyIaWBcYcJMw",
+        "actual_stars": 2.0,
+        "is_success": false,
+        "review_length": 610,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_022",
+      "initial_time": 22,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis",
+        "discord"
+      ],
+      "tagline": "New restaurant review posted (mixed sentiment)",
+      "description": "A customer left the following review:\n\n\"Marios Trattoria And Bar has a lot to offer, especially for those who appreciate authentic Italian cuisine. The food quality is generally high, and the pizza is a standout, often praised by other reviewers. However, the service can be inconsistent, with some visits being more positive than others. While the atmosphere is clean and welcoming, it might not be as romantic or upscale as one might hope...\"",
+      "metadata": {
+        "user_id": "BvBhLkZNlIYFtgaiZ-BfeQ",
+        "item_id": "tkW6eLIT26-0lMCByw1OGw",
+        "actual_stars": 3.0,
+        "is_success": false,
+        "review_length": 635,
+        "sentiment": "mixed"
+      }
+    },
+    {
+      "event_id": "yelp_023",
+      "initial_time": 23,
+      "source_nodes": [
+        "news_feed",
+        "twitter",
+        "reddit",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (mixed sentiment)",
+      "description": "A customer left the following review:\n\n\"I visited Pottery Barn with high hopes, but my experience was a major letdown. The store itself is beautiful, with high-quality and stylish products, but the customer service was abysmal. I was ignored for long periods, and when I did get assistance, the staff seemed disinterested and unhelpful. Additionally, I heard from other customers about significant delivery delays and issues with orders. Gi...\"",
+      "metadata": {
+        "user_id": "5PBvxl5YzLPVni9AI8qsuA",
+        "item_id": "L7nW6sGXi3J6MeB9Vg4jVw",
+        "actual_stars": 1.0,
+        "is_success": false,
+        "review_length": 551,
+        "sentiment": "mixed"
+      }
+    },
+    {
+      "event_id": "yelp_024",
+      "initial_time": 24,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"Cake Life Bake Shop is a charming and artistic bakery with a lot to offer. The baked goods, especially the cupcakes and pastries, are truly delicious and made with high-quality ingredients. The atmosphere is clean and welcoming, and the staff is generally friendly and helpful. However, the prices are a bit on the higher side, which might be a drawback for some. Despite this, it's a great spot for ...\"",
+      "metadata": {
+        "user_id": "xbUdF2XmnFwOWEsNSpabyA",
+        "item_id": "J-ciDDEdIHMcChGIyKZnOg",
+        "actual_stars": 4.0,
+        "is_success": true,
+        "review_length": 597,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_025",
+      "initial_time": 25,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis",
+        "discord"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"\"Julio's Mufflers provides a solid mix of friendly and knowledgeable service, which is a breath of fresh air in the automotive repair industry. The staff, especially Julio, are honest and transparent, ensuring you only pay for the repairs you actually need. While the service is fast and efficient, the cash-only policy and limited scope of repairs are minor inconveniences. Overall, a reliable and t...\"",
+      "metadata": {
+        "user_id": "wKvc5-MBjo5-GQqPnbG8Lw",
+        "item_id": "Unw031KzD4WIWWKve0-Jxw",
+        "actual_stars": 3.0,
+        "is_success": false,
+        "review_length": 442,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_026",
+      "initial_time": 26,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis",
+        "discord"
+      ],
+      "tagline": "New restaurant review posted (positive sentiment)",
+      "description": "A customer left the following review:\n\n\"I visited Gail's Caribbean & American Cuisine with high hopes after reading the positive reviews. The food, especially the doubles, was indeed fresh and flavorful, which was a pleasant surprise. The service was generally friendly, and the casual atmosphere was comfortable. However, I did notice some inconsistencies in the food quality, particularly with the curry chicken, which was a bit undercook...\"",
+      "metadata": {
+        "user_id": "STB-P06LzXIzLj5feAIihA",
+        "item_id": "Tdb_Nd4EQar9sXE-a8SPSA",
+        "actual_stars": 3.0,
+        "is_success": false,
+        "review_length": 611,
+        "sentiment": "positive"
+      }
+    },
+    {
+      "event_id": "yelp_027",
+      "initial_time": 27,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis",
+        "discord"
+      ],
+      "tagline": "New restaurant review posted (mixed sentiment)",
+      "description": "A customer left the following review:\n\n\"Vale Food Co is a decent spot for a quick, healthy meal. The family-friendly atmosphere and affordable prices are a plus, making it a good choice for those with kids. The food is generally fresh, with a variety of options like acai bowls and poke bowls. However, the service can be slow, and there have been instances of inconsistent portion sizes and availability of menu items. While the overall ex...\"",
+      "metadata": {
+        "user_id": "mjc1_oPVdI1zo7ucgzyc5Q",
+        "item_id": "vdv_HaU7ZIID12KB9mG9Vw",
+        "actual_stars": 3.0,
+        "is_success": false,
+        "review_length": 502,
+        "sentiment": "mixed"
+      }
+    },
+    {
+      "event_id": "yelp_028",
+      "initial_time": 28,
+      "source_nodes": [
+        "news_feed",
+        "discord"
+      ],
+      "tagline": "New restaurant review posted (mixed sentiment)",
+      "description": "A customer left the following review:\n\n\"I visited Modern Vac & Sew Centers for some alterations and was pleased with the quality of the work. The staff was knowledgeable and the pricing was reasonable. However, the turnaround time was a bit longer than I expected, which was a minor inconvenience. Overall, it's a decent place for sewing and appliance repairs, but there's room for improvement in terms of communication and speed.\"",
+      "metadata": {
+        "user_id": "5k0yMdidXDS3fSVpgV26_w",
+        "item_id": "H3PBFYqsgtA_EZr5WgroeA",
+        "actual_stars": 3.0,
+        "is_success": false,
+        "review_length": 390,
+        "sentiment": "mixed"
+      }
+    },
+    {
+      "event_id": "yelp_029",
+      "initial_time": 29,
+      "source_nodes": [
+        "news_feed",
+        "expert_analysis"
+      ],
+      "tagline": "New restaurant review posted (mixed sentiment)",
+      "description": "A customer left the following review:\n\n\"The US Post Office on Grays Ferry Ave has a few bright spots, such as the helpful and efficient service from specific employees like Bill and the tattooed worker. However, the overall experience is marred by frequent service issues, such as lost packages and poor communication. The facility is also quite dirty and poorly maintained, which is a significant letdown. While the location and parking ar...\"",
+      "metadata": {
+        "user_id": "sEwiNGNuMBxH2DV-4EDymw",
+        "item_id": "GB1Bmqd-Ymw37wv3UePOCA",
+        "actual_stars": 2.0,
+        "is_success": false,
+        "review_length": 537,
+        "sentiment": "mixed"
+      }
+    }
+  ]
+}
