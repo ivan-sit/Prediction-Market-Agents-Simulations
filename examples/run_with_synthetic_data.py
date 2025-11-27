@@ -178,19 +178,19 @@ def create_agents_with_subscriptions(portal_network, num_agents=None, yaml_path=
     # Try to load from YAML if provided
     if yaml_path and Path(yaml_path).exists():
         print(f"Loading agents from: {yaml_path}")
-        agent_configs = load_agents_from_yaml(Path(yaml_path))
-        print(f"Found {len(agent_configs)} agent personas in YAML")
+        base_agent_configs = load_agents_from_yaml(Path(yaml_path))
+        print(f"Found {len(base_agent_configs)} agent personas in YAML")
 
         # If num_agents not specified, use all agents from YAML
         if num_agents is None:
-            num_agents = len(agent_configs)
+            num_agents = len(base_agent_configs)
             print(f"Using all {num_agents} agents from YAML file")
     else:
         # Fallback to hardcoded configs
         if num_agents is None:
             num_agents = 3  # Default for hardcoded agents
 
-        agent_configs = [
+        base_agent_configs = [
             {
                 'agent_id': 'conservative_trader',
                 'personality': 'Conservative trader who values high-quality sources and expert analysis. Risk-averse and careful.',
@@ -223,9 +223,21 @@ def create_agents_with_subscriptions(portal_network, num_agents=None, yaml_path=
             },
         ]
 
-    # Limit to requested number of agents
-    agent_configs = agent_configs[:num_agents]
-    print(f"Creating {len(agent_configs)} agents")
+    # Build agent_configs with duplicates if needed
+    agent_configs = []
+    num_base = len(base_agent_configs)
+    for i in range(num_agents):
+        base_config = base_agent_configs[i % num_base].copy()
+        # Add suffix for duplicates to create unique agent IDs
+        if i >= num_base:
+            duplicate_num = (i // num_base) + 1
+            base_config['agent_id'] = f"{base_config['agent_id']}_v{duplicate_num}"
+        agent_configs.append(base_config)
+
+    if num_agents > num_base:
+        print(f"Creating {num_agents} agents ({num_base} unique personas + {num_agents - num_base} duplicates)")
+    else:
+        print(f"Creating {num_agents} agents")
 
     # Subscribe agents to portals
     for config in agent_configs:
@@ -417,9 +429,9 @@ Examples:
         print(f"[RANDOM] Using random seed: {args.seed}")
 
     # Validate inputs
-    if args.agents < 1 or args.agents > 5:
-        print("Warning: Number of agents should be between 1 and 5")
-        args.agents = max(1, min(5, args.agents))
+    if args.agents is not None and args.agents < 1:
+        print("Warning: Number of agents must be at least 1")
+        args.agents = 1
 
     # Check if events file exists
     events_path = Path(args.events)
