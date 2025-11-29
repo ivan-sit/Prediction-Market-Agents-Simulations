@@ -1,0 +1,2944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information Flow Animation - prediction_sim_run1</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            overflow: hidden;
+        }
+        #container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        #header {
+            padding: 15px 20px;
+            background: #16213e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #0f3460;
+        }
+        #header h1 {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        #stats {
+            display: flex;
+            gap: 30px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #e94560;
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+        #main {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        #graph-container {
+            flex: 1;
+            position: relative;
+        }
+        #graph {
+            width: 100%;
+            height: 100%;
+        }
+        #sidebar {
+            width: 300px;
+            background: #16213e;
+            border-left: 1px solid #0f3460;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        #sidebar h2 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 15px;
+        }
+        .event-item {
+            background: #1a1a2e;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 3px solid #e94560;
+        }
+        .event-type {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #e94560;
+            margin-bottom: 5px;
+        }
+        .event-content {
+            font-size: 0.85rem;
+            color: #ccc;
+        }
+        #timeline {
+            height: 120px;
+            background: #16213e;
+            border-top: 1px solid #0f3460;
+            padding: 10px 20px;
+        }
+        #controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        button {
+            background: #e94560;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        button:hover {
+            background: #ff6b6b;
+        }
+        button:disabled {
+            background: #444;
+            cursor: not-allowed;
+        }
+        #speed-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #speed-slider {
+            width: 100px;
+        }
+        #timeline-chart {
+            height: 60px;
+        }
+        .node {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .node:hover {
+            filter: brightness(1.2);
+        }
+        .node-label {
+            font-size: 10px;
+            fill: #fff;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+        .link {
+            stroke-opacity: 0.4;
+            transition: stroke-opacity 0.3s ease;
+        }
+        .link:hover {
+            stroke-opacity: 1;
+        }
+        .particle {
+            fill: #e94560;
+            opacity: 0.8;
+        }
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(22, 33, 62, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            pointer-events: none;
+            z-index: 1000;
+            max-width: 300px;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pulsing {
+            animation: pulse 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="header">
+            <h1>Information Flow Animation - prediction_sim_run1</h1>
+            <div id="stats">
+                <div class="stat">
+                    <div class="stat-value" id="timestep-display">0</div>
+                    <div class="stat-label">Timestep</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="price-display">0.50</div>
+                    <div class="stat-label">Market Price</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="events-display">0</div>
+                    <div class="stat-label">Events</div>
+                </div>
+            </div>
+        </div>
+        <div id="main">
+            <div id="graph-container">
+                <svg id="graph"></svg>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(to right, #d73027, #f7f7f7, #1a9850);"></div>
+                        <span>Belief: NO (red) → YES (green)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #1DA1F2;"></div>
+                        <span>Twitter</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #E74C3C;"></div>
+                        <span>Reuters/News</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #9B59B6;"></div>
+                        <span>Insider</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #2ECC71;"></div>
+                        <span>Analyst Report</span>
+                    </div>
+                </div>
+            </div>
+            <div id="sidebar">
+                <h2>Events This Timestep</h2>
+                <div id="event-list"></div>
+            </div>
+        </div>
+        <div id="timeline">
+            <div id="controls">
+                <button id="play-btn">Play</button>
+                <button id="step-back-btn">&lt;</button>
+                <button id="step-forward-btn">&gt;</button>
+                <button id="reset-btn">Reset</button>
+                <div id="speed-control">
+                    <label>Speed:</label>
+                    <input type="range" id="speed-slider" min="0.5" max="3" step="0.5" value="1">
+                    <span id="speed-value">1x</span>
+                </div>
+            </div>
+            <svg id="timeline-chart"></svg>
+        </div>
+    </div>
+    <div class="tooltip" id="tooltip" style="display: none;"></div>
+
+    <script>
+        // Animation data
+        const animationData = {
+  "run_id": "prediction_sim_run1",
+  "network": {
+    "nodes": [
+      {
+        "id": "twitter",
+        "type": "source",
+        "label": "Twitter",
+        "layer": 0,
+        "color": "#1DA1F2",
+        "radius": 25
+      },
+      {
+        "id": "expert_analysis",
+        "type": "source",
+        "label": "Expert Analysis",
+        "layer": 0,
+        "color": "#2ECC71",
+        "radius": 25
+      },
+      {
+        "id": "news_feed",
+        "type": "source",
+        "label": "News Feed",
+        "layer": 0,
+        "color": "#E74C3C",
+        "radius": 25
+      },
+      {
+        "id": "discord",
+        "type": "source",
+        "label": "Discord",
+        "layer": 0,
+        "color": "#7289DA",
+        "radius": 25
+      },
+      {
+        "id": "reddit",
+        "type": "source",
+        "label": "Reddit",
+        "layer": 0,
+        "color": "#FF4500",
+        "radius": 25
+      },
+      {
+        "id": "social_trader",
+        "type": "agent",
+        "label": "Social",
+        "subscriptions": [
+          "twitter",
+          "reddit",
+          "discord"
+        ],
+        "layer": 1,
+        "color": "#3498DB",
+        "radius": 20
+      },
+      {
+        "id": "conservative_trader",
+        "type": "agent",
+        "label": "Conservative",
+        "subscriptions": [
+          "news_feed",
+          "expert_analysis"
+        ],
+        "layer": 1,
+        "color": "#3498DB",
+        "radius": 20
+      },
+      {
+        "id": "contrarian_trader",
+        "type": "agent",
+        "label": "Contrarian",
+        "subscriptions": [
+          "twitter",
+          "expert_analysis"
+        ],
+        "layer": 1,
+        "color": "#3498DB",
+        "radius": 20
+      },
+      {
+        "id": "well_informed_trader",
+        "type": "agent",
+        "label": "Well Informed",
+        "subscriptions": [
+          "twitter",
+          "news_feed",
+          "expert_analysis",
+          "reddit"
+        ],
+        "layer": 1,
+        "color": "#3498DB",
+        "radius": 20
+      },
+      {
+        "id": "aggressive_trader",
+        "type": "agent",
+        "label": "Aggressive",
+        "subscriptions": [
+          "twitter",
+          "reddit",
+          "news_feed"
+        ],
+        "layer": 1,
+        "color": "#3498DB",
+        "radius": 20
+      },
+      {
+        "id": "market",
+        "type": "market",
+        "label": "Market",
+        "layer": 2,
+        "color": "#F39C12",
+        "radius": 35
+      }
+    ],
+    "edges": [
+      {
+        "source": "twitter",
+        "target": "social_trader",
+        "type": "subscription",
+        "style": "dashed",
+        "color": "#BDC3C7",
+        "width": 1
+      },
+      {
+        "source": "reddit",
+        "target": "social_trader",
+        "type": "subscription",
+        "style": "dashed",
+        "color": "#BDC3C7",
+        "width": 1
+      },
+      {
+        "source": "discord",
+        "target": "social_trader",
+        "type": "subscription",
+        "style": "dashed",
+        "color": "#BDC3C7",
+        "width": 1
+      },
+      {
+        "source": "news_feed",
+        "target": "conservative_trader",
+        "type": "subscription",
+        "style": "dashed",
+        "color": "#BDC3C7",
+        "width": 1
+      },
+      {
+        "source": "expert_analysis",
+        "target": "conservative_trader",
+        "type": "subscription",
+        "style": "dashed",
+        "color": "#BDC3C7",
+        "width": 1
+      },
+      {
+        "source": "twitter",
+        "target": "contrarian_trader",
+        "type": "subscription",
+        "style": "dashed",
+        "color": "#BDC3C7",
+        "width": 1
+      },
+      {
+        "source": "expert_analysis",
+        "target": "contrarian_trader",
+        "type": "subscription",
+        "style": "dashed",
+        "color": "#BDC3C7",
+        "width": 1
+      },
+      {
+        "source": "twitter",
+        "target": "well_informed_trader",
+        "type": "subscription",
+        "style": "dashed",
+        "color": "#BDC3C7",
+        "width": 1
+      },
+      {
+        "source": "news_feed",
+        "target": "well_informed_trader",
+        "type": "subscription",
+        "style": "dashed",
+        "color": "#BDC3C7",
+        "width": 1
+      },
+      {
+        "source": "expert_analysis",
+        "target": "well_informed_trader",
+        "type": "subscription",
+        "style": "dashed",
+        "color": "#BDC3C7",
+        "width": 1
+      },
+      {
+        "source": "reddit",
+        "target": "well_informed_trader",
+        "type": "subscription",
+        "style": "dashed",
+        "color": "#BDC3C7",
+        "width": 1
+      },
+      {
+        "source": "twitter",
+        "target": "aggressive_trader",
+        "type": "subscription",
+        "style": "dashed",
+        "color": "#BDC3C7",
+        "width": 1
+      },
+      {
+        "source": "reddit",
+        "target": "aggressive_trader",
+        "type": "subscription",
+        "style": "dashed",
+        "color": "#BDC3C7",
+        "width": 1
+      },
+      {
+        "source": "news_feed",
+        "target": "aggressive_trader",
+        "type": "subscription",
+        "style": "dashed",
+        "color": "#BDC3C7",
+        "width": 1
+      },
+      {
+        "source": "social_trader",
+        "target": "market",
+        "type": "trading",
+        "style": "solid",
+        "color": "#F39C12",
+        "width": 2
+      },
+      {
+        "source": "conservative_trader",
+        "target": "market",
+        "type": "trading",
+        "style": "solid",
+        "color": "#F39C12",
+        "width": 2
+      },
+      {
+        "source": "contrarian_trader",
+        "target": "market",
+        "type": "trading",
+        "style": "solid",
+        "color": "#F39C12",
+        "width": 2
+      },
+      {
+        "source": "well_informed_trader",
+        "target": "market",
+        "type": "trading",
+        "style": "solid",
+        "color": "#F39C12",
+        "width": 2
+      },
+      {
+        "source": "aggressive_trader",
+        "target": "market",
+        "type": "trading",
+        "style": "solid",
+        "color": "#F39C12",
+        "width": 2
+      }
+    ]
+  },
+  "frames": [
+    {
+      "timestep": 0,
+      "market_price": 0.9944454019127613,
+      "market_volume": 518.7559127807617,
+      "agent_beliefs": {
+        "social_trader": 0.5,
+        "conservative_trader": 0.75,
+        "contrarian_trader": 0.75,
+        "well_informed_trader": 0.75,
+        "aggressive_trader": 0.85
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 0,
+          "source_id": "news_feed",
+          "tagline": "Thunder defeat Timberwolves 4-1 in Western Conference Finals",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "source_emit",
+          "timestep": 0,
+          "source_id": "expert_analysis",
+          "tagline": "Thunder defeat Timberwolves 4-1 in Western Conference Finals",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "belief_update",
+          "timestep": 0,
+          "agent_id": "social_trader",
+          "belief_before": 0.5,
+          "belief_after": 0.5,
+          "market_price": 0.9944454019127613
+        },
+        {
+          "type": "belief_update",
+          "timestep": 0,
+          "agent_id": "conservative_trader",
+          "belief_before": 0.5,
+          "belief_after": 0.75,
+          "market_price": 0.9944454019127613
+        },
+        {
+          "type": "belief_update",
+          "timestep": 0,
+          "agent_id": "contrarian_trader",
+          "belief_before": 0.5,
+          "belief_after": 0.75,
+          "market_price": 0.9944454019127613
+        },
+        {
+          "type": "belief_update",
+          "timestep": 0,
+          "agent_id": "well_informed_trader",
+          "belief_before": 0.5,
+          "belief_after": 0.75,
+          "market_price": 0.9944454019127613
+        },
+        {
+          "type": "belief_update",
+          "timestep": 0,
+          "agent_id": "aggressive_trader",
+          "belief_before": 0.5,
+          "belief_after": 0.85,
+          "market_price": 0.9944454019127613
+        },
+        {
+          "type": "trade",
+          "timestep": 0,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 103.75118255615234,
+          "price": 0.9944454019127613
+        },
+        {
+          "type": "trade",
+          "timestep": 0,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 103.75118255615234,
+          "price": 0.9944454019127613
+        },
+        {
+          "type": "trade",
+          "timestep": 0,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 103.75118255615234,
+          "price": 0.9944454019127613
+        },
+        {
+          "type": "trade",
+          "timestep": 0,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 103.75118255615234,
+          "price": 0.9944454019127613
+        },
+        {
+          "type": "trade",
+          "timestep": 0,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 103.75118255615234,
+          "price": 0.9944454019127613
+        }
+      ],
+      "event_counts": {
+        "source_emit": 2,
+        "belief_update": 5,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 1,
+      "market_price": 0.998378196882585,
+      "market_volume": 1077.2826671600342,
+      "agent_beliefs": {
+        "social_trader": 0.5,
+        "well_informed_trader": 0.65,
+        "conservative_trader": 0.65,
+        "aggressive_trader": 0.85,
+        "contrarian_trader": 0.8
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 1,
+          "source_id": "news_feed",
+          "tagline": "Pacers defeat Knicks 4-2 to reach NBA Finals",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "source_emit",
+          "timestep": 1,
+          "source_id": "expert_analysis",
+          "tagline": "Pacers defeat Knicks 4-2 to reach NBA Finals",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "belief_update",
+          "timestep": 1,
+          "agent_id": "well_informed_trader",
+          "belief_before": 0.75,
+          "belief_after": 0.65,
+          "market_price": 0.998378196882585
+        },
+        {
+          "type": "belief_update",
+          "timestep": 1,
+          "agent_id": "conservative_trader",
+          "belief_before": 0.75,
+          "belief_after": 0.65,
+          "market_price": 0.998378196882585
+        },
+        {
+          "type": "belief_update",
+          "timestep": 1,
+          "agent_id": "contrarian_trader",
+          "belief_before": 0.75,
+          "belief_after": 0.8,
+          "market_price": 0.998378196882585
+        },
+        {
+          "type": "trade",
+          "timestep": 1,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 215.45653343200684,
+          "price": 0.998378196882585
+        },
+        {
+          "type": "trade",
+          "timestep": 1,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 215.45653343200684,
+          "price": 0.998378196882585
+        },
+        {
+          "type": "trade",
+          "timestep": 1,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 215.45653343200684,
+          "price": 0.998378196882585
+        },
+        {
+          "type": "trade",
+          "timestep": 1,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 215.45653343200684,
+          "price": 0.998378196882585
+        },
+        {
+          "type": "trade",
+          "timestep": 1,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 215.45653343200684,
+          "price": 0.998378196882585
+        }
+      ],
+      "event_counts": {
+        "source_emit": 2,
+        "belief_update": 3,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 2,
+      "market_price": 0.999993371868461,
+      "market_volume": 550.1587390899658,
+      "agent_beliefs": {
+        "conservative_trader": 0.65,
+        "contrarian_trader": 0.8,
+        "social_trader": 0.8,
+        "aggressive_trader": 0.85,
+        "well_informed_trader": 0.85
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 2,
+          "source_id": "twitter",
+          "tagline": "Small market Finals matchup excites NBA fans",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "source_emit",
+          "timestep": 2,
+          "source_id": "reddit",
+          "tagline": "Small market Finals matchup excites NBA fans",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "belief_update",
+          "timestep": 2,
+          "agent_id": "social_trader",
+          "belief_before": 0.5,
+          "belief_after": 0.8,
+          "market_price": 0.999993371868461
+        },
+        {
+          "type": "belief_update",
+          "timestep": 2,
+          "agent_id": "well_informed_trader",
+          "belief_before": 0.65,
+          "belief_after": 0.85,
+          "market_price": 0.999993371868461
+        },
+        {
+          "type": "trade",
+          "timestep": 2,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 110.03174781799316,
+          "price": 0.999993371868461
+        },
+        {
+          "type": "trade",
+          "timestep": 2,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 110.03174781799316,
+          "price": 0.999993371868461
+        },
+        {
+          "type": "trade",
+          "timestep": 2,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 110.03174781799316,
+          "price": 0.999993371868461
+        },
+        {
+          "type": "trade",
+          "timestep": 2,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 110.03174781799316,
+          "price": 0.999993371868461
+        },
+        {
+          "type": "trade",
+          "timestep": 2,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 110.03174781799316,
+          "price": 0.999993371868461
+        }
+      ],
+      "event_counts": {
+        "source_emit": 2,
+        "belief_update": 2,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 3,
+      "market_price": 0.9990172746555821,
+      "market_volume": 1499.997854232788,
+      "agent_beliefs": {
+        "aggressive_trader": 0.85,
+        "social_trader": 0.8,
+        "conservative_trader": 0.65,
+        "contrarian_trader": 0.8,
+        "well_informed_trader": 0.65
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 3,
+          "source_id": "expert_analysis",
+          "tagline": "Sportsbooks install Thunder as Finals favorites",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "belief_update",
+          "timestep": 3,
+          "agent_id": "well_informed_trader",
+          "belief_before": 0.85,
+          "belief_after": 0.65,
+          "market_price": 0.9990172746555821
+        },
+        {
+          "type": "trade",
+          "timestep": 3,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 299.9995708465576,
+          "price": 0.9990172746555821
+        },
+        {
+          "type": "trade",
+          "timestep": 3,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 299.9995708465576,
+          "price": 0.9990172746555821
+        },
+        {
+          "type": "trade",
+          "timestep": 3,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 299.9995708465576,
+          "price": 0.9990172746555821
+        },
+        {
+          "type": "trade",
+          "timestep": 3,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 299.9995708465576,
+          "price": 0.9990172746555821
+        },
+        {
+          "type": "trade",
+          "timestep": 3,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 299.9995708465576,
+          "price": 0.9990172746555821
+        }
+      ],
+      "event_counts": {
+        "source_emit": 1,
+        "belief_update": 1,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 4,
+      "market_price": 0.9999890826574555,
+      "market_volume": 450.09493827819824,
+      "agent_beliefs": {
+        "social_trader": 0.8,
+        "contrarian_trader": 0.8,
+        "conservative_trader": 0.65,
+        "well_informed_trader": 0.85,
+        "aggressive_trader": 0.85
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 4,
+          "source_id": "news_feed",
+          "tagline": "Game 1 set for June 5 at Paycom Center in Oklahoma City",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "belief_update",
+          "timestep": 4,
+          "agent_id": "well_informed_trader",
+          "belief_before": 0.65,
+          "belief_after": 0.85,
+          "market_price": 0.9999890826574555
+        },
+        {
+          "type": "trade",
+          "timestep": 4,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 90.01898765563965,
+          "price": 0.9999890826574555
+        },
+        {
+          "type": "trade",
+          "timestep": 4,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 90.01898765563965,
+          "price": 0.9999890826574555
+        },
+        {
+          "type": "trade",
+          "timestep": 4,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 90.01898765563965,
+          "price": 0.9999890826574555
+        },
+        {
+          "type": "trade",
+          "timestep": 4,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 90.01898765563965,
+          "price": 0.9999890826574555
+        },
+        {
+          "type": "trade",
+          "timestep": 4,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 90.01898765563965,
+          "price": 0.9999890826574555
+        }
+      ],
+      "event_counts": {
+        "source_emit": 1,
+        "belief_update": 1,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 5,
+      "market_price": 0.9999999264386218,
+      "market_volume": 499.99985694885254,
+      "agent_beliefs": {
+        "contrarian_trader": 0.8,
+        "social_trader": 0.8,
+        "well_informed_trader": 0.85,
+        "aggressive_trader": 0.85,
+        "conservative_trader": 0.65
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 5,
+          "source_id": "news_feed",
+          "tagline": "SGA wins 2024-25 regular season MVP",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "trade",
+          "timestep": 5,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 99.99997138977051,
+          "price": 0.9999999264386218
+        },
+        {
+          "type": "trade",
+          "timestep": 5,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 99.99997138977051,
+          "price": 0.9999999264386218
+        },
+        {
+          "type": "trade",
+          "timestep": 5,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 99.99997138977051,
+          "price": 0.9999999264386218
+        },
+        {
+          "type": "trade",
+          "timestep": 5,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 99.99997138977051,
+          "price": 0.9999999264386218
+        },
+        {
+          "type": "trade",
+          "timestep": 5,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 99.99997138977051,
+          "price": 0.9999999264386218
+        }
+      ],
+      "event_counts": {
+        "source_emit": 1,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 6,
+      "market_price": 0.999998522444248,
+      "market_volume": 1699.99361038208,
+      "agent_beliefs": {
+        "social_trader": 0.8,
+        "aggressive_trader": 0.85,
+        "well_informed_trader": 0.65,
+        "contrarian_trader": 0.65,
+        "conservative_trader": 0.65
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 6,
+          "source_id": "expert_analysis",
+          "tagline": "Historical significance: First Finals Game 7 since 2016 possible",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "belief_update",
+          "timestep": 6,
+          "agent_id": "well_informed_trader",
+          "belief_before": 0.85,
+          "belief_after": 0.65,
+          "market_price": 0.999998522444248
+        },
+        {
+          "type": "belief_update",
+          "timestep": 6,
+          "agent_id": "contrarian_trader",
+          "belief_before": 0.8,
+          "belief_after": 0.65,
+          "market_price": 0.999998522444248
+        },
+        {
+          "type": "trade",
+          "timestep": 6,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 339.998722076416,
+          "price": 0.999998522444248
+        },
+        {
+          "type": "trade",
+          "timestep": 6,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 339.998722076416,
+          "price": 0.999998522444248
+        },
+        {
+          "type": "trade",
+          "timestep": 6,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 339.998722076416,
+          "price": 0.999998522444248
+        },
+        {
+          "type": "trade",
+          "timestep": 6,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 339.998722076416,
+          "price": 0.999998522444248
+        },
+        {
+          "type": "trade",
+          "timestep": 6,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 339.998722076416,
+          "price": 0.999998522444248
+        }
+      ],
+      "event_counts": {
+        "source_emit": 1,
+        "belief_update": 2,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 7,
+      "market_price": 0.9999703324053636,
+      "market_volume": 1700.0267505645752,
+      "agent_beliefs": {
+        "contrarian_trader": 0.65,
+        "social_trader": 0.8,
+        "well_informed_trader": 0.65,
+        "aggressive_trader": 0.85,
+        "conservative_trader": 0.8
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 7,
+          "source_id": "news_feed",
+          "tagline": "Paycom Center announces sellout for Game 1",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "belief_update",
+          "timestep": 7,
+          "agent_id": "conservative_trader",
+          "belief_before": 0.65,
+          "belief_after": 0.8,
+          "market_price": 0.9999703324053636
+        },
+        {
+          "type": "trade",
+          "timestep": 7,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 340.00535011291504,
+          "price": 0.9999703324053636
+        },
+        {
+          "type": "trade",
+          "timestep": 7,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 340.00535011291504,
+          "price": 0.9999703324053636
+        },
+        {
+          "type": "trade",
+          "timestep": 7,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 340.00535011291504,
+          "price": 0.9999703324053636
+        },
+        {
+          "type": "trade",
+          "timestep": 7,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 340.00535011291504,
+          "price": 0.9999703324053636
+        },
+        {
+          "type": "trade",
+          "timestep": 7,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 340.00535011291504,
+          "price": 0.9999703324053636
+        }
+      ],
+      "event_counts": {
+        "source_emit": 1,
+        "belief_update": 1,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 8,
+      "market_price": 0.9973368022102936,
+      "market_volume": 1550.0097274780273,
+      "agent_beliefs": {
+        "conservative_trader": 0.8,
+        "aggressive_trader": 0.85,
+        "social_trader": 0.8,
+        "contrarian_trader": 0.65,
+        "well_informed_trader": 0.65
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 8,
+          "source_id": "twitter",
+          "tagline": "Thunder fans prepare for first Finals home game since 2012",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "source_emit",
+          "timestep": 8,
+          "source_id": "reddit",
+          "tagline": "Thunder fans prepare for first Finals home game since 2012",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "trade",
+          "timestep": 8,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 310.00194549560547,
+          "price": 0.9973368022102936
+        },
+        {
+          "type": "trade",
+          "timestep": 8,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 310.00194549560547,
+          "price": 0.9973368022102936
+        },
+        {
+          "type": "trade",
+          "timestep": 8,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 310.00194549560547,
+          "price": 0.9973368022102936
+        },
+        {
+          "type": "trade",
+          "timestep": 8,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 310.00194549560547,
+          "price": 0.9973368022102936
+        },
+        {
+          "type": "trade",
+          "timestep": 8,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 310.00194549560547,
+          "price": 0.9973368022102936
+        }
+      ],
+      "event_counts": {
+        "source_emit": 2,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 9,
+      "market_price": 0.9999933984392677,
+      "market_volume": 600.2636909484863,
+      "agent_beliefs": {
+        "social_trader": 0.8,
+        "well_informed_trader": 0.85,
+        "conservative_trader": 0.85,
+        "aggressive_trader": 0.85,
+        "contrarian_trader": 0.8
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 9,
+          "source_id": "news_feed",
+          "tagline": "GAME 1: Pacers stun Thunder 111-110 on Haliburton game-winner",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "source_emit",
+          "timestep": 9,
+          "source_id": "expert_analysis",
+          "tagline": "GAME 1: Pacers stun Thunder 111-110 on Haliburton game-winner",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "belief_update",
+          "timestep": 9,
+          "agent_id": "well_informed_trader",
+          "belief_before": 0.65,
+          "belief_after": 0.85,
+          "market_price": 0.9999933984392677
+        },
+        {
+          "type": "belief_update",
+          "timestep": 9,
+          "agent_id": "conservative_trader",
+          "belief_before": 0.8,
+          "belief_after": 0.85,
+          "market_price": 0.9999933984392677
+        },
+        {
+          "type": "belief_update",
+          "timestep": 9,
+          "agent_id": "contrarian_trader",
+          "belief_before": 0.65,
+          "belief_after": 0.8,
+          "market_price": 0.9999933984392677
+        },
+        {
+          "type": "trade",
+          "timestep": 9,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 120.05273818969727,
+          "price": 0.9999933984392677
+        },
+        {
+          "type": "trade",
+          "timestep": 9,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 120.05273818969727,
+          "price": 0.9999933984392677
+        },
+        {
+          "type": "trade",
+          "timestep": 9,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 120.05273818969727,
+          "price": 0.9999933984392677
+        },
+        {
+          "type": "trade",
+          "timestep": 9,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 120.05273818969727,
+          "price": 0.9999933984392677
+        },
+        {
+          "type": "trade",
+          "timestep": 9,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 120.05273818969727,
+          "price": 0.9999933984392677
+        }
+      ],
+      "event_counts": {
+        "source_emit": 2,
+        "belief_update": 3,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 10,
+      "market_price": 0.99999998363615,
+      "market_volume": 599.9993324279785,
+      "agent_beliefs": {
+        "aggressive_trader": 0.85,
+        "contrarian_trader": 0.8,
+        "conservative_trader": 0.85,
+        "well_informed_trader": 0.85,
+        "social_trader": 0.8
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 10,
+          "source_id": "twitter",
+          "tagline": "Haliburton's clutch shot sends shockwaves through NBA",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "source_emit",
+          "timestep": 10,
+          "source_id": "reddit",
+          "tagline": "Haliburton's clutch shot sends shockwaves through NBA",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "source_emit",
+          "timestep": 10,
+          "source_id": "discord",
+          "tagline": "Haliburton's clutch shot sends shockwaves through NBA",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "trade",
+          "timestep": 10,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 119.9998664855957,
+          "price": 0.99999998363615
+        },
+        {
+          "type": "trade",
+          "timestep": 10,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 119.9998664855957,
+          "price": 0.99999998363615
+        },
+        {
+          "type": "trade",
+          "timestep": 10,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 119.9998664855957,
+          "price": 0.99999998363615
+        },
+        {
+          "type": "trade",
+          "timestep": 10,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 119.9998664855957,
+          "price": 0.99999998363615
+        },
+        {
+          "type": "trade",
+          "timestep": 10,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 119.9998664855957,
+          "price": 0.99999998363615
+        }
+      ],
+      "event_counts": {
+        "source_emit": 3,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 11,
+      "market_price": 0.9999999999452465,
+      "market_volume": 569.9985980987549,
+      "agent_beliefs": {
+        "aggressive_trader": 0.85,
+        "social_trader": 0.8,
+        "well_informed_trader": 0.85,
+        "conservative_trader": 0.65,
+        "contrarian_trader": 0.85
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 11,
+          "source_id": "expert_analysis",
+          "tagline": "Betting markets adjust after Game 1 upset",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "belief_update",
+          "timestep": 11,
+          "agent_id": "conservative_trader",
+          "belief_before": 0.85,
+          "belief_after": 0.65,
+          "market_price": 0.9999999999452465
+        },
+        {
+          "type": "belief_update",
+          "timestep": 11,
+          "agent_id": "contrarian_trader",
+          "belief_before": 0.8,
+          "belief_after": 0.85,
+          "market_price": 0.9999999999452465
+        },
+        {
+          "type": "trade",
+          "timestep": 11,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 113.99971961975098,
+          "price": 0.9999999999452465
+        },
+        {
+          "type": "trade",
+          "timestep": 11,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 113.99971961975098,
+          "price": 0.9999999999452465
+        },
+        {
+          "type": "trade",
+          "timestep": 11,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 113.99971961975098,
+          "price": 0.9999999999452465
+        },
+        {
+          "type": "trade",
+          "timestep": 11,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 113.99971961975098,
+          "price": 0.9999999999452465
+        },
+        {
+          "type": "trade",
+          "timestep": 11,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 113.99971961975098,
+          "price": 0.9999999999452465
+        }
+      ],
+      "event_counts": {
+        "source_emit": 1,
+        "belief_update": 2,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 12,
+      "market_price": 0.999999999999698,
+      "market_volume": 519.9981689453125,
+      "agent_beliefs": {
+        "social_trader": 0.8,
+        "contrarian_trader": 0.85,
+        "well_informed_trader": 0.85,
+        "conservative_trader": 0.65,
+        "aggressive_trader": 0.85
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 12,
+          "source_id": "news_feed",
+          "tagline": "Thunder promise adjustments for Game 2",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "trade",
+          "timestep": 12,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 103.9996337890625,
+          "price": 0.999999999999698
+        },
+        {
+          "type": "trade",
+          "timestep": 12,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 103.9996337890625,
+          "price": 0.999999999999698
+        },
+        {
+          "type": "trade",
+          "timestep": 12,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 103.9996337890625,
+          "price": 0.999999999999698
+        },
+        {
+          "type": "trade",
+          "timestep": 12,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 103.9996337890625,
+          "price": 0.999999999999698
+        },
+        {
+          "type": "trade",
+          "timestep": 12,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 103.9996337890625,
+          "price": 0.999999999999698
+        }
+      ],
+      "event_counts": {
+        "source_emit": 1,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 13,
+      "market_price": 0.999999999999998,
+      "market_volume": 499.9979496002197,
+      "agent_beliefs": {
+        "social_trader": 0.8,
+        "well_informed_trader": 0.85,
+        "conservative_trader": 0.65,
+        "aggressive_trader": 0.85,
+        "contrarian_trader": 0.85
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 13,
+          "source_id": "news_feed",
+          "tagline": "GAME 2: Thunder dominate 123-107, even series 1-1",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "source_emit",
+          "timestep": 13,
+          "source_id": "expert_analysis",
+          "tagline": "GAME 2: Thunder dominate 123-107, even series 1-1",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "trade",
+          "timestep": 13,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 99.99958992004395,
+          "price": 0.999999999999998
+        },
+        {
+          "type": "trade",
+          "timestep": 13,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 99.99958992004395,
+          "price": 0.999999999999998
+        },
+        {
+          "type": "trade",
+          "timestep": 13,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 99.99958992004395,
+          "price": 0.999999999999998
+        },
+        {
+          "type": "trade",
+          "timestep": 13,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 99.99958992004395,
+          "price": 0.999999999999998
+        },
+        {
+          "type": "trade",
+          "timestep": 13,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 99.99958992004395,
+          "price": 0.999999999999998
+        }
+      ],
+      "event_counts": {
+        "source_emit": 2,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 14,
+      "market_price": 1.0,
+      "market_volume": 479.99749183654785,
+      "agent_beliefs": {
+        "contrarian_trader": 0.85,
+        "aggressive_trader": 0.85,
+        "conservative_trader": 0.65,
+        "social_trader": 0.85,
+        "well_informed_trader": 0.85
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 14,
+          "source_id": "twitter",
+          "tagline": "Thunder's Game 2 response praised across NBA",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "source_emit",
+          "timestep": 14,
+          "source_id": "reddit",
+          "tagline": "Thunder's Game 2 response praised across NBA",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "belief_update",
+          "timestep": 14,
+          "agent_id": "social_trader",
+          "belief_before": 0.8,
+          "belief_after": 0.85,
+          "market_price": 1.0
+        },
+        {
+          "type": "trade",
+          "timestep": 14,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 95.99949836730957,
+          "price": 1.0
+        },
+        {
+          "type": "trade",
+          "timestep": 14,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 95.99949836730957,
+          "price": 1.0
+        },
+        {
+          "type": "trade",
+          "timestep": 14,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 95.99949836730957,
+          "price": 1.0
+        },
+        {
+          "type": "trade",
+          "timestep": 14,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 95.99949836730957,
+          "price": 1.0
+        },
+        {
+          "type": "trade",
+          "timestep": 14,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 95.99949836730957,
+          "price": 1.0
+        }
+      ],
+      "event_counts": {
+        "source_emit": 2,
+        "belief_update": 1,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 15,
+      "market_price": 1.0,
+      "market_volume": 959.9949836730957,
+      "agent_beliefs": {
+        "social_trader": 0.85,
+        "contrarian_trader": 0.85,
+        "conservative_trader": 0.65,
+        "well_informed_trader": 0.85,
+        "aggressive_trader": 0.85
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 15,
+          "source_id": "news_feed",
+          "tagline": "Series shifts to Indianapolis for Games 3 and 4",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "trade",
+          "timestep": 15,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 191.99899673461914,
+          "price": 1.0
+        },
+        {
+          "type": "trade",
+          "timestep": 15,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 191.99899673461914,
+          "price": 1.0
+        },
+        {
+          "type": "trade",
+          "timestep": 15,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 191.99899673461914,
+          "price": 1.0
+        },
+        {
+          "type": "trade",
+          "timestep": 15,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 191.99899673461914,
+          "price": 1.0
+        },
+        {
+          "type": "trade",
+          "timestep": 15,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 191.99899673461914,
+          "price": 1.0
+        }
+      ],
+      "event_counts": {
+        "source_emit": 1,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 16,
+      "market_price": 1.0,
+      "market_volume": 2359.994602203369,
+      "agent_beliefs": {
+        "aggressive_trader": 0.85,
+        "social_trader": 0.85,
+        "well_informed_trader": 0.65,
+        "contrarian_trader": 0.5,
+        "conservative_trader": 0.65
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 16,
+          "source_id": "expert_analysis",
+          "tagline": "Finals MVP odds after Game 2: SGA takes commanding lead",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "belief_update",
+          "timestep": 16,
+          "agent_id": "well_informed_trader",
+          "belief_before": 0.85,
+          "belief_after": 0.65,
+          "market_price": 1.0
+        },
+        {
+          "type": "belief_update",
+          "timestep": 16,
+          "agent_id": "contrarian_trader",
+          "belief_before": 0.85,
+          "belief_after": 0.5,
+          "market_price": 1.0
+        },
+        {
+          "type": "trade",
+          "timestep": 16,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 471.9989204406738,
+          "price": 1.0
+        },
+        {
+          "type": "trade",
+          "timestep": 16,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 471.9989204406738,
+          "price": 1.0
+        },
+        {
+          "type": "trade",
+          "timestep": 16,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 471.9989204406738,
+          "price": 1.0
+        },
+        {
+          "type": "trade",
+          "timestep": 16,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 471.9989204406738,
+          "price": 1.0
+        },
+        {
+          "type": "trade",
+          "timestep": 16,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 471.9989204406738,
+          "price": 1.0
+        }
+      ],
+      "event_counts": {
+        "source_emit": 1,
+        "belief_update": 2,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 17,
+      "market_price": 0.9999999999999776,
+      "market_volume": 2359.994602203369,
+      "agent_beliefs": {
+        "conservative_trader": 0.65,
+        "social_trader": 0.85,
+        "well_informed_trader": 0.65,
+        "contrarian_trader": 0.5,
+        "aggressive_trader": 0.85
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 17,
+          "source_id": "news_feed",
+          "tagline": "Gainbridge Fieldhouse announces Game 3 sellout",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "trade",
+          "timestep": 17,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 471.9989204406738,
+          "price": 0.9999999999999776
+        },
+        {
+          "type": "trade",
+          "timestep": 17,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 471.9989204406738,
+          "price": 0.9999999999999776
+        },
+        {
+          "type": "trade",
+          "timestep": 17,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 471.9989204406738,
+          "price": 0.9999999999999776
+        },
+        {
+          "type": "trade",
+          "timestep": 17,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 471.9989204406738,
+          "price": 0.9999999999999776
+        },
+        {
+          "type": "trade",
+          "timestep": 17,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 471.9989204406738,
+          "price": 0.9999999999999776
+        }
+      ],
+      "event_counts": {
+        "source_emit": 1,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 18,
+      "market_price": 0.9999999999993276,
+      "market_volume": 1659.9957466125488,
+      "agent_beliefs": {
+        "social_trader": 0.85,
+        "contrarian_trader": 0.85,
+        "conservative_trader": 0.65,
+        "aggressive_trader": 0.85,
+        "well_informed_trader": 0.65
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 18,
+          "source_id": "news_feed",
+          "tagline": "GAME 3: Pacers take 2-1 lead with 116-107 home win",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "source_emit",
+          "timestep": 18,
+          "source_id": "expert_analysis",
+          "tagline": "GAME 3: Pacers take 2-1 lead with 116-107 home win",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "belief_update",
+          "timestep": 18,
+          "agent_id": "contrarian_trader",
+          "belief_before": 0.5,
+          "belief_after": 0.85,
+          "market_price": 0.9999999999993276
+        },
+        {
+          "type": "trade",
+          "timestep": 18,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 331.99914932250977,
+          "price": 0.9999999999993276
+        },
+        {
+          "type": "trade",
+          "timestep": 18,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 331.99914932250977,
+          "price": 0.9999999999993276
+        },
+        {
+          "type": "trade",
+          "timestep": 18,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 331.99914932250977,
+          "price": 0.9999999999993276
+        },
+        {
+          "type": "trade",
+          "timestep": 18,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 331.99914932250977,
+          "price": 0.9999999999993276
+        },
+        {
+          "type": "trade",
+          "timestep": 18,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 331.99914932250977,
+          "price": 0.9999999999993276
+        }
+      ],
+      "event_counts": {
+        "source_emit": 2,
+        "belief_update": 1,
+        "trade": 5
+      }
+    },
+    {
+      "timestep": 19,
+      "market_price": 0.9999999999977678,
+      "market_volume": 1879.9959182739258,
+      "agent_beliefs": {
+        "aggressive_trader": 0.85,
+        "contrarian_trader": 0.85,
+        "conservative_trader": 0.65,
+        "well_informed_trader": 0.85,
+        "social_trader": 0.85
+      },
+      "events": [
+        {
+          "type": "source_emit",
+          "timestep": 19,
+          "source_id": "twitter",
+          "tagline": "Pacers one win from championship after Game 3 upset",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "source_emit",
+          "timestep": 19,
+          "source_id": "reddit",
+          "tagline": "Pacers one win from championship after Game 3 upset",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "source_emit",
+          "timestep": 19,
+          "source_id": "discord",
+          "tagline": "Pacers one win from championship after Game 3 upset",
+          "recipients": [
+            "social_trader",
+            "conservative_trader",
+            "contrarian_trader",
+            "well_informed_trader",
+            "aggressive_trader"
+          ],
+          "num_recipients": 5
+        },
+        {
+          "type": "belief_update",
+          "timestep": 19,
+          "agent_id": "well_informed_trader",
+          "belief_before": 0.65,
+          "belief_after": 0.85,
+          "market_price": 0.9999999999977678
+        },
+        {
+          "type": "trade",
+          "timestep": 19,
+          "agent_id": "aggressive_trader",
+          "side": "SELL",
+          "shares": 375.99918365478516,
+          "price": 0.9999999999977678
+        },
+        {
+          "type": "trade",
+          "timestep": 19,
+          "agent_id": "contrarian_trader",
+          "side": "SELL",
+          "shares": 375.99918365478516,
+          "price": 0.9999999999977678
+        },
+        {
+          "type": "trade",
+          "timestep": 19,
+          "agent_id": "conservative_trader",
+          "side": "SELL",
+          "shares": 375.99918365478516,
+          "price": 0.9999999999977678
+        },
+        {
+          "type": "trade",
+          "timestep": 19,
+          "agent_id": "well_informed_trader",
+          "side": "SELL",
+          "shares": 375.99918365478516,
+          "price": 0.9999999999977678
+        },
+        {
+          "type": "trade",
+          "timestep": 19,
+          "agent_id": "social_trader",
+          "side": "SELL",
+          "shares": 375.99918365478516,
+          "price": 0.9999999999977678
+        }
+      ],
+      "event_counts": {
+        "source_emit": 3,
+        "belief_update": 1,
+        "trade": 5
+      }
+    }
+  ],
+  "timeline": {
+    "prices": [
+      0.9944454019127613,
+      0.998378196882585,
+      0.999993371868461,
+      0.9990172746555821,
+      0.9999890826574555,
+      0.9999999264386218,
+      0.999998522444248,
+      0.9999703324053636,
+      0.9973368022102936,
+      0.9999933984392677,
+      0.99999998363615,
+      0.9999999999452465,
+      0.999999999999698,
+      0.999999999999998,
+      1.0,
+      1.0,
+      1.0,
+      0.9999999999999776,
+      0.9999999999993276,
+      0.9999999999977678
+    ],
+    "volumes": [
+      518.7559127807617,
+      1077.2826671600342,
+      550.1587390899658,
+      1499.997854232788,
+      450.09493827819824,
+      499.99985694885254,
+      1699.99361038208,
+      1700.0267505645752,
+      1550.0097274780273,
+      600.2636909484863,
+      599.9993324279785,
+      569.9985980987549,
+      519.9981689453125,
+      499.9979496002197,
+      479.99749183654785,
+      959.9949836730957,
+      2359.994602203369,
+      2359.994602203369,
+      1659.9957466125488,
+      1879.9959182739258
+    ]
+  },
+  "metadata": {
+    "total_timesteps": 20,
+    "num_sources": 5,
+    "num_agents": 5,
+    "source_nodes": [
+      "twitter",
+      "expert_analysis",
+      "news_feed",
+      "discord",
+      "reddit"
+    ],
+    "agent_ids": [
+      "social_trader",
+      "conservative_trader",
+      "contrarian_trader",
+      "well_informed_trader",
+      "aggressive_trader"
+    ]
+  }
+};
+
+        // State
+        let currentTimestep = 0;
+        let isPlaying = false;
+        let playInterval = null;
+        let speed = 1;
+
+        // D3 selections
+        let svg, simulation, nodeGroup, linkGroup, particleGroup;
+        let nodes, links;
+
+        // Belief color scale (red = low, yellow = mid, green = high)
+        const beliefColorScale = d3.scaleSequential(d3.interpolateRdYlGn).domain([0, 1]);
+
+        // Initialize
+        function init() {
+            setupGraph();
+            setupTimeline();
+            setupControls();
+            updateFrame(0);
+        }
+
+        function setupGraph() {
+            const container = document.getElementById('graph-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            svg = d3.select('#graph')
+                .attr('width', width)
+                .attr('height', height);
+
+            // Define arrow markers for edges
+            svg.append('defs').append('marker')
+                .attr('id', 'arrowhead')
+                .attr('viewBox', '-0 -5 10 10')
+                .attr('refX', 20)
+                .attr('refY', 0)
+                .attr('orient', 'auto')
+                .attr('markerWidth', 6)
+                .attr('markerHeight', 6)
+                .append('path')
+                .attr('d', 'M 0,-5 L 10,0 L 0,5')
+                .attr('fill', '#666');
+
+            // Create groups
+            linkGroup = svg.append('g').attr('class', 'links');
+            particleGroup = svg.append('g').attr('class', 'particles');
+            nodeGroup = svg.append('g').attr('class', 'nodes');
+
+            // Prepare data
+            nodes = animationData.network.nodes.map(n => ({...n}));
+            links = animationData.network.edges.map(e => ({
+                source: e.source,
+                target: e.target,
+                type: e.type
+            }));
+
+            // Create force simulation with layered layout
+            simulation = d3.forceSimulation(nodes)
+                .force('link', d3.forceLink(links).id(d => d.id).distance(100))
+                .force('charge', d3.forceManyBody().strength(-300))
+                .force('center', d3.forceCenter(width / 2, height / 2))
+                .force('y', d3.forceY(d => {
+                    if (d.type === 'source') return height * 0.2;
+                    if (d.type === 'agent') return height * 0.5;
+                    return height * 0.8;
+                }).strength(0.5))
+                .force('collision', d3.forceCollide().radius(d => (d.radius || 20) + 10));
+
+            // Draw links
+            const linkElements = linkGroup.selectAll('line')
+                .data(links)
+                .enter()
+                .append('line')
+                .attr('class', 'link')
+                .attr('stroke', d => d.type === 'subscription' ? '#4a5568' : '#F39C12')
+                .attr('stroke-width', d => d.type === 'subscription' ? 1 : 2)
+                .attr('stroke-dasharray', d => d.type === 'subscription' ? '5,5' : 'none')
+                .attr('marker-end', 'url(#arrowhead)');
+
+            // Draw nodes
+            const nodeElements = nodeGroup.selectAll('g')
+                .data(nodes)
+                .enter()
+                .append('g')
+                .attr('class', 'node')
+                .call(d3.drag()
+                    .on('start', dragstarted)
+                    .on('drag', dragged)
+                    .on('end', dragended))
+                .on('mouseover', showTooltip)
+                .on('mouseout', hideTooltip);
+
+            // Source node colors
+            const sourceColors = {
+                'twitter': '#1DA1F2',
+                'reuters': '#E74C3C',
+                'insider': '#9B59B6',
+                'analyst_report': '#2ECC71',
+                'news_feed': '#E74C3C',
+                'expert_analysis': '#2ECC71'
+            };
+
+            nodeElements.append('circle')
+                .attr('r', d => {
+                    if (d.type === 'market') return 30;
+                    if (d.type === 'agent') return 25;
+                    return 20;
+                })
+                .attr('fill', d => {
+                    if (d.type === 'source') return sourceColors[d.id] || '#9B59B6';
+                    if (d.type === 'market') return '#F39C12';
+                    return '#3498DB';
+                })
+                .attr('stroke', '#fff')
+                .attr('stroke-width', 2);
+
+            // Add value text inside nodes (for agents and market)
+            nodeElements.append('text')
+                .attr('class', 'node-value')
+                .attr('dy', 4)
+                .attr('text-anchor', 'middle')
+                .attr('fill', '#fff')
+                .attr('font-size', '11px')
+                .attr('font-weight', 'bold')
+                .text(d => {
+                    if (d.type === 'market') return '0.50';
+                    if (d.type === 'agent') return '0.50';
+                    return '';
+                });
+
+            // Add label below node
+            nodeElements.append('text')
+                .attr('class', 'node-label')
+                .attr('dy', d => {
+                    if (d.type === 'market') return 45;
+                    if (d.type === 'agent') return 40;
+                    return 35;
+                })
+                .text(d => d.label || d.id);
+
+            // Update positions on tick
+            simulation.on('tick', () => {
+                linkElements
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+
+                nodeElements.attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+        }
+
+        function setupTimeline() {
+            const container = document.getElementById('timeline-chart');
+            const width = container.parentElement.clientWidth - 40;
+            const height = 60;
+
+            const timelineSvg = d3.select('#timeline-chart')
+                .attr('width', width)
+                .attr('height', height);
+
+            const prices = animationData.timeline.prices;
+            if (prices.length === 0) return;
+
+            const xScale = d3.scaleLinear()
+                .domain([0, prices.length - 1])
+                .range([30, width - 10]);
+
+            const yScale = d3.scaleLinear()
+                .domain([0, 1])
+                .range([height - 10, 10]);
+
+            // Price line
+            const line = d3.line()
+                .x((d, i) => xScale(i))
+                .y(d => yScale(d))
+                .curve(d3.curveMonotoneX);
+
+            timelineSvg.append('path')
+                .datum(prices)
+                .attr('fill', 'none')
+                .attr('stroke', '#e94560')
+                .attr('stroke-width', 2)
+                .attr('d', line);
+
+            // Playhead
+            timelineSvg.append('line')
+                .attr('id', 'playhead')
+                .attr('y1', 0)
+                .attr('y2', height)
+                .attr('stroke', '#fff')
+                .attr('stroke-width', 2);
+
+            // X axis
+            timelineSvg.append('g')
+                .attr('transform', `translate(0,${height - 5})`)
+                .call(d3.axisBottom(xScale).ticks(10).tickFormat(d => `t${d}`))
+                .selectAll('text')
+                .attr('fill', '#888')
+                .attr('font-size', '10px');
+
+            // Click to seek
+            timelineSvg.on('click', function(event) {
+                const [x] = d3.pointer(event);
+                const timestep = Math.round(xScale.invert(x));
+                setTimestep(Math.max(0, Math.min(timestep, animationData.frames.length - 1)));
+            });
+        }
+
+        function setupControls() {
+            document.getElementById('play-btn').onclick = togglePlay;
+            document.getElementById('step-back-btn').onclick = () => setTimestep(currentTimestep - 1);
+            document.getElementById('step-forward-btn').onclick = () => setTimestep(currentTimestep + 1);
+            document.getElementById('reset-btn').onclick = () => setTimestep(0);
+
+            const speedSlider = document.getElementById('speed-slider');
+            speedSlider.oninput = function() {
+                speed = parseFloat(this.value);
+                document.getElementById('speed-value').textContent = speed + 'x';
+                if (isPlaying) {
+                    clearInterval(playInterval);
+                    playInterval = setInterval(nextFrame, 1000 / speed);
+                }
+            };
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            document.getElementById('play-btn').textContent = isPlaying ? 'Pause' : 'Play';
+
+            if (isPlaying) {
+                playInterval = setInterval(nextFrame, 1000 / speed);
+            } else {
+                clearInterval(playInterval);
+            }
+        }
+
+        function nextFrame() {
+            if (currentTimestep < animationData.frames.length - 1) {
+                setTimestep(currentTimestep + 1);
+            } else {
+                togglePlay();
+            }
+        }
+
+        function setTimestep(ts) {
+            if (ts < 0 || ts >= animationData.frames.length) return;
+            currentTimestep = ts;
+            updateFrame(ts);
+        }
+
+        function updateFrame(timestep) {
+            const frame = animationData.frames[timestep];
+            if (!frame) return;
+
+            // Update displays
+            document.getElementById('timestep-display').textContent = timestep;
+            document.getElementById('price-display').textContent = (frame.market_price || 0.5).toFixed(3);
+            document.getElementById('events-display').textContent = (frame.events || []).length;
+
+            // Update playhead
+            const prices = animationData.timeline.prices;
+            if (prices.length > 0) {
+                const timelineWidth = document.getElementById('timeline-chart').clientWidth - 40;
+                const x = 30 + (timestep / (prices.length - 1)) * (timelineWidth - 30);
+                d3.select('#playhead').attr('x1', x).attr('x2', x);
+            }
+
+            // Update agent node colors and values based on beliefs
+            const beliefs = frame.agent_beliefs || {};
+            nodeGroup.selectAll('g').each(function(d) {
+                if (d.type === 'agent' && beliefs[d.id] !== undefined) {
+                    const belief = beliefs[d.id];
+                    d3.select(this).select('circle')
+                        .transition()
+                        .duration(300)
+                        .attr('fill', beliefColorScale(belief));
+                    // Update text value inside node
+                    d3.select(this).select('.node-value')
+                        .text(belief.toFixed(2));
+                }
+            });
+
+            // Update market node with price
+            const marketPrice = frame.market_price || 0.5;
+            nodeGroup.selectAll('g').each(function(d) {
+                if (d.type === 'market') {
+                    d3.select(this).select('circle')
+                        .transition()
+                        .duration(300)
+                        .attr('fill', beliefColorScale(marketPrice));
+                    // Update text value inside market node
+                    d3.select(this).select('.node-value')
+                        .text(marketPrice.toFixed(2));
+                }
+            });
+
+            // Animate events
+            const events = frame.events || [];
+            animateEvents(events);
+
+            // Update event list
+            updateEventList(events);
+        }
+
+        function animateEvents(events) {
+            // Clear old particles
+            particleGroup.selectAll('*').remove();
+
+            events.forEach((event, i) => {
+                setTimeout(() => {
+                    if (event.type === 'source_emit') {
+                        animateSourceEmit(event);
+                    } else if (event.type === 'trade') {
+                        animateTrade(event);
+                    } else if (event.type === 'agent_crosspost') {
+                        animateCrosspost(event);
+                    }
+                }, i * 100);
+            });
+        }
+
+        function animateSourceEmit(event) {
+            const sourceNode = nodes.find(n => n.id === event.source_id);
+            if (!sourceNode) return;
+
+            // Pulse source node
+            nodeGroup.selectAll('g')
+                .filter(d => d.id === event.source_id)
+                .select('circle')
+                .classed('pulsing', true)
+                .on('animationend', function() {
+                    d3.select(this).classed('pulsing', false);
+                });
+
+            // Animate particles to recipients
+            (event.recipients || []).forEach((recipientId, i) => {
+                const targetNode = nodes.find(n => n.id === recipientId);
+                if (!targetNode) return;
+
+                setTimeout(() => {
+                    const particle = particleGroup.append('circle')
+                        .attr('class', 'particle')
+                        .attr('r', 5)
+                        .attr('cx', sourceNode.x)
+                        .attr('cy', sourceNode.y);
+
+                    particle.transition()
+                        .duration(500)
+                        .attr('cx', targetNode.x)
+                        .attr('cy', targetNode.y)
+                        .on('end', function() {
+                            d3.select(this).remove();
+                            // Pulse recipient
+                            nodeGroup.selectAll('g')
+                                .filter(d => d.id === recipientId)
+                                .select('circle')
+                                .classed('pulsing', true)
+                                .on('animationend', function() {
+                                    d3.select(this).classed('pulsing', false);
+                                });
+                        });
+                }, i * 50);
+            });
+        }
+
+        function animateTrade(event) {
+            const agentNode = nodes.find(n => n.id === event.agent_id);
+            const marketNode = nodes.find(n => n.type === 'market');
+            if (!agentNode || !marketNode) return;
+
+            const color = event.side === 'BUY' ? '#2ECC71' : '#E74C3C';
+
+            const particle = particleGroup.append('circle')
+                .attr('class', 'particle')
+                .attr('r', 8)
+                .attr('fill', color)
+                .attr('cx', agentNode.x)
+                .attr('cy', agentNode.y);
+
+            particle.transition()
+                .duration(400)
+                .attr('cx', marketNode.x)
+                .attr('cy', marketNode.y)
+                .attr('r', 4)
+                .on('end', function() {
+                    d3.select(this).remove();
+                });
+        }
+
+        function animateCrosspost(event) {
+            const agentNode = nodes.find(n => n.id === event.agent_id);
+            const targetNode = nodes.find(n => n.id === event.target_channel);
+            if (!agentNode || !targetNode) return;
+
+            const particle = particleGroup.append('circle')
+                .attr('class', 'particle')
+                .attr('r', 4)
+                .attr('fill', '#9B59B6')
+                .attr('cx', agentNode.x)
+                .attr('cy', agentNode.y);
+
+            particle.transition()
+                .duration(400)
+                .attr('cx', targetNode.x)
+                .attr('cy', targetNode.y)
+                .on('end', function() {
+                    d3.select(this).remove();
+                });
+        }
+
+        function updateEventList(events) {
+            const container = document.getElementById('event-list');
+            container.innerHTML = '';
+
+            if (events.length === 0) {
+                container.innerHTML = '<p style="color: #666; font-size: 0.85rem;">No events this timestep</p>';
+                return;
+            }
+
+            events.forEach(event => {
+                const div = document.createElement('div');
+                div.className = 'event-item';
+
+                const typeColors = {
+                    'source_emit': '#1DA1F2',
+                    'belief_update': '#F39C12',
+                    'trade': '#2ECC71',
+                    'agent_crosspost': '#9B59B6',
+                    'agent_receive': '#3498DB'
+                };
+
+                div.style.borderLeftColor = typeColors[event.type] || '#e94560';
+
+                let content = '';
+                switch (event.type) {
+                    case 'source_emit':
+                        content = `<strong>${event.source_id}</strong> emitted event to ${event.num_recipients} agents`;
+                        break;
+                    case 'belief_update':
+                        const delta = (event.belief_after - event.belief_before).toFixed(3);
+                        const sign = delta >= 0 ? '+' : '';
+                        content = `<strong>${event.agent_id}</strong> belief: ${event.belief_before.toFixed(3)} &rarr; ${event.belief_after.toFixed(3)} (${sign}${delta})`;
+                        break;
+                    case 'trade':
+                        content = `<strong>${event.agent_id}</strong> ${event.side} ${event.shares.toFixed(1)} shares @ ${event.price.toFixed(3)}`;
+                        break;
+                    case 'agent_crosspost':
+                        content = `<strong>${event.agent_id}</strong> posted to <strong>${event.target_channel}</strong>`;
+                        break;
+                    default:
+                        content = JSON.stringify(event);
+                }
+
+                div.innerHTML = `
+                    <div class="event-type">${event.type.replace('_', ' ')}</div>
+                    <div class="event-content">${content}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function showTooltip(event, d) {
+            const tooltip = document.getElementById('tooltip');
+            let content = `<strong>${d.label || d.id}</strong><br>Type: ${d.type}`;
+
+            if (d.type === 'agent') {
+                const frame = animationData.frames[currentTimestep];
+                const belief = frame?.agent_beliefs?.[d.id];
+                if (belief !== undefined) {
+                    content += `<br>Belief: ${belief.toFixed(3)}`;
+                }
+                if (d.subscriptions) {
+                    content += `<br>Subscriptions: ${d.subscriptions.join(', ')}`;
+                }
+            }
+
+            tooltip.innerHTML = content;
+            tooltip.style.display = 'block';
+            tooltip.style.left = (event.pageX + 10) + 'px';
+            tooltip.style.top = (event.pageY + 10) + 'px';
+        }
+
+        function hideTooltip() {
+            document.getElementById('tooltip').style.display = 'none';
+        }
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+        // Initialize on load
+        window.addEventListener('load', init);
+        window.addEventListener('resize', () => {
+            // Re-initialize on resize
+            d3.select('#graph').selectAll('*').remove();
+            setupGraph();
+        });
+    </script>
+</body>
+</html>

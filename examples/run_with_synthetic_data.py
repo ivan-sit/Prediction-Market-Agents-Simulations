@@ -239,9 +239,17 @@ def create_agents_with_subscriptions(portal_network, num_agents=None, yaml_path=
     else:
         print(f"Creating {num_agents} agents")
 
-    # Subscribe agents to portals
+    # Subscribe agents to portals and collect subscription data
+    subscriptions_data = []
     for config in agent_configs:
         portal_network.subscribe_agent(config['agent_id'], config['subscriptions'])
+        subscriptions_data.append({
+            'agent_id': config['agent_id'],
+            'subscriptions': config['subscriptions'],
+        })
+
+    # Store subscriptions for later use (animation export)
+    portal_network._agent_subscriptions_data = subscriptions_data
 
     # Create agent factories
     agent_factories = []
@@ -333,6 +341,13 @@ def build_simulation_engine(
         evaluator_factories=[],  # Add custom evaluators if needed
         runtime_config=runtime_config
     )
+
+    # 7. Save agent subscriptions for animation visualization
+    subscriptions_file = runtime_config.log_dir / f"{run_name}_run1_subscriptions.json"
+    if hasattr(portal_network, '_agent_subscriptions_data'):
+        import json
+        with open(subscriptions_file, 'w') as f:
+            json.dump(portal_network._agent_subscriptions_data, f, indent=2)
 
     print("Engine ready!\n")
     return engine

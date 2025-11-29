@@ -233,10 +233,11 @@ def build_lmsr_engine(
         runtime_config=SimulationRuntimeConfig(
             max_timesteps=timesteps,
             run_name=run_name,
-            log_dir=Path("simulation_logs"),
+            log_dir=Path("artifacts"),  # Save to artifacts for consistent visualization
             enable_logging=True,
             save_logs_as_csv=True,
             save_logs_as_json=True,
+            enable_flow_logging=True,  # Enable for animation visualization
         ),
     )
 
@@ -257,14 +258,8 @@ def main() -> None:
     print("\nRUNNING LMSR PREDICTION MARKET SIMULATION")
     print(f"Agents: {args.agents}, Timesteps: {args.timesteps}, Liquidity: {args.liquidity}\n")
 
-    run_name = _generate_run_name(
-        agents=args.agents,
-        timesteps=args.timesteps,
-        liquidity=args.liquidity,
-        messages=args.messages,
-        volatility=args.volatility,
-        cash=args.cash,
-    )
+    # Use consistent run name for animation visualization
+    run_name = "prediction_sim"
 
     engine = build_lmsr_engine(
         num_agents=args.agents,

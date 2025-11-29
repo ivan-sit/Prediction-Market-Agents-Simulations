@@ -23,7 +23,7 @@ from .interfaces import (
     MessageStream,
     PortalNetwork,
 )
-from .logging import SimulationLogger
+from .logging import SimulationLogger, InformationFlowLogger, create_flow_logger
 
 
 Factory = Callable[[], object]
@@ -41,6 +41,7 @@ class SimulationRuntimeConfig:
     enable_logging: bool = True
     save_logs_as_csv: bool = True
     save_logs_as_json: bool = True
+    enable_flow_logging: bool = False  # Enable information flow logging for animation
 
 
 @dataclass(slots=True)
@@ -53,6 +54,7 @@ class SimulationResult:
     market_snapshots: List[Mapping[str, object]] = field(default_factory=list)
     evaluator_metrics: Mapping[str, Mapping[str, float]] = field(default_factory=dict)
     logger: Optional[SimulationLogger] = None
+    flow_logger: Optional[InformationFlowLogger] = None  # For animation data
     log_files: Mapping[str, Path] = field(default_factory=dict)
     summary_stats: Mapping[str, object] = field(default_factory=dict)
     agent_pnl_history: List[Mapping[str, float]] = field(default_factory=list)
@@ -116,6 +118,38 @@ class SimulationEngine:
             logger = SimulationLogger(log_dir=self._config.log_dir, run_id=run_name)
             result.logger = logger
 
+        # Initialize flow logger for animation if enabled
+        flow_logger: Optional[InformationFlowLogger] = None
+        if self._config.enable_flow_logging:
+            run_name = f"{self._config.run_name}_run{run_id}"
+            flow_logger = create_flow_logger(run_id=run_name, log_dir=self._config.log_dir)
+            result.flow_logger = flow_logger
+
+            # Register agent subscriptions for network topology
+            # Also get persona name for display
+            for agent in agents:
+                subscriptions = []
+                persona_name = None
+
+                if hasattr(agent, 'persona') and agent.persona:
+                    subscriptions = agent.persona.get('subscriptions', ['all'])
+                    persona_name = agent.persona.get('name', None)
+                elif hasattr(agent, 'subscriptions'):
+                    subscriptions = list(agent.subscriptions)
+                else:
+                    subscriptions = ['all']
+
+                # Expand "all" to actual source list for clearer visualization
+                if 'all' in subscriptions:
+                    # Default sources used in demo
+                    subscriptions = ['reuters', 'twitter', 'analyst_report', 'insider']
+
+                flow_logger.register_agent_subscriptions(
+                    agent.agent_id,
+                    subscriptions,
+                    display_name=persona_name
+                )
+
         current_price = market.current_price()
         timestep = 0
 
@@ -141,7 +175,14 @@ class SimulationEngine:
                     for message in messages:
                         logger.log_source_message(timestep, message)
 
+                # Log information flow: routing of messages to agents
+                if flow_logger and messages:
+                    flow_logger.log_routing(timestep, messages, routed)
+
                 pbar_timestep.write(f"[Timestep {timestep}] Processing {len(agents)} agents, {len(messages)} messages...")
+
+                # Track previous beliefs for flow logging
+                prev_beliefs = dict(flow_logger.agent_beliefs) if flow_logger else {}
 
                 # Parallel agent processing
                 with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -159,7 +200,29 @@ class SimulationEngine:
                                 belief_snapshot[agent.agent_id] = agent_result['belief']
                                 if agent_result['order']:
                                     orders.append(agent_result['order'])
-                                
+
+                                # Log belief update for flow visualization
+                                if flow_logger:
+                                    prev_belief = prev_beliefs.get(agent.agent_id, 0.5)
+                                    flow_logger.log_belief_update(
+                                        timestep=timestep,
+                                        agent_id=agent.agent_id,
+                                        belief_before=prev_belief,
+                                        belief_after=agent_result['belief'],
+                                        market_price=current_price,
+                                    )
+
+                                    # Log cross-posts if any
+                                    for post in agent_result.get('posts', []):
+                                        flow_logger.log_crosspost(
+                                            timestep=timestep,
+                                            agent_id=agent.agent_id,
+                                            target_channel=post.get('target_node', 'unknown'),
+                                            original_event_id=post.get('event_id'),
+                                            content=post.get('content', ''),
+                                            transformation='forwarded',
+                                        )
+
                                 agent_time = agent_result['time']
                                 pbar_agents.set_postfix(time=f"{agent_time:.1f}s", belief=f"{agent_result['belief']:.3f}")
                                 pbar_agents.update(1)
@@ -168,6 +231,18 @@ class SimulationEngine:
 
                 if orders:
                     market.submit_orders(orders, timestep)
+
+                    # Log trades for flow visualization
+                    if flow_logger:
+                        for order in orders:
+                            flow_logger.log_trade(
+                                timestep=timestep,
+                                agent_id=order.agent_id,
+                                side=order.side,
+                                shares=order.size,
+                                price=order.limit_price,
+                                confidence=order.confidence,
+                            )
 
                 current_price = market.current_price()
                 snapshot = market.snapshot()
@@ -218,6 +293,11 @@ class SimulationEngine:
                 result.log_files.update(logger.save_to_json())
             result.summary_stats = logger.get_summary_stats()
 
+        # Save flow logs for animation
+        if flow_logger:
+            flow_path = flow_logger.save_to_json()
+            result.log_files["flow"] = flow_path
+
         # Capture trades if adapter supports it
         if hasattr(market, "get_trades"):
             try:
@@ -229,22 +309,24 @@ class SimulationEngine:
 
     def _process_agent(self, agent, inbox, timestep, current_price, portal):
         agent_start = time.time()
-        
+
         if inbox:
             agent.ingest(inbox)
-        
+
         belief = agent.update_belief(timestep, current_price)
         maybe_order = agent.generate_order(belief, current_price)
-        
-        # Optional: agent-generated posts
+
+        # Optional: agent-generated posts (cross-posting)
+        posts = []
         generate_posts = getattr(agent, "generate_posts", None)
         if callable(generate_posts):
             posts = generate_posts(timestep)
             for post in posts:
                 portal.ingest_agent_feedback(agent.agent_id, post)
-                
+
         return {
             'belief': belief,
             'order': maybe_order,
+            'posts': posts,  # Include posts for flow logging
             'time': time.time() - agent_start
         }
