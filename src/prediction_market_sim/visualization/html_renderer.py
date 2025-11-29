@@ -423,6 +423,16 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                 }})
                 .text(d => d.label || d.id);
 
+            // Add position text below label (for agents only)
+            nodeElements.filter(d => d.type === 'agent')
+                .append('text')
+                .attr('class', 'node-position')
+                .attr('dy', 54)
+                .attr('text-anchor', 'middle')
+                .attr('fill', '#888')
+                .attr('font-size', '9px')
+                .text('Y:0 N:0');
+
             // Update positions on tick
             simulation.on('tick', () => {{
                 linkElements
@@ -551,8 +561,9 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                 d3.select('#playhead').attr('x1', x).attr('x2', x);
             }}
 
-            // Update agent node colors and values based on beliefs
+            // Update agent node colors, values, and positions based on beliefs
             const beliefs = frame.agent_beliefs || {{}};
+            const positions = frame.agent_positions || {{}};
             nodeGroup.selectAll('g').each(function(d) {{
                 if (d.type === 'agent' && beliefs[d.id] !== undefined) {{
                     const belief = beliefs[d.id];
@@ -563,6 +574,14 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                     // Update text value inside node
                     d3.select(this).select('.node-value')
                         .text(belief.toFixed(2));
+                    // Update position text below label (show net position)
+                    const pos = positions[d.id] || {{ YES: 0, NO: 0 }};
+                    const netPos = pos.YES - pos.NO;
+                    const netText = netPos >= 0 ? `+${{netPos.toFixed(0)}}` : `${{netPos.toFixed(0)}}`;
+                    const color = netPos > 0 ? '#4CAF50' : netPos < 0 ? '#f44336' : '#888';
+                    d3.select(this).select('.node-position')
+                        .attr('fill', color)
+                        .text(`Net: ${{netText}}`);
                 }}
             }});
 

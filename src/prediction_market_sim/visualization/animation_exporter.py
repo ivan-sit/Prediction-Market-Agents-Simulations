@@ -161,13 +161,56 @@ class AnimationExporter:
                     sources_by_ts[ts] = []
                 sources_by_ts[ts].append(record)
 
+        # Load agent subscriptions early (needed for frame building)
+        agent_subscriptions: Dict[str, List[str]] = {}
+        subscriptions_path = log_dir / f"{run_id}_subscriptions.json"
+        if subscriptions_path.exists():
+            with open(subscriptions_path, 'r', encoding='utf-8') as f:
+                subscriptions_data = json.load(f)
+            for record in subscriptions_data:
+                agent_subscriptions[record['agent_id']] = record['subscriptions']
+
+        # Load actual trade data from trades CSV
+        trades_by_ts: Dict[int, List[Dict[str, Any]]] = {}
+        # Try multiple possible trade file locations
+        trades_paths = [
+            log_dir / "trades" / f"{run_id}_trades.csv",
+            log_dir / "trades" / f"{run_id.replace('_run1', '')}_trades.csv",
+            log_dir / f"{run_id}_trades.csv",
+        ]
+        for trades_path in trades_paths:
+            if trades_path.exists():
+                import csv
+                with open(trades_path, 'r', encoding='utf-8') as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        ts = int(row.get("timestamp", 0))
+                        if ts not in trades_by_ts:
+                            trades_by_ts[ts] = []
+                        # Convert outcome to side for visualization
+                        # YES = BUY (betting event happens), NO = SELL (betting event doesn't happen)
+                        outcome = row.get("outcome", "YES").upper()
+                        side = "BUY" if outcome == "YES" else "SELL"
+                        trades_by_ts[ts].append({
+                            "trade_id": row.get("trade_id", ""),
+                            "agent_id": row.get("agent_id", ""),
+                            "side": side,
+                            "outcome": outcome,
+                            "shares": float(row.get("shares", 0)),
+                            "cost": float(row.get("cost", 0)),
+                            "price": float(row.get("price", 0.5)),
+                        })
+                break
+
         # Build frames from market/belief data if no flow events
         if not has_flow_data and exporter.market_prices:
             exporter._build_frames_with_synthetic_events(
                 beliefs_by_ts,
                 belief_records_by_ts,
                 sources_by_ts,
-                market_by_ts
+                market_by_ts,
+                agent_subscriptions,
+                trades_by_ts
             )
 
         # If we have flow frames, update them with market/belief data
@@ -182,7 +225,7 @@ class AnimationExporter:
 
         # Build network from sources data if no flow data
         if not exporter.nodes:
-            exporter._build_network_from_sources(log_dir, run_id)
+            exporter._build_network_from_sources(log_dir, run_id, agent_subscriptions)
 
         exporter.total_timesteps = len(exporter.frames)
         return exporter
@@ -192,9 +235,11 @@ class AnimationExporter:
         beliefs_by_ts: Dict[int, Dict[str, float]],
         belief_records_by_ts: Dict[int, List[Dict[str, Any]]],
         sources_by_ts: Dict[int, List[Dict[str, Any]]],
-        market_by_ts: Dict[int, Dict[str, Any]]
+        market_by_ts: Dict[int, Dict[str, Any]],
+        agent_subscriptions: Optional[Dict[str, List[str]]] = None,
+        trades_by_ts: Optional[Dict[int, List[Dict[str, Any]]]] = None
     ) -> None:
-        """Build animation frames with synthetic events from log data.
+        """Build animation frames with events from log data.
 
         Creates source_emit, belief_update, and trade events for animation.
 
@@ -203,9 +248,16 @@ class AnimationExporter:
             belief_records_by_ts: Full belief records by timestep
             sources_by_ts: Source messages grouped by timestep
             market_by_ts: Market data by timestep
+            agent_subscriptions: Optional dict mapping agent_id to list of subscribed sources
+            trades_by_ts: Optional dict mapping timestep to list of actual trades
         """
         # Track previous beliefs to detect changes
         prev_beliefs: Dict[str, float] = {}
+
+        # Track cumulative positions for each agent
+        agent_positions: Dict[str, Dict[str, float]] = {}
+        for agent_id in self.agent_ids:
+            agent_positions[agent_id] = {"YES": 0.0, "NO": 0.0}
 
         for i, price in enumerate(self.market_prices):
             events: List[Dict[str, Any]] = []
@@ -222,13 +274,22 @@ class AnimationExporter:
 
                 # Create an event for each source node
                 for source_id in source_nodes:
+                    # Filter recipients to only agents subscribed to this source
+                    if agent_subscriptions:
+                        recipients = [
+                            agent_id for agent_id in self.agent_ids
+                            if source_id in agent_subscriptions.get(agent_id, [])
+                        ]
+                    else:
+                        recipients = list(self.agent_ids)  # Fallback: all agents
+
                     events.append({
                         "type": "source_emit",
                         "timestep": i,
                         "source_id": source_id,
                         "tagline": source_record.get("tagline", ""),
-                        "recipients": list(self.agent_ids),  # All agents receive
-                        "num_recipients": len(self.agent_ids),
+                        "recipients": recipients,
+                        "num_recipients": len(recipients),
                     })
 
             # 2. Create belief_update events from belief changes
@@ -247,35 +308,40 @@ class AnimationExporter:
                     })
                 prev_beliefs[agent_id] = belief
 
-            # 3. Create trade events from market data
-            market_record = market_by_ts.get(i, {})
-            num_trades = market_record.get("num_trades", 0)
-            prev_trades = market_by_ts.get(i - 1, {}).get("num_trades", 0) if i > 0 else 0
-            new_trades = num_trades - prev_trades
+            # 3. Create trade events from actual trade data and update positions
+            if trades_by_ts:
+                for trade in trades_by_ts.get(i, []):
+                    agent_id = trade["agent_id"]
+                    outcome = trade.get("outcome", "YES")
+                    shares = trade["shares"]
 
-            if new_trades > 0:
-                # Distribute trades among agents based on belief-price gap
-                for agent_id, belief in current_beliefs.items():
-                    gap = belief - price
-                    if abs(gap) > 0.05:  # Only trade if significant gap
-                        side = "BUY" if gap > 0 else "SELL"
-                        # Estimate shares from volume
-                        volume = market_record.get("tick_volume", 0)
-                        shares_per_agent = volume / max(len(current_beliefs), 1)
-                        events.append({
-                            "type": "trade",
-                            "timestep": i,
-                            "agent_id": agent_id,
-                            "side": side,
-                            "shares": shares_per_agent,
-                            "price": price,
-                        })
+                    # Update cumulative position
+                    if agent_id in agent_positions:
+                        agent_positions[agent_id][outcome] += shares
+
+                    events.append({
+                        "type": "trade",
+                        "timestep": i,
+                        "agent_id": agent_id,
+                        "side": trade["side"],
+                        "outcome": outcome,
+                        "shares": shares,
+                        "price": trade["price"],
+                        "cost": trade.get("cost", 0),
+                    })
+
+            # Snapshot current positions for this frame
+            positions_snapshot = {
+                agent_id: {"YES": pos["YES"], "NO": pos["NO"]}
+                for agent_id, pos in agent_positions.items()
+            }
 
             frame = {
                 "timestep": i,
                 "market_price": price,
                 "market_volume": self.market_volumes[i] if i < len(self.market_volumes) else 0,
                 "agent_beliefs": current_beliefs,
+                "agent_positions": positions_snapshot,
                 "events": events,
                 "event_counts": self._count_event_types(events),
             }
@@ -301,21 +367,28 @@ class AnimationExporter:
             }
             self.frames.append(frame)
 
-    def _build_network_from_sources(self, log_dir: Path, run_id: str) -> None:
+    def _build_network_from_sources(
+        self,
+        log_dir: Path,
+        run_id: str,
+        agent_subscriptions: Optional[Dict[str, List[str]]] = None
+    ) -> None:
         """Build network topology from sources data.
 
         Args:
             log_dir: Directory containing log files
             run_id: Run identifier
+            agent_subscriptions: Optional pre-loaded subscriptions dict
         """
-        # Load agent subscriptions if available
-        agent_subscriptions: Dict[str, List[str]] = {}
-        subscriptions_path = log_dir / f"{run_id}_subscriptions.json"
-        if subscriptions_path.exists():
-            with open(subscriptions_path, 'r', encoding='utf-8') as f:
-                subscriptions_data = json.load(f)
-            for record in subscriptions_data:
-                agent_subscriptions[record['agent_id']] = record['subscriptions']
+        # Load agent subscriptions if not provided
+        if agent_subscriptions is None:
+            agent_subscriptions = {}
+            subscriptions_path = log_dir / f"{run_id}_subscriptions.json"
+            if subscriptions_path.exists():
+                with open(subscriptions_path, 'r', encoding='utf-8') as f:
+                    subscriptions_data = json.load(f)
+                for record in subscriptions_data:
+                    agent_subscriptions[record['agent_id']] = record['subscriptions']
 
         # Add source nodes from sources file
         sources_path = log_dir / f"{run_id}_sources.json"

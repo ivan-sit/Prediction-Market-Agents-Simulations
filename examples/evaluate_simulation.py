@@ -187,6 +187,13 @@ def evaluate_simulation(
     # Calculate evaluation metrics
     report = {}
 
+    # Market summary metrics
+    report['timesteps'] = len(timesteps)
+    report['initial_price'] = initial_price
+    report['price_change'] = final_price - initial_price
+    report['price_min'] = min(prices)
+    report['price_max'] = max(prices)
+
     # 1. Prediction Quality Metrics
     print(f"\n[1] PREDICTION QUALITY METRICS")
     print("-" * 70)
@@ -241,6 +248,7 @@ def evaluate_simulation(
         print(f"\n[4] AGENT TRADING BEHAVIOR")
         print("-" * 70)
 
+        agent_trading_behavior = {}
         for agent_id in trades_data['agent_id'].unique():
             agent_trades = trades_data[trades_data['agent_id'] == agent_id]
 
@@ -249,12 +257,22 @@ def evaluate_simulation(
             yes_trades = len(agent_trades[agent_trades['outcome'] == 'YES'])
             no_trades = len(agent_trades[agent_trades['outcome'] == 'NO'])
 
+            agent_trading_behavior[agent_id] = {
+                'total_trades': len(agent_trades),
+                'total_shares': float(total_shares),
+                'yes_trades': yes_trades,
+                'no_trades': no_trades,
+                'avg_cost_per_share': float(avg_price)
+            }
+
             print(f"\n{agent_id}:")
             print(f"  Total Trades:    {len(agent_trades)}")
             print(f"  Total Shares:    {total_shares:,.0f}")
             print(f"  YES Trades:      {yes_trades}")
             print(f"  NO Trades:       {no_trades}")
             print(f"  Avg Cost/Share:  ${avg_price:.4f}")
+
+        report['agent_trading_behavior'] = agent_trading_behavior
 
     # 4. Belief Analysis
     if beliefs_data:
@@ -268,15 +286,24 @@ def evaluate_simulation(
                 belief_by_agent[agent_id] = []
             belief_by_agent[agent_id].append(entry['belief'])
 
+        agent_belief_analysis = {}
         for agent_id, beliefs in belief_by_agent.items():
             avg_belief = np.mean(beliefs)
             belief_std = np.std(beliefs)
             belief_error = abs(avg_belief - actual_outcome)
 
+            agent_belief_analysis[agent_id] = {
+                'avg_belief': float(avg_belief),
+                'belief_std': float(belief_std),
+                'belief_error': float(belief_error)
+            }
+
             print(f"{agent_id}:")
             print(f"  Avg Belief:      {avg_belief:.4f}")
             print(f"  Belief Std Dev:  {belief_std:.4f}")
             print(f"  Belief Error:    {belief_error:.4f} (vs actual outcome)")
+
+        report['agent_belief_analysis'] = agent_belief_analysis
 
     # Summary
     print(f"\n[SUMMARY]")
@@ -293,6 +320,18 @@ def evaluate_simulation(
     print(f"Actual Outcome:    {actual_outcome:.4f}")
     print(f"Prediction Error:  {report['prediction_error']:.4f}")
     print(f"Accuracy Rating:   {accuracy_rating}")
+
+    report['accuracy_rating'] = accuracy_rating
+
+    # Save metrics to JSON
+    metrics_dir = artifacts_dir / "metrics"
+    metrics_dir.mkdir(parents=True, exist_ok=True)
+    metrics_file = metrics_dir / f"{run_name}_evaluation.json"
+
+    with open(metrics_file, 'w') as f:
+        json.dump(report, f, indent=2)
+
+    print(f"\n[SAVED] Metrics saved to: {metrics_file}")
 
     return report
 
