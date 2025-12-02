@@ -14,8 +14,8 @@
       ],
       "timestamp": "2025-11-14T01:48:37.074Z",
       "context": "Prediction Market Agents Simulations project - agents module configuration",
-      "accessCount": 0,
-      "lastAccessed": "2025-11-14T01:48:37.074Z",
+      "accessCount": 1,
+      "lastAccessed": "2025-12-02T02:34:35.667Z",
       "lastVerified": "2025-11-14T01:48:37.074Z",
       "status": "fresh"
     },
@@ -30,8 +30,8 @@
         "technical-debt"
       ],
       "timestamp": "2025-11-18T19:29:44.158Z",
-      "accessCount": 0,
-      "lastAccessed": "2025-11-18T19:29:44.158Z",
+      "accessCount": 1,
+      "lastAccessed": "2025-12-02T02:34:35.667Z",
       "lastVerified": "2025-11-18T19:29:44.158Z",
       "status": "fresh"
     },
@@ -85,8 +85,8 @@
       ],
       "timestamp": "2025-11-18T19:42:00.435Z",
       "context": "First successful full integration test run",
-      "accessCount": 0,
-      "lastAccessed": "2025-11-18T19:42:00.435Z",
+      "accessCount": 1,
+      "lastAccessed": "2025-12-02T02:34:35.667Z",
       "lastVerified": "2025-11-18T19:42:00.435Z",
       "status": "fresh"
     },
@@ -294,8 +294,8 @@
         "investigation"
       ],
       "timestamp": "2025-11-18T21:37:24.279Z",
-      "accessCount": 0,
-      "lastAccessed": "2025-11-18T21:37:24.279Z",
+      "accessCount": 1,
+      "lastAccessed": "2025-12-02T02:34:35.667Z",
       "lastVerified": "2025-11-18T21:37:24.279Z",
       "status": "fresh"
     },
@@ -310,8 +310,8 @@
         "investigation"
       ],
       "timestamp": "2025-11-18T21:45:51.509Z",
-      "accessCount": 0,
-      "lastAccessed": "2025-11-18T21:45:51.509Z",
+      "accessCount": 1,
+      "lastAccessed": "2025-12-02T02:34:35.667Z",
       "lastVerified": "2025-11-18T21:45:51.509Z",
       "status": "fresh"
     },
@@ -326,8 +326,8 @@
         "analysis"
       ],
       "timestamp": "2025-11-18T21:48:42.362Z",
-      "accessCount": 0,
-      "lastAccessed": "2025-11-18T21:48:42.362Z",
+      "accessCount": 1,
+      "lastAccessed": "2025-12-02T02:34:35.667Z",
       "lastVerified": "2025-11-18T21:48:42.362Z",
       "status": "fresh"
     },
@@ -345,8 +345,8 @@
       ],
       "timestamp": "2025-11-18T22:15:18.979Z",
       "context": "Investigation of why demo_full_simulation.py finishes instantly",
-      "accessCount": 0,
-      "lastAccessed": "2025-11-18T22:15:18.979Z",
+      "accessCount": 1,
+      "lastAccessed": "2025-12-02T02:34:35.667Z",
       "lastVerified": "2025-11-18T22:15:18.979Z",
       "status": "fresh"
     },
@@ -528,8 +528,8 @@
       ],
       "timestamp": "2025-11-23T23:24:32.325Z",
       "context": "Understanding why agents aren't placing orders in prediction market simulation",
-      "accessCount": 0,
-      "lastAccessed": "2025-11-23T23:24:32.325Z",
+      "accessCount": 1,
+      "lastAccessed": "2025-12-02T02:34:35.667Z",
       "lastVerified": "2025-11-23T23:24:32.325Z",
       "status": "fresh"
     },

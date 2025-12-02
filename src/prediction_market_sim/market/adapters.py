@@ -20,6 +20,7 @@ from collections import defaultdict
 from typing import Dict, List, Mapping, Sequence
 
 from ..simulation.interfaces import MarketAdapter, MarketOrder
+from .lmsr import LMSRTrade
 
 
 class LMSRMarketAdapter(MarketAdapter):
@@ -267,7 +268,22 @@ class OrderBookMarketAdapter(MarketAdapter):
         if not self._last_market_state:
             self._last_market_state = self._market.get_market_state()
         return float(self._last_market_state.get("mid_price", 0.5))
-    
+
+    def get_price(self, outcome: str) -> float:
+        """Get the current market price for a specific outcome.
+
+        Args:
+            outcome: 'YES' or 'NO'
+
+        Returns:
+            Current mid price for that outcome
+        """
+        mid_price = self.current_price()
+        if outcome.upper() == "YES":
+            return mid_price
+        else:
+            return 1.0 - mid_price
+
     def snapshot(self) -> Mapping[str, object]:
         return self.get_market_state()
     
@@ -485,3 +501,69 @@ class OrderBookMarketAdapter(MarketAdapter):
     def get_failed_orders(self) -> List[MarketOrder]:
         """Get list of orders that failed to execute."""
         return self._failed_orders.copy()
+
+    def buy_up_to_price(self, agent_id: str, outcome: str, max_cost: float, timestamp: int) -> object:
+        """Buy shares up to a maximum cost using market orders.
+
+        For order books, this submits a market order and tries to fill
+        as much as possible within the budget. Unlike LMSR, execution
+        depends on available liquidity.
+
+        Args:
+            agent_id: Agent making the purchase
+            outcome: "YES" or "NO"
+            max_cost: Maximum amount willing to spend
+            timestamp: Current simulation timestamp
+
+        Returns:
+            Trade result dict or None if no execution
+        """
+        if max_cost <= 0:
+            return None
+
+        outcome = outcome.upper()
+
+        # Get current best ask to estimate quantity
+        state = self._market.get_market_state()
+        best_ask = state.get("best_ask", 0.5)
+
+        if best_ask is None or best_ask <= 0:
+            best_ask = 0.5  # Default if no asks
+
+        # Estimate quantity we can afford at best ask
+        estimated_qty = max_cost / best_ask
+
+        # Submit market order - it will fill what it can
+        trades = self._market.submit_market_order(
+            agent_id=agent_id,
+            outcome=outcome,
+            side="BUY",
+            quantity=estimated_qty,
+            timestamp=timestamp
+        )
+
+        if trades:
+            # Return first trade (simplified - could aggregate)
+            trade = trades[0]
+
+            if self._track_positions:
+                self._update_position(
+                    agent_id=agent_id,
+                    outcome=trade.outcome,
+                    side="BUY",
+                    quantity=trade.quantity,
+                    price=trade.price
+                )
+
+            # Return an LMSRTrade dataclass for compatibility with asdict()
+            return LMSRTrade(
+                trade_id=str(trade.trade_id) if hasattr(trade, 'trade_id') else f"ob_{timestamp}",
+                timestamp=timestamp,
+                agent_id=agent_id,
+                outcome=trade.outcome,
+                shares=trade.quantity,
+                cost=trade.quantity * trade.price,
+                price=trade.price
+            )
+
+        return None

@@ -204,11 +204,11 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
         }}
         @keyframes pulse {{
             0% {{ transform: scale(1); opacity: 1; }}
-            50% {{ transform: scale(1.3); opacity: 0.7; }}
+            50% {{ transform: scale(1.08); opacity: 0.9; }}
             100% {{ transform: scale(1); opacity: 1; }}
         }}
         .pulsing {{
-            animation: pulse 0.5s ease-in-out;
+            animation: pulse 0.4s ease-in-out;
         }}
     </style>
 </head>
@@ -341,15 +341,15 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
             // Create force simulation with layered layout
             simulation = d3.forceSimulation(nodes)
-                .force('link', d3.forceLink(links).id(d => d.id).distance(100))
-                .force('charge', d3.forceManyBody().strength(-300))
+                .force('link', d3.forceLink(links).id(d => d.id).distance(200))
+                .force('charge', d3.forceManyBody().strength(-800))
                 .force('center', d3.forceCenter(width / 2, height / 2))
                 .force('y', d3.forceY(d => {{
-                    if (d.type === 'source') return height * 0.2;
+                    if (d.type === 'source') return height * 0.15;
                     if (d.type === 'agent') return height * 0.5;
-                    return height * 0.8;
-                }}).strength(0.5))
-                .force('collision', d3.forceCollide().radius(d => (d.radius || 20) + 10));
+                    return height * 0.85;
+                }}).strength(0.6))
+                .force('collision', d3.forceCollide().radius(d => (d.radius || 20) + 40));
 
             // Draw links
             const linkElements = linkGroup.selectAll('line')
@@ -433,8 +433,16 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
                 .attr('font-size', '9px')
                 .text('Y:0 N:0');
 
-            // Update positions on tick
+            // Update positions on tick with boundary constraints
+            const padding = 50;
             simulation.on('tick', () => {{
+                // Clamp node positions to stay within bounds
+                nodes.forEach(d => {{
+                    const r = d.type === 'market' ? 30 : d.type === 'agent' ? 25 : 20;
+                    d.x = Math.max(padding + r, Math.min(width - padding - r, d.x));
+                    d.y = Math.max(padding + r, Math.min(height - padding - r, d.y));
+                }});
+
                 linkElements
                     .attr('x1', d => d.source.x)
                     .attr('y1', d => d.source.y)

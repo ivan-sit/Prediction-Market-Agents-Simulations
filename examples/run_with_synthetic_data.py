@@ -310,8 +310,8 @@ def build_simulation_engine(
     else:
         market_factory = lambda: OrderBookMarketAdapter(
             market_id="prediction_market",
-            initial_price=0.5,
             tick_size=0.01,
+            initial_liquidity=True,
             track_positions=True
         )
 
