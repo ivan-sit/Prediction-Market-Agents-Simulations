@@ -9,8 +9,6 @@ from langchain_chroma import Chroma
 from langchain_core.documents import Document
 import json
 import xml.etree.ElementTree as ET
-import uuid
-import random
 import dataclasses
 
 class MarketPlanningModule(PlanningBase):
@@ -103,10 +101,6 @@ class MarketMemoryModule(MemoryBase):
 
     def get_full_history(self) -> List[Dict]:
         return self.event_history.copy()
-
-
-
-
 
 class PredictionMarketAgent(SimulationAgent):
     def __init__(self, llm: LLMBase, market: Optional[LMSRMarket] = None, personality_prompt: str = "", initial_bankroll: float = 10000.0, agent_id: str = "unknown"):

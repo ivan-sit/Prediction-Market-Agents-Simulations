@@ -1,8 +1,3 @@
-"""Protocol definitions that the high-level simulator depends on.
-
-All concrete implementations are developed by teammate-owned modules.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass

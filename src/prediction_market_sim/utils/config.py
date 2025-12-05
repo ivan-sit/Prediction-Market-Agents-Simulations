@@ -120,7 +120,7 @@ def create_market_from_config(
     if config.market_type == "lmsr":
         from ..market import LMSRMarketAdapter
         
-        print(f"🔵 Creating LMSR market (liquidity={config.lmsr_liquidity_param})")
+        print(f"Creating LMSR market (liquidity={config.lmsr_liquidity_param})")
         return LMSRMarketAdapter(
             liquidity_param=config.lmsr_liquidity_param
         )
@@ -128,7 +128,7 @@ def create_market_from_config(
     elif config.market_type == "orderbook":
         from ..market import OrderBookMarketAdapter
         
-        print(f"📗 Creating Order Book market (tick_size={config.orderbook_tick_size}, "
+        print(f"Creating Order Book market (tick_size={config.orderbook_tick_size}, "
               f"initial_liquidity={config.orderbook_initial_liquidity})")
         return OrderBookMarketAdapter(
             market_id=market_id,

@@ -1,12 +1,4 @@
-"""
-Order Book implementation backed by the pyorderbook library.
-
-This module wraps the compiled pyorderbook engine to provide a realistic
-price-time prioritized limit order book for prediction markets. The wrapper
-keeps the public API compatible with the previous in-house implementation
-while delegating matching logic to the external library for better
-performance and correctness.
-"""
+"""Order Book implementation backed by pyorderbook library."""
 
 from __future__ import annotations
 
@@ -14,12 +6,12 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Literal
 from uuid import UUID
 
-try:  # pragma: no cover - optional dependency import
+try: 
     from pyorderbook.book import Book as PyOrderBook
     from pyorderbook.book import TradeBlotter as PyTradeBlotter
     from pyorderbook.order import Order as PyBookOrder
     from pyorderbook.order import Side as PySide
-except ImportError:  # pragma: no cover
+except ImportError:
     PyOrderBook = None
     PyBookOrder = None
     PySide = None
@@ -31,8 +23,6 @@ else:
 
 @dataclass
 class Order:
-    """Represents a limit order in the order book."""
-
     order_id: str
     agent_id: str
     side: Literal["BUY", "SELL"]
@@ -44,19 +34,15 @@ class Order:
 
     @property
     def remaining_quantity(self) -> float:
-        """Unfilled quantity."""
         return max(0.0, self.quantity - self.filled_quantity)
 
     @property
     def is_filled(self) -> bool:
-        """Check if order is completely filled."""
         return self.remaining_quantity <= 0.0 + 1e-9
 
 
 @dataclass
 class Trade:
-    """Represents an executed trade."""
-
     trade_id: str
     timestamp: int
     buyer_id: str
@@ -69,24 +55,7 @@ class Trade:
 
 
 class OrderBookMarket:
-    """
-    Realistic order book implementation using pyorderbook.
-
-    Simulates Kalshi/Polymarket-style prediction markets where:
-    - Traders submit limit orders (bid/ask)
-    - Orders are matched via price-time priority
-    - Liquidity depends on trader participation
-    - Bid-ask spread exists
-    - Orders may not execute if no counterparty
-
-    Args:
-        market_id: Unique identifier for this market
-        outcomes: List of possible outcomes (usually ["YES", "NO"])
-        tick_size: Minimum price increment (e.g., 0.01 = 1 cent)
-        initial_liquidity: If True, seed the book with initial orders
-        quantity_scale: Multiplier used to convert float quantities to ints for
-            pyorderbook (default 1000 keeps sub-share precision)
-    """
+    """Realistic order book using pyorderbook. Price-time priority matching."""
 
     def __init__(
         self,
@@ -118,9 +87,6 @@ class OrderBookMarket:
         if initial_liquidity:
             self._seed_initial_liquidity()
 
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
     def submit_limit_order(
         self,
         agent_id: str,
@@ -130,7 +96,6 @@ class OrderBookMarket:
         quantity: float,
         timestamp: int,
     ) -> Optional[Order]:
-        """Submit a limit order to the book."""
         outcome = outcome.upper()
         side = side.upper()
 
@@ -174,7 +139,6 @@ class OrderBookMarket:
         quantity: float,
         timestamp: int,
     ) -> List[Trade]:
-        """Submit a market order (executes immediately at best available price)."""
         outcome = outcome.upper()
         side = side.upper()
 
@@ -206,7 +170,6 @@ class OrderBookMarket:
         return trades
 
     def cancel_order(self, order_id: str) -> bool:
-        """Cancel an unfilled order."""
         if order_id not in self._orders:
             return False
 
@@ -228,7 +191,6 @@ class OrderBookMarket:
         return True
 
     def get_market_state(self) -> Dict:
-        """Get current market state."""
         reference_outcome = self.outcomes[0] if self.outcomes else "YES"
         best_bid = self._get_best_price(reference_outcome, PySide.BID)
         best_ask = self._get_best_price(reference_outcome, PySide.ASK)
@@ -263,7 +225,6 @@ class OrderBookMarket:
         }
 
     def get_order_book(self, outcome: str, depth: int = 10) -> Dict:
-        """Get order book for a specific outcome."""
         outcome = outcome.upper()
         bids = self._build_book_entries(outcome, PySide.BID, depth)
         asks = self._build_book_entries(outcome, PySide.ASK, depth)
@@ -274,20 +235,15 @@ class OrderBookMarket:
         }
 
     def get_trades(self) -> List[Trade]:
-        """Get all executed trades."""
         return self._trades.copy()
 
     def get_last_price(self, outcome: str) -> Optional[float]:
-        """Get last traded price for an outcome."""
         outcome = outcome.upper()
         for trade in reversed(self._trades):
             if trade.outcome == outcome:
                 return trade.price
         return None
 
-    # ------------------------------------------------------------------
-    # Internal helpers
-    # ------------------------------------------------------------------
     def _seed_initial_liquidity(self) -> None:
         initial_orders = [
             ("YES", "BUY", 0.45, 100),

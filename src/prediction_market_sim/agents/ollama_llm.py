@@ -14,19 +14,13 @@ class OllamaEmbeddings:
         return [self.embed_query(text) for text in texts]
 
     def embed_query(self, text: str) -> List[float]:
-        """Generate embeddings for text with robust error handling.
-
-        Returns a 768-dimensional zero vector on any failure to prevent ChromaDB crashes.
-        """
         EMBEDDING_DIM = 768  # nomic-embed-text dimension
 
         try:
-            # Handle empty or whitespace-only text
             if not text or not text.strip():
                 print("Warning: Empty text provided to embed_query, returning zero vector")
                 return [0.0] * EMBEDDING_DIM
 
-            # Make API request with timeout using session
             response = self.session.post(
                 f"{self.base_url}/api/embeddings",
                 json={"model": self.model, "prompt": text},
@@ -36,13 +30,11 @@ class OllamaEmbeddings:
             if response.status_code == 200:
                 data = response.json()
 
-                # Validate response contains embedding
                 if 'embedding' not in data:
                     raise ValueError(f"Response missing 'embedding' key: {data.keys()}")
 
                 embedding = data['embedding']
 
-                # Validate embedding is not empty
                 if not embedding:
                     raise ValueError("Embedding is empty list")
 
@@ -51,13 +43,11 @@ class OllamaEmbeddings:
                 raise Exception(f"HTTP {response.status_code}: {response.text}")
 
         except Exception as e:
-            # Log error with context but don't crash
             text_preview = text[:100] + "..." if len(text) > 100 else text
             print(f"Warning: Embedding failed (len={len(text)}): {e}")
             print(f"   Text preview: {text_preview}")
             print(f"   Returning zero vector to prevent crash")
 
-            # Return zero vector instead of crashing ChromaDB
             return [0.0] * EMBEDDING_DIM
 
 
@@ -90,7 +80,6 @@ class OllamaLLM(LLMBase):
         if n > 1:
             print("Warning: Ollama doesn't support n>1")
 
-        # Create cache key from messages and parameters
         cache_key = (
             model or self.model,
             json.dumps(messages, sort_keys=True),
@@ -118,9 +107,7 @@ class OllamaLLM(LLMBase):
         if response.status_code == 200:
             result = response.json()['message']['content']
             
-            # Update cache
             if len(self._cache) >= self._max_cache_size:
-                # Simple removal of first item (not true LRU but sufficient for this)
                 self._cache.pop(next(iter(self._cache)))
             self._cache[cache_key] = result
             

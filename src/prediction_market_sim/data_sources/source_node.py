@@ -8,20 +8,14 @@ agents to read and post information.
 
 from typing import List, Dict, Optional, Set
 
-# Import Event from the sibling data module
-
 import sys
 from pathlib import Path
-
-# Add parent directory to path to import from sibling module
 
 parent_dir = Path(__file__).parent.parent
 if str(parent_dir) not in sys.path:
     sys.path.insert(0, str(parent_dir))
 
 from ..data.data_module import Event
-
-# Global time function - should be implemented by the main simulation
 
 _current_time = 0
 
@@ -300,76 +294,3 @@ class SourceNodeManager:
         """Clear all events from all nodes."""
         for node in self.nodes.values():
             node.clear_feed()
-
-
-if __name__ == "__main__":
-    # Example usage and testing
-    from data.data_module import Event
-
-    # Set simulation time
-    set_current_time(100)
-
-    # Create source nodes
-    portal_a = SourceNode("portal_A")
-    portal_b = SourceNode("portal_B")
-
-    # Create sample events
-    event1 = Event(
-        event_id="evt_001",
-        initial_time=100,
-        source_nodes=["portal_A", "portal_B"],
-        tagline="Breaking News",
-        description="Important event occurs"
-    )
-
-    event2 = Event(
-        event_id="evt_002",
-        initial_time=95,  # Older event posted later
-        source_nodes=["portal_A"],
-        tagline="Old News Resurfaces",
-        description="Previously unknown information comes to light"
-    )
-
-    # Post events to portals
-    print(f"Posting event1 to portal_A: {portal_a.post_event(event1)}")
-    print(f"Posting event1 to portal_B: {portal_b.post_event(event1)}")
-
-    set_current_time(105)
-    print(f"\nPosting event2 to portal_A: {portal_a.post_event(event2)}")
-
-    # Try to post duplicate
-    print(f"Posting event1 again to portal_A: {portal_a.post_event(event1)}")
-
-    # Simulate agent reading
-    print(f"\nPortal A feed length: {portal_a.get_current_feed_length()}")
-    print(f"Portal A latest index: {portal_a.get_latest_index()}")
-
-    # Agent reads from beginning
-    new_events = portal_a.get_events_since_index(-1)
-    print(f"\nAgent reads all events (from index -1): {len(new_events)}")
-    for i, event in enumerate(new_events):
-        print(f"  {i}: {event.tagline} (posted at t={portal_a.get_event_post_time(event.event_id)})")
-
-    # Agent reads only new events
-    last_read = 0
-    new_events = portal_a.get_events_since_index(last_read)
-    print(f"\nAgent reads events since index {last_read}: {len(new_events)}")
-    for event in new_events:
-        print(f"  {event.tagline}")
-
-    # Test SourceNodeManager
-    print("\n--- Testing SourceNodeManager ---")
-    manager = SourceNodeManager()
-    manager.create_node("portal_C")
-    manager.create_node("portal_D")
-
-    event3 = Event(
-        event_id="evt_003",
-        initial_time=110,
-        source_nodes=["portal_C", "portal_D"],
-        tagline="Simultaneous Post",
-        description="Event posted to multiple portals at once"
-    )
-
-    results = manager.post_event_to_nodes(event3, ["portal_C", "portal_D"])
-    print(f"Posting to multiple nodes: {results}")

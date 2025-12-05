@@ -1,24 +1,16 @@
-"""Adapters that wrap third-party order-book libraries."""
-
 from __future__ import annotations
 
 from typing import Mapping, Sequence
 
 from .interfaces import MarketAdapter, MarketOrder
 
-try:  # pragma: no cover - optional dependency
-    from orderbook import OrderBook  # type: ignore
-except ImportError:  # pragma: no cover - handled at runtime
+try: 
+    from orderbook import OrderBook 
+except ImportError:
     OrderBook = None
 
 
 class ExternalOrderBookAdapter(MarketAdapter):
-    """Thin wrapper around the `orderbook` PyPI package.
-
-    The adapter keeps the simulator lightweight and delegates matching logic to a
-    well-tested implementation authored by the community.
-    """
-
     def __init__(self, *, initial_price: float = 0.5, **orderbook_kwargs):
         if OrderBook is None:
             raise ImportError(

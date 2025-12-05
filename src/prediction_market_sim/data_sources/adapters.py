@@ -1,8 +1,5 @@
 """
 Adapters to connect data/data_sources modules to simulation engine protocols.
-
-This bridges the gap between your colleagues' implementations and the
-simulation engine's expected interfaces.
 """
 
 from typing import List, Mapping, Iterable
@@ -170,7 +167,6 @@ class SourceNodeNetworkAdapter(PortalNetwork):
         if not node:
             return
 
-        # Create a lightweight Event from the post
         event = Event(
             event_id=payload.get("event_id", f"agent_post_{agent_id}"),
             initial_time=payload.get("timestamp", 0),
@@ -198,10 +194,6 @@ def create_event_stream(db_path: str = "events_database.json", read_only: bool =
 def create_portal_network(node_configs: list[dict] | None = None) -> SourceNodeNetworkAdapter:
     """
     Factory function to create a source node network.
-    
-    Args:
-        node_configs: Optional list of node configurations like:
-            [{'node_id': 'twitter', 'reliability': 0.8}, ...]
             
     Returns:
         PortalNetwork adapter wrapping SourceNodeManager
@@ -210,7 +202,6 @@ def create_portal_network(node_configs: list[dict] | None = None) -> SourceNodeN
     
     if node_configs:
         for config in node_configs:
-            # Note: reliability is ignored as SourceNode doesn't support it yet
             manager.create_node(config['node_id'])
     
     return SourceNodeNetworkAdapter(manager=manager)

@@ -1,324 +1,61 @@
-# Prediction-Market-Agents-Simulations
+Prediction Market Simulation
 
-A comprehensive simulation framework for multi-agent prediction markets with support for **TWO market mechanisms**:
+A simulation framework for multi-agent prediction markets using LLM-powered agents.
 
-## 🎯 Choose Your Market Type
+SETUP
 
-### 📗 **Order Book** (Realistic - Like Kalshi/Polymarket)
-- Price-time priority matching
-- Bid/ask spreads and market depth  
-- Orders may NOT execute without counterparty
-- Realistic liquidity constraints
-- **Use for:** Production-like simulations
+1. Create virtual environment:
+   python -m venv venv
+   source venv/bin/activate
 
-### 🔵 **LMSR** (Simple - Automated Market Maker)
-- Guaranteed liquidity (always trades)
-- No spread, instant execution
-- Formula-based pricing
-- **Use for:** Testing, low-liquidity scenarios
+2. Install dependencies:
+   pip install -r requirements.txt
 
-## ✨ Features
+3. Install Ollama, pull model, and start server:
+   ollama pull llama3.2:3b
+   ollama serve
 
-- ✅ **Dynamic Market Selection** via config file
-- ✅ **Comprehensive Logging** of market state, beliefs, and flows
-- ✅ **Multiple Agent Types** (Bayesian, Momentum, Noise traders)
-- ✅ **Flexible Architecture** for easy extension
-- ✅ **Real-time Position Tracking** and PnL calculation
-- ✅ **Visualization Tools** for analysis
+4. Copy and edit config:
+   cp config.env.example config.env
 
-## Market Implementations
 
-### 1. Order Book (PyOrderBook)
-**Realistic market like Kalshi/Polymarket:**
-- Limit orders and market orders
-- Order matching via price-time priority
-- Bid/ask spread exists
-- Liquidity depends on traders
-- Orders can fail if no counterparty
+RUNNING A SIMULATION
 
-### 2. LMSR (Logarithmic Market Scoring Rule)
-**Simple automated market maker:**
-- Always has liquidity
-- Instant execution guaranteed
-- Zero spread
-- Formula-based pricing
-- Good for testing
+Basic run (uses config.env defaults):
+   python examples/run_simulation.py
 
-### Data Logging
-
-The simulator logs all state to structured CSV/JSON files:
-
-- `market_df`: Price, spread, volume, net flow over time
-- `belief_df`: Agent beliefs and convergence metrics
-- `sources_df`: Information signals fed to agents
-- `agent_meta_df`: Agent-specific metadata
-
-### Visualization
-
-Built-in visualization tools to analyze:
-- Price evolution and dynamics
-- Agent belief convergence
-- Trading volume and flow
-- Information signal impact
-
-## 🚀 Quick Start
-
-### 1. Installation
-
-```bash
-# Clone repo
-git clone <repo-url>
-cd Prediction-Market-Agents-Simulations
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 2. Configure Market Type
-
-```bash
-# Copy config template
-cp config.env.example config.env
-
-# Edit config.env to choose market type
-# MARKET_TYPE=orderbook  (realistic, like Kalshi)
-# MARKET_TYPE=lmsr       (simple, always liquid)
-```
-
-### 3. Run Your First Simulation
-
-```bash
-# Run a complete simulation with configurable options
-python examples/run_simulation.py
-
-# Or customize it
-python examples/run_simulation.py --timesteps 50 --market orderbook --agents 5
-```
-
-**🎯 See [QUICKSTART.md](QUICKSTART.md) for a complete guide with all options!**
+With custom options:
+   python examples/run_simulation.py --events data/nba_finals_2025_okc_pacers.json --agents 5
 
 Available options:
-- `--timesteps N` - Number of simulation steps (default: from config.env)
-- `--market TYPE` - Choose `lmsr` or `orderbook` (default: from config.env)
-- `--agents N` - Number of trading agents 1-6 (default: 3)
-- `--seed N` - Random seed for reproducibility (default: 42)
-- `--quiet` - Minimal output mode
+   --events FILE      Event data JSON file
+   --market TYPE      lmsr or orderbook
+   --agents N         Number of agents
+   --timesteps N      Max simulation steps
+   --personas FILE    YAML file with agent personalities
+   --seed N           Random seed (-1 for random)
 
-**Note:** Works out of the box with fallback behavior. For LLM-powered agents, install Ollama: `ollama pull llama3.1:8b`
 
-The framework supports **multiple orderbook implementations**:
-- 🚀 **limit-order-book** (C++/Python, high-performance) - RECOMMENDED
-- 🐍 **pyorderbook** (Pure Python, easy to debug)
-- 📦 **Custom implementation** (Built-in fallback, no dependencies)
+EVALUATING RESULTS
 
-### Run a Demo
+After a simulation:
+   python examples/evaluate_simulation.py --run-name prediction_sim --actual-outcome 1.0 --plot
 
-```bash
-# Basic demo (stub components)
-PYTHONPATH=src python examples/demo_simulation.py
 
-# Full-featured demo (OrderBook + LMSR)
-PYTHONPATH=src python examples/demo_full_simulation.py
+GENERATING ANIMATIONS
 
-# Demo with external orderbook library (RECOMMENDED for production)
-PYTHONPATH=src python examples/demo_external_orderbook.py
+Create HTML visualization of market activity:
+   python -m prediction_market_sim.visualization.animate artifacts/ --run-id prediction_sim_run1
 
-# Visualize results
-pip install pandas matplotlib seaborn  # if not already installed
-python examples/visualize_results.py orderbook_demo_run1
-```
 
-## Documentation
+OUTPUT FILES
 
-- 📘 **[Quick Start Guide](docs/QUICKSTART.md)** - Get up and running quickly
-- 📚 **[Library Choices](docs/LIBRARY_CHOICES.md)** - Orderbook library options and recommendations
-- 📐 **[Simulator Architecture](docs/SIMULATOR_SKELETON.md)** - System design and interfaces
-- 🏦 **[Market Module](docs/MARKET_MODULE.md)** - OrderBook and LMSR documentation
+Simulation outputs go to artifacts/:
+   - prediction_sim_run1_market.json    Market prices and volume
+   - prediction_sim_run1_beliefs.json   Agent beliefs over time
+   - prediction_sim_run1_flow.json      Information flow data
 
-## Architecture
-
-```
-Simulator (Orchestrator)
-    ↓
-MessageStream → PortalNetwork → Agents → MarketAdapter
-                                  ↓
-                            Market State
-                                  ↓
-                             Evaluators
-```
-
-### Core Components
-
-1. **SimulationEngine**: High-level orchestrator coordinating all modules
-2. **MessageStream**: Generates information signals each timestep
-3. **PortalNetwork**: Routes messages to agent inboxes
-4. **Agents**: Update beliefs and generate orders
-5. **MarketAdapter**: Processes orders and updates prices
-6. **Evaluators**: Track metrics and measure performance
-
-## Example Usage
-
-### Recommended: Smart Adapter (Auto-detects best library)
-
-```python
-from pathlib import Path
-from prediction_market_sim import SimulationEngine, SimulationRuntimeConfig
-from prediction_market_sim.market import create_orderbook_adapter
-
-# Build simulation with smart adapter
-engine = SimulationEngine(
-    stream_factory=lambda: MyDataStream(),
-    portal_factory=lambda: MyPortalNetwork(),
-    agent_factories=[lambda: MyAgent(agent_id="agent_1")],
-    # Smart adapter automatically uses best available library
-    market_factory=lambda: create_orderbook_adapter(
-        initial_price=0.5,
-        tick_size=0.01,
-        prefer="auto"  # Uses: limit-order-book > pyorderbook > custom
-    ),
-    evaluator_factories=[],
-    runtime_config=SimulationRuntimeConfig(
-        max_timesteps=100,
-        run_name="my_sim",
-        enable_logging=True
-    )
-)
-
-# Run simulation
-result = engine.run_once(run_id=1, seed=42)
-
-# Access results
-print(f"Final price: {result.prices[-1]:.4f}")
-print(f"Logs saved to: {result.log_files}")
-```
-
-### Alternative: Specific Library
-
-```python
-from prediction_market_sim.market import LimitOrderBookAdapter
-
-# Explicitly use external library (if installed)
-market = LimitOrderBookAdapter(initial_price=0.5, tick_size=0.01)
-```
-
-## Project Structure
-
-```
-Prediction-Market-Agents-Simulations/
-├── src/
-│   └── prediction_market_sim/
-│       ├── agents/          # Agent implementations
-│       ├── data_sources/    # Data streams and portals
-│       ├── evaluation/      # Metric calculators
-│       ├── market/          # OrderBook and LMSR
-│       │   ├── orderbook.py
-│       │   ├── lmsr.py
-│       │   └── adapters.py
-│       ├── simulation/      # Core orchestrator
-│       │   ├── engine.py
-│       │   ├── interfaces.py
-│       │   ├── logging.py
-│       │   └── market_adapters.py
-│       └── utils/
-├── examples/
-│   ├── demo_simulation.py         # Basic demo
-│   ├── demo_full_simulation.py    # Full-featured demo
-│   └── visualize_results.py       # Visualization script
-├── docs/
-│   ├── QUICKSTART.md              # Getting started
-│   ├── SIMULATOR_SKELETON.md      # Architecture details
-│   └── MARKET_MODULE.md           # Market documentation
-├── requirements.txt
-└── README.md
-```
-
-## Key Features
-
-### OrderBook Market
-
-```python
-from prediction_market_sim.market import OrderBookMarketAdapter
-
-market = OrderBookMarketAdapter(
-    initial_price=0.50,
-    tick_size=0.01,
-    track_positions=True
-)
-```
-
-Features:
-- Price-time priority matching
-- Bid-ask spreads
-- Market depth tracking
-- Position and PnL tracking
-
-### LMSR Market Maker
-
-```python
-from prediction_market_sim.market import LMSRMarketAdapter
-
-market = LMSRMarketAdapter(
-    liquidity_param=100.0,
-    track_positions=True
-)
-```
-
-Features:
-- Instant liquidity
-- No spread
-- Automated price discovery
-- Bounded market maker loss
-
-## Agent Examples
-
-The demo includes several agent types:
-
-- **BayesianAgent**: Updates beliefs using weighted signals
-- **MomentumAgent**: Follows price trends
-- **NoiseTrader**: Adds random market noise
-
-See `examples/demo_full_simulation.py` for implementations.
-
-## Data Analysis
-
-After running simulations, analyze the data:
-
-```python
-import pandas as pd
-
-# Load data
-market_df = pd.read_csv("simulation_logs/my_sim_run1_market.csv")
-beliefs_df = pd.read_csv("simulation_logs/my_sim_run1_beliefs.csv")
-
-# Analyze
-print(f"Price change: {market_df['price'].iloc[-1] - market_df['price'].iloc[0]}")
-print(f"Total volume: {market_df['total_volume'].iloc[-1]}")
-```
-
-Or use the built-in visualization:
-
-```bash
-python examples/visualize_results.py my_sim_run1
-```
-
-## Integration with External Libraries
-
-The framework can integrate with external orderbook implementations. See the `OrderbookSim` C++ library example mentioned in the documentation.
-
-## Contributing
-
-To add new components:
-
-1. Implement the relevant protocol from `interfaces.py`
-2. Add tests
-3. Update documentation
-4. Provide example usage
-
-## References
-
-- **LMSR**: Hanson, R. (2003). "Combinatorial Information Market Design"
-- **OrderBooks**: Harris, L. (2003). "Trading and Exchanges"
-
-## License
-
-See LICENSE file for details.
+Dashboards go to artifacts/dashboards/:
+   - prediction_sim_pnl.png             Agent profit/loss
+   - prediction_sim_price.png           Price evolution
+   - prediction_sim_beliefs.png         Belief convergence

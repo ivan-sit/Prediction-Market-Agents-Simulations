@@ -1,25 +1,8 @@
-#!/usr/bin/env python3
 """
-High-Level Driver Script for Prediction Market Simulation with Synthetic Data
-
-This script properly integrates all modules:
-- data: EventDatabase for loading events from JSON
-- data_sources: SourceNode network for information routing
-- agents: LLM-powered agents that react to events and place trades
-- market: LMSR or OrderBook for price discovery
-- simulation: SimulationEngine orchestration
-
-Configuration is loaded from config.env with command-line overrides.
-
+Driver script for running simulations
 Usage:
     # Use defaults from config.env
-    python examples/run_with_synthetic_data.py
-
-    # Override specific settings
-    python examples/run_with_synthetic_data.py --events data/other.json --agents 5
-
-    # Override all settings
-    python examples/run_with_synthetic_data.py --events data/my_events.json --market lmsr --agents 3
+    python examples/run_simulation.py
 """
 
 import sys
@@ -31,21 +14,14 @@ import yaml
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 
 def load_env_config(env_path: Path = None) -> dict:
-    """
-    Load configuration from config.env file.
-
-    Returns dict with defaults that can be overridden by command-line args.
-    """
-    # Default config values
     config = {
         'events_file': 'data/sample_election_events.json',
         'market_type': 'lmsr',
-        'num_agents': None,  # None means use all agents from YAML or default to 3
+        'num_agents': 3, 
         'max_timesteps': 100,
         'liquidity_param': 100.0,
         'run_name': 'prediction_sim',
@@ -54,7 +30,6 @@ def load_env_config(env_path: Path = None) -> dict:
         'personas_yaml': None,
     }
 
-    # Find config.env - check multiple locations
     if env_path is None:
         possible_paths = [
             Path(__file__).parent.parent / "config.env",
@@ -66,12 +41,11 @@ def load_env_config(env_path: Path = None) -> dict:
                 break
 
     if env_path is None or not env_path.exists():
-        print("[INFO] No config.env found, using defaults")
+        print("No config.env found, using defaults")
         return config
 
-    print(f"[CONFIG] Loading config from: {env_path}")
+    print(f"Loading config from: {env_path}")
 
-    # Parse config.env
     with open(env_path, 'r') as f:
         for line in f:
             line = line.strip()
@@ -82,7 +56,6 @@ def load_env_config(env_path: Path = None) -> dict:
                 key = key.strip()
                 value = value.strip()
 
-                # Map env vars to config keys
                 mapping = {
                     'EVENTS_FILE': ('events_file', str),
                     'MARKET_TYPE': ('market_type', str),
@@ -100,7 +73,7 @@ def load_env_config(env_path: Path = None) -> dict:
                     try:
                         config[config_key] = converter(value)
                     except ValueError:
-                        pass  # Keep default if conversion fails
+                        pass
 
     return config
 
@@ -117,8 +90,6 @@ from prediction_market_sim.utils.config import SimulationConfig
 def create_standard_portals():
     """
     Create the standard set of information portals.
-
-    These portal IDs should be used in your synthetic datasets.
     """
     return create_portal_network([
         {'node_id': 'twitter', 'reliability': 0.6},
@@ -130,26 +101,11 @@ def create_standard_portals():
 
 
 def load_agents_from_yaml(yaml_path: Path):
-    """
-    Load agent configurations from YAML file.
-
-    Expected format:
-      agents:
-        - agent_id: ...
-          personality_prompt: ...
-          subscriptions: [...]
-          net_worth: "$X"
-          ...
-
-    Returns:
-        List of agent config dicts
-    """
     with open(yaml_path, 'r') as f:
         data = yaml.safe_load(f)
 
     agent_configs = []
     for agent in data.get('agents', []):
-        # Convert net_worth string like "$150,000" to float
         net_worth_str = agent.get('net_worth', '$10000')
         initial_cash = float(net_worth_str.replace('$', '').replace(',', ''))
 
@@ -164,31 +120,17 @@ def load_agents_from_yaml(yaml_path: Path):
 
 
 def create_agents_with_subscriptions(portal_network, num_agents=None, yaml_path=None):
-    """
-    Create agents with different personalities and portal subscriptions.
-
-    Args:
-        portal_network: Portal network to subscribe agents to
-        num_agents: Number of agents to create (limits from config). If None and using YAML, uses all agents from YAML.
-        yaml_path: Optional path to YAML file with agent personas
-
-    Returns:
-        List of agent factory functions
-    """
-    # Try to load from YAML if provided
     if yaml_path and Path(yaml_path).exists():
         print(f"Loading agents from: {yaml_path}")
         base_agent_configs = load_agents_from_yaml(Path(yaml_path))
         print(f"Found {len(base_agent_configs)} agent personas in YAML")
 
-        # If num_agents not specified, use all agents from YAML
         if num_agents is None:
             num_agents = len(base_agent_configs)
             print(f"Using all {num_agents} agents from YAML file")
     else:
-        # Fallback to hardcoded configs
         if num_agents is None:
-            num_agents = 3  # Default for hardcoded agents
+            num_agents = 3
 
         base_agent_configs = [
             {
@@ -223,12 +165,10 @@ def create_agents_with_subscriptions(portal_network, num_agents=None, yaml_path=
             },
         ]
 
-    # Build agent_configs with duplicates if needed
     agent_configs = []
     num_base = len(base_agent_configs)
     for i in range(num_agents):
         base_config = base_agent_configs[i % num_base].copy()
-        # Add suffix for duplicates to create unique agent IDs
         if i >= num_base:
             duplicate_num = (i // num_base) + 1
             base_config['agent_id'] = f"{base_config['agent_id']}_v{duplicate_num}"
@@ -239,7 +179,6 @@ def create_agents_with_subscriptions(portal_network, num_agents=None, yaml_path=
     else:
         print(f"Creating {num_agents} agents")
 
-    # Subscribe agents to portals and collect subscription data
     subscriptions_data = []
     for config in agent_configs:
         portal_network.subscribe_agent(config['agent_id'], config['subscriptions'])
@@ -248,10 +187,8 @@ def create_agents_with_subscriptions(portal_network, num_agents=None, yaml_path=
             'subscriptions': config['subscriptions'],
         })
 
-    # Store subscriptions for later use (animation export)
     portal_network._agent_subscriptions_data = subscriptions_data
 
-    # Create agent factories
     agent_factories = []
     for config in agent_configs:
         def make_agent(cfg=config):
@@ -276,8 +213,6 @@ def build_simulation_engine(
     personas_yaml: str = None
 ):
     """
-    Build the complete simulation engine with all modules integrated.
-
     Args:
         events_path: Path to JSON file with event data
         market_type: 'lmsr' or 'orderbook'
@@ -289,19 +224,11 @@ def build_simulation_engine(
         personas_yaml: Optional path to YAML file with agent personas
 
     Returns:
-        Configured SimulationEngine ready to run
+        SimulationEngine
     """
-
-    # 1. Create portal network with standard portals
-    print("Setting up information portal network...")
     portal_network = create_standard_portals()
-
-    # 2. Create agents and subscribe them to portals
-    print(f"Creating {num_agents} agents with different strategies...")
     agent_factories = create_agents_with_subscriptions(portal_network, num_agents, yaml_path=personas_yaml)
 
-    # 3. Create market
-    print(f"Setting up {market_type.upper()} market...")
     if market_type.lower() == 'lmsr':
         market_factory = lambda: LMSRMarketAdapter(
             liquidity_param=liquidity_param,
@@ -315,41 +242,34 @@ def build_simulation_engine(
             track_positions=True
         )
 
-    # 4. Create event stream from JSON file
-    print(f"Loading events from: {events_path}")
     stream_factory = lambda: create_event_stream(str(events_path), read_only=read_only)
 
-    # 5. Configure simulation runtime
     runtime_config = SimulationRuntimeConfig(
         max_timesteps=timesteps,
         log_dir=Path("artifacts"),
         run_name=run_name,
         log_every=1,
-        stop_when_stream_finishes=True,  # Stop when all events consumed
+        stop_when_stream_finishes=True,
         enable_logging=True,
         save_logs_as_csv=True,
         save_logs_as_json=True
     )
 
-    # 6. Build the engine
-    print("Building simulation engine...")
     engine = SimulationEngine(
         stream_factory=stream_factory,
         portal_factory=lambda: portal_network,
         agent_factories=agent_factories,
         market_factory=market_factory,
-        evaluator_factories=[],  # Add custom evaluators if needed
+        evaluator_factories=[], 
         runtime_config=runtime_config
     )
 
-    # 7. Save agent subscriptions for animation visualization
     subscriptions_file = runtime_config.log_dir / f"{run_name}_run1_subscriptions.json"
     if hasattr(portal_network, '_agent_subscriptions_data'):
         import json
         with open(subscriptions_file, 'w') as f:
             json.dump(portal_network._agent_subscriptions_data, f, indent=2)
 
-    print("Engine ready!\n")
     return engine
 
 
@@ -360,17 +280,6 @@ def main():
     parser = argparse.ArgumentParser(
         description="Run prediction market simulation with synthetic event data",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  # Use defaults from config.env
-  python examples/run_with_synthetic_data.py
-
-  # Override events file only
-  python examples/run_with_synthetic_data.py --events data/other_events.json
-
-  # Override multiple settings
-  python examples/run_with_synthetic_data.py --market orderbook --agents 5 --seed 123
-        """
     )
     parser.add_argument(
         '--events',
@@ -437,44 +346,21 @@ Examples:
 
     args = parser.parse_args()
 
-    # Handle random seed
     if args.seed == -1:
         import random
         args.seed = random.randint(0, 999999)
-        print(f"[RANDOM] Using random seed: {args.seed}")
+        print(f"Using random seed: {args.seed}")
 
-    # Validate inputs
     if args.agents is not None and args.agents < 1:
         print("Warning: Number of agents must be at least 1")
         args.agents = 1
 
-    # Check if events file exists
     events_path = Path(args.events)
     if not events_path.exists():
         print(f"Error: Events file not found: {events_path}")
-        print(f"\nCreate a JSON file with this structure:")
-        print("""
-{
-  "events": [
-    {
-      "event_id": "evt_001",
-      "initial_time": 0,
-      "source_nodes": ["twitter", "news_feed"],
-      "tagline": "Market event headline",
-      "description": "Detailed description of what happened..."
-    }
-  ]
-}
-        """)
-        sys.exit(1)
 
-    # Use provided run name (already has default from config.env)
     run_name = args.name
 
-    # Print configuration
-    print("\n" + "="*60)
-    print("PREDICTION MARKET SIMULATION WITH SYNTHETIC DATA")
-    print("="*60)
     print(f"Events file:    {events_path}")
     print(f"Market type:    {args.market.upper()}")
     if args.agents is None and args.personas:
@@ -491,7 +377,6 @@ Examples:
         print(f"Personas:       {args.personas}")
     print("="*60 + "\n")
 
-    # Build and run simulation
     try:
         engine = build_simulation_engine(
             events_path=str(events_path),
@@ -504,17 +389,12 @@ Examples:
             personas_yaml=args.personas
         )
 
-        print("Starting simulation...\n")
-        print("-" * 60)
+        print("Starting simulation\n")
 
         result = engine.run_once(run_id=1, seed=args.seed)
 
-        print("\n" + "-" * 60)
-        print("Simulation complete!\n")
+        print("Simulation complete\n")
 
-        # Display results
-        print("RESULTS SUMMARY")
-        print("="*60)
         if result.prices:
             print(f"Total timesteps:  {len(result.prices)}")
             print(f"Starting price:   {result.prices[0]:.4f}")
@@ -528,16 +408,6 @@ Examples:
         for log_type, path in result.log_files.items():
             print(f"   {log_type}: {path}")
 
-        print("\n" + "="*60)
-        print("Simulation successful!")
-        print("="*60)
-        print("\nAnalyze results with:")
-        print(f"  - CSV files in: artifacts/")
-        print(f"  - Market data: artifacts/{run_name}_run1_market.csv")
-        print(f"  - Agent beliefs: artifacts/{run_name}_run1_beliefs.csv")
-        print(f"  - Event sources: artifacts/{run_name}_run1_sources.csv")
-
-        # Plot and save PnL dashboard per agent if available
         if result.agent_pnl_history:
             dashboard_dir = Path("artifacts/dashboards")
             dashboard_dir.mkdir(parents=True, exist_ok=True)
@@ -552,7 +422,6 @@ Examples:
             plt.close()
             print(f"  - PnL chart: {pnl_path}")
 
-        # Get agent colors for consistent styling across charts
         agent_ids = list(pnl_df.columns) if result.agent_pnl_history else []
         agent_colors = {agent: f"C{i}" for i, agent in enumerate(agent_ids)}
 
@@ -721,7 +590,7 @@ Examples:
                 plt.close()
                 print(f"  - Positions chart: {positions_path}")
 
-        # Save trade log per agent if available
+        # Save trade log per agent
         if result.trade_log:
             trades_dir = Path("artifacts/trades")
             trades_dir.mkdir(parents=True, exist_ok=True)
@@ -736,18 +605,10 @@ Examples:
                         rows.append({"trade": str(t)})
             trades_path = trades_dir / f"{run_name}_trades.csv"
             pd.DataFrame(rows).to_csv(trades_path, index=False)
-            print(f"  - Trades log: {trades_path}")
 
     except Exception as e:
-        print(f"\n[ERROR] Error during simulation: {e}")
         import traceback
         traceback.print_exc()
-
-        print("\nTroubleshooting:")
-        print("  1. Verify events JSON file has correct format")
-        print("  2. Check that source_nodes in events match: twitter, news_feed, expert_analysis, reddit, discord")
-        print("  3. Ensure Ollama is running for LLM agents: ollama serve")
-        print("  4. Check that all dependencies are installed: pip install -r requirements.txt")
         sys.exit(1)
 
 

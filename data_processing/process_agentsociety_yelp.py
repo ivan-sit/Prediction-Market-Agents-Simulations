@@ -1,6 +1,5 @@
 """
 Convert AgentSociety Yelp data into prediction market events.
-Market: "What percentage of restaurants will receive 4+ stars?"
 
 Usage:
     python data_processing/process_agentsociety_yelp.py \
@@ -11,6 +10,7 @@ Usage:
 import json
 import argparse
 from pathlib import Path
+from collections import Counter
 
 
 def load_agentsociety_data(data_dir: Path):
@@ -85,8 +85,6 @@ def create_market_events(pairs: list, max_events: int = 30):
         stars = gt["stars"]
         sentiment = classify_sentiment(review_text)
         sources = determine_sources(review_text, stars)
-
-        # Truncate review for event description
         text_preview = review_text[:400] + "..." if len(review_text) > 400 else review_text
 
         event = {
@@ -118,13 +116,7 @@ def calculate_ground_truth(pairs: list, threshold: float = 4.0):
 
 def print_stats(pairs: list, events: list, ground_truth: float):
     """Print summary statistics"""
-    print("\n" + "=" * 60)
-    print("AGENTSOCIETY YELP DATA PROCESSING")
-    print("=" * 60)
-
-    # Star distribution
     stars_list = [gt["stars"] for _, gt, _ in pairs[:len(events)]]
-    from collections import Counter
     star_counts = Counter(stars_list)
 
     print(f"\nProcessed {len(events)} reviews")
@@ -135,7 +127,6 @@ def print_stats(pairs: list, events: list, ground_truth: float):
         bar = "█" * int(pct / 2)
         print(f"  {stars} stars: {count:3d} ({pct:5.1f}%) {bar}")
 
-    # Sentiment distribution
     sentiments = Counter(e["metadata"]["sentiment"] for e in events)
     print(f"\nSentiment Distribution:")
     for sent, count in sentiments.most_common():
@@ -197,10 +188,6 @@ def main():
         json.dump(output, f, indent=2)
 
     print(f"Saved {len(events)} events to: {output_path}")
-    print(f"\nTo run the simulation:")
-    print(f"  python examples/run_with_synthetic_data.py --events {args.output}")
-    print(f"\nTo evaluate results:")
-    print(f"  python examples/evaluate_simulation.py --run-name prediction_sim --actual-outcome {ground_truth:.3f} --plot")
 
 
 if __name__ == "__main__":

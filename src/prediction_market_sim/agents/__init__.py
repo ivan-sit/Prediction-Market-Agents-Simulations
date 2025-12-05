@@ -17,7 +17,6 @@ __all__ = [
     "MarketPlanningModule",
     "MarketReasoningModule",
     "MarketMemoryModule",
-    "PlaceholderMarketTools",
     "OllamaLLM",
     "OllamaEmbeddings",
     "PredictionMarketAgentAdapter",

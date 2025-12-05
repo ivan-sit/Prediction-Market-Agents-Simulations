@@ -1,8 +1,3 @@
-"""
-Evaluate prediction market simulation results.
-Works with output from run_with_synthetic_data.py
-"""
-
 import sys
 from pathlib import Path
 import pandas as pd
@@ -11,7 +6,6 @@ import json
 import argparse
 import matplotlib.pyplot as plt
 
-# Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 
@@ -54,37 +48,20 @@ def load_simulation_results(artifacts_dir: Path, run_name: str):
 
 
 def calculate_brier_score(predicted_probs: list, actual_outcome: float) -> float:
-    """
-    Brier Score: Mean squared error for probabilistic predictions.
-    Lower is better. Range: [0, 1]
-    """
     predicted_probs = np.array(predicted_probs)
     return float(np.mean((predicted_probs - actual_outcome) ** 2))
 
 
 def calculate_log_score(predicted_probs: list, actual_outcome: float) -> float:
-    """
-    Logarithmic Score: Measures calibration of probabilistic predictions.
-    Higher (less negative) is better.
-    """
     predicted_probs = np.array(predicted_probs)
-    # Clip to avoid log(0)
     predicted_probs = np.clip(predicted_probs, 1e-10, 1 - 1e-10)
 
-    if actual_outcome >= 0.5:  # YES outcome
+    if actual_outcome >= 0.5:
         return float(np.mean(np.log(predicted_probs)))
-    else:  # NO outcome
+    else:
         return float(np.mean(np.log(1 - predicted_probs)))
 
-
 def calculate_agent_pnl(trades: pd.DataFrame, final_price: float) -> dict:
-    """
-    Calculate PnL for each agent based on their trades.
-
-    PnL = (shares * final_price) - cost_paid
-    For YES shares: value = shares * final_price
-    For NO shares: value = shares * (1 - final_price)
-    """
     agent_pnls = {}
 
     for agent_id in trades['agent_id'].unique():
@@ -123,7 +100,6 @@ def calculate_agent_pnl(trades: pd.DataFrame, final_price: float) -> dict:
 
 
 def calculate_price_volatility(prices: list) -> float:
-    """Calculate price volatility as standard deviation of returns"""
     if len(prices) < 2:
         return 0.0
     returns = np.diff(prices)
@@ -131,9 +107,6 @@ def calculate_price_volatility(prices: list) -> float:
 
 
 def calculate_price_discovery_speed(prices: list, final_price: float, threshold: float = 0.05) -> int:
-    """
-    Calculate how many timesteps until price is within threshold of final price.
-    """
     for i, price in enumerate(prices):
         if abs(price - final_price) <= threshold:
             return i
@@ -143,24 +116,9 @@ def calculate_price_discovery_speed(prices: list, final_price: float, threshold:
 def evaluate_simulation(
     artifacts_dir: Path,
     run_name: str,
-    actual_outcome: float = 1.0,  # 1.0 = YES happened, 0.0 = NO happened
+    actual_outcome: float = 1.0,
     outcome_name: str = "YES"
 ):
-    """
-    Comprehensive evaluation of simulation results.
-
-    Args:
-        artifacts_dir: Directory containing simulation artifacts
-        run_name: Name of the simulation run
-        actual_outcome: Actual probability of the outcome (1.0 if YES won, 0.0 if NO won)
-        outcome_name: Name of the winning outcome for display
-    """
-    print("\n" + "=" * 70)
-    print(f"PREDICTION MARKET SIMULATION EVALUATION")
-    print(f"Run: {run_name}")
-    print("=" * 70)
-
-    # Load data
     results = load_simulation_results(artifacts_dir, run_name)
     if not results:
         return None
@@ -169,34 +127,24 @@ def evaluate_simulation(
     beliefs_data = results['beliefs']
     trades_data = results['trades']
 
-    # Extract price history
     prices = [m['price'] for m in market_data]
     timesteps = [m['timestep'] for m in market_data]
 
     final_price = prices[-1]
     initial_price = prices[0]
 
-    print(f"\n[MARKET SUMMARY]")
-    print("-" * 70)
     print(f"Timesteps:        {len(timesteps)}")
     print(f"Initial Price:    {initial_price:.4f}")
     print(f"Final Price:      {final_price:.4f}")
     print(f"Price Change:     {final_price - initial_price:+.4f}")
     print(f"Price Range:      [{min(prices):.4f}, {max(prices):.4f}]")
 
-    # Calculate evaluation metrics
     report = {}
-
-    # Market summary metrics
     report['timesteps'] = len(timesteps)
     report['initial_price'] = initial_price
     report['price_change'] = final_price - initial_price
     report['price_min'] = min(prices)
     report['price_max'] = max(prices)
-
-    # 1. Prediction Quality Metrics
-    print(f"\n[1] PREDICTION QUALITY METRICS")
-    print("-" * 70)
 
     brier_score = calculate_brier_score(prices, actual_outcome)
     log_score = calculate_log_score(prices, actual_outcome)
@@ -208,10 +156,6 @@ def evaluate_simulation(
     print(f"Log Score:        {log_score:.4f}  (higher = better, 0 = perfect)")
     print(f"Actual Outcome:   {outcome_name} (prob={actual_outcome})")
     print(f"Prediction Error: {abs(final_price - actual_outcome):.4f}")
-
-    # 2. Market Efficiency
-    print(f"\n[2] MARKET EFFICIENCY")
-    print("-" * 70)
 
     volatility = calculate_price_volatility(prices)
     discovery_speed = calculate_price_discovery_speed(prices, actual_outcome, threshold=0.1)
@@ -231,22 +175,13 @@ def evaluate_simulation(
 
     # 3. Agent Performance
     if trades_data is not None and len(trades_data) > 0:
-        print(f"\n[3] AGENT PERFORMANCE")
-        print("-" * 70)
 
         agent_pnls = calculate_agent_pnl(trades_data, actual_outcome)
         report['agent_performance'] = agent_pnls
 
-        print(f"{'Agent':<25} {'Cost':>12} {'Value':>12} {'PnL':>12} {'Return':>10}")
-        print("-" * 70)
-
         for agent_id, metrics in sorted(agent_pnls.items(), key=lambda x: x[1]['pnl'], reverse=True):
             print(f"{agent_id:<25} ${metrics['total_cost']:>10,.2f} ${metrics['total_value']:>10,.2f} "
                   f"${metrics['pnl']:>10,.2f} {metrics['return_pct']:>9.1f}%")
-
-        # Agent trading stats
-        print(f"\n[4] AGENT TRADING BEHAVIOR")
-        print("-" * 70)
 
         agent_trading_behavior = {}
         for agent_id in trades_data['agent_id'].unique():
@@ -266,18 +201,15 @@ def evaluate_simulation(
             }
 
             print(f"\n{agent_id}:")
-            print(f"  Total Trades:    {len(agent_trades)}")
-            print(f"  Total Shares:    {total_shares:,.0f}")
-            print(f"  YES Trades:      {yes_trades}")
-            print(f"  NO Trades:       {no_trades}")
-            print(f"  Avg Cost/Share:  ${avg_price:.4f}")
+            print(f"Total Trades:    {len(agent_trades)}")
+            print(f"Total Shares:    {total_shares:,.0f}")
+            print(f"YES Trades:      {yes_trades}")
+            print(f"NO Trades:       {no_trades}")
+            print(f"Avg Cost/Share:  ${avg_price:.4f}")
 
         report['agent_trading_behavior'] = agent_trading_behavior
 
-    # 4. Belief Analysis
     if beliefs_data:
-        print(f"\n[5] AGENT BELIEF ANALYSIS")
-        print("-" * 70)
 
         belief_by_agent = {}
         for entry in beliefs_data:
@@ -299,31 +231,20 @@ def evaluate_simulation(
             }
 
             print(f"{agent_id}:")
-            print(f"  Avg Belief:      {avg_belief:.4f}")
-            print(f"  Belief Std Dev:  {belief_std:.4f}")
-            print(f"  Belief Error:    {belief_error:.4f} (vs actual outcome)")
+            print(f"Avg Belief:      {avg_belief:.4f}")
+            print(f"Belief Std Dev:  {belief_std:.4f}")
+            print(f"Belief Error:    {belief_error:.4f} (vs actual outcome)")
 
         report['agent_belief_analysis'] = agent_belief_analysis
 
-    # Summary
-    print(f"\n[SUMMARY]")
-    print("=" * 70)
     report['final_price'] = final_price
     report['actual_outcome'] = actual_outcome
     report['prediction_error'] = abs(final_price - actual_outcome)
 
-    accuracy_rating = "EXCELLENT" if report['prediction_error'] < 0.05 else \
-                      "GOOD" if report['prediction_error'] < 0.1 else \
-                      "FAIR" if report['prediction_error'] < 0.2 else "POOR"
-
     print(f"Final Price:       {final_price:.4f}")
     print(f"Actual Outcome:    {actual_outcome:.4f}")
     print(f"Prediction Error:  {report['prediction_error']:.4f}")
-    print(f"Accuracy Rating:   {accuracy_rating}")
 
-    report['accuracy_rating'] = accuracy_rating
-
-    # Save metrics to JSON
     metrics_dir = artifacts_dir / "metrics"
     metrics_dir.mkdir(parents=True, exist_ok=True)
     metrics_file = metrics_dir / f"{run_name}_evaluation.json"
@@ -331,14 +252,10 @@ def evaluate_simulation(
     with open(metrics_file, 'w') as f:
         json.dump(report, f, indent=2)
 
-    print(f"\n[SAVED] Metrics saved to: {metrics_file}")
-
     return report
 
 
 def plot_evaluation(artifacts_dir: Path, run_name: str, output_dir: Path):
-    """Generate evaluation visualization plots"""
-
     results = load_simulation_results(artifacts_dir, run_name)
     if not results:
         return
