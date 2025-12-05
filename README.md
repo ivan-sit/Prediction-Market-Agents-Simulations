@@ -45,7 +45,7 @@ After a simulation:
 GENERATING ANIMATIONS
 
 Create HTML visualization of market activity:
-   python -m prediction_market_sim.visualization.animate artifacts/ --run-id prediction_sim_run1
+   PYTHONPATH=src python -m prediction_market_sim.visualization.animate artifacts/ --run-id prediction_sim_run1
 
 
 OUTPUT FILES

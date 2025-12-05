@@ -1,8 +1,8 @@
-from .simulator import Simulator
+from .agent import SimulationAgent
 import logging
 
 logger = logging.getLogger("websocietysimulator")
-logger.setLevel(logging.INFO)  # 默认级别
+logger.setLevel(logging.INFO)
 
 if not logger.hasHandlers():
     handler = logging.StreamHandler()
@@ -12,4 +12,4 @@ if not logger.hasHandlers():
     handler.setFormatter(formatter)
     logger.addHandler(handler)
 
-__all__ = ["Simulator"]
+__all__ = ["SimulationAgent"]
