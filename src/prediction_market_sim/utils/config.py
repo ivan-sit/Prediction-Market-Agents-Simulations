@@ -108,11 +108,6 @@ def create_market_from_config(
         
     Returns:
         Market adapter instance (LMSR or OrderBook)
-        
-    Example:
-        >>> config = SimulationConfig()
-        >>> market = create_market_from_config(config)
-        >>> # Uses market type from config.env
     """
     if config is None:
         config = SimulationConfig()

@@ -59,3 +59,5 @@ Dashboards go to artifacts/dashboards/:
    - prediction_sim_pnl.png             Agent profit/loss
    - prediction_sim_price.png           Price evolution
    - prediction_sim_beliefs.png         Belief convergence
+
+The src/ folder contains the code for the majority of our infrastructure, which is extensive due to the need to create our own simulator. The examples/ directory holds the primary driver scripts.
